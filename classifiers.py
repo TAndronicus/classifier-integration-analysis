@@ -1,10 +1,10 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.colors import ListedColormap
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.datasets import make_classification
+from sklearn.model_selection import train_test_split
 from sklearn.neighbors import NearestCentroid
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
 h = .2
