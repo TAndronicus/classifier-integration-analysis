@@ -36,20 +36,17 @@ def extract_coefficients(clf):
     return a, b
 
 
-def evaluate_coefficients(coefficients, number_of_classifiers, scores, j):
-    a, b, sumOfScores = 0, 0, 0
-    for k in range(number_of_classifiers):
-        a += coefficients[k][0] * scores[k][j]
-        b += coefficients[k][1] * scores[k][j]
-        sumOfScores += scores[k][j]
-    return a / sumOfScores, b / sumOfScores
 
-def evaluate_coefficients_from_two_best(coefficients, number_of_classifiers, scores, j):
+def evaluate_coefficients_from_n_best(coefficients, number_of_classifiers, scores, j, number_of_best_classifiers):
     a, b, sumOfScores, params = 0, 0, 0, []
     for i in range(number_of_classifiers):
         params.append([scores[i][j], coefficients[i]])
     params.sort()
-    print(params)
+    for i in range(number_of_best_classifiers):
+        sumOfScores += params[i][0]
+        a += params[i][1][0]
+        b += params[i][1][1]
+    return a / sumOfScores, b / sumOfScores
 
 
 def initialize_classifiers(number_of_classifiers, classifier):

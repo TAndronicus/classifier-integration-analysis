@@ -2,13 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2fee8ee0-a3d8-400f-bc32-7ad73eb33e3d" name="Default" comment="Refactoring">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/Classification.iml" afterPath="$PROJECT_DIR$/.idea/Classification.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/classifiers.py" afterPath="$PROJECT_DIR$/classifiers.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/densityExamination.py" afterPath="$PROJECT_DIR$/densityExamination.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/func.py" afterPath="$PROJECT_DIR$/my_library.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/my_library.py" afterPath="$PROJECT_DIR$/my_library.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/plot_classifier_comparison.py" afterPath="$PROJECT_DIR$/plot_classifier_comparison.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/regre.py" afterPath="$PROJECT_DIR$/regre.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -19,23 +22,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="densityExamination.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="densityExamination.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/densityExamination.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="227">
-              <caret line="57" column="23" lean-forward="false" selection-start-line="57" selection-start-column="23" selection-end-line="57" selection-end-column="23" />
-              <folding>
-                <element signature="e#0#31#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="60">
+              <caret line="3" column="12" lean-forward="false" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="12" />
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="my_library.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="my_library.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/my_library.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="448">
-              <caret line="50" column="17" lean-forward="false" selection-start-line="50" selection-start-column="17" selection-end-line="50" selection-end-column="17" />
+            <state relative-caret-position="286">
+              <caret line="47" column="28" lean-forward="false" selection-start-line="47" selection-start-column="28" selection-end-line="47" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -78,8 +79,8 @@
         <option value="$PROJECT_DIR$/tfclassif.py" />
         <option value="$PROJECT_DIR$/classifiers.py" />
         <option value="$PROJECT_DIR$/func.py" />
-        <option value="$PROJECT_DIR$/densityExamination.py" />
         <option value="$PROJECT_DIR$/my_library.py" />
+        <option value="$PROJECT_DIR$/densityExamination.py" />
       </list>
     </option>
   </component>
@@ -104,23 +105,24 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="Classification" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Classification" type="462c0819:PsiDirectoryNode" />
+              <item name="SKClassifiers" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SKClassifiers" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
       <pane id="Scratches" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -259,19 +261,19 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-9" y="-9" width="1938" height="1050" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1625" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3286026" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32946146" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39915523" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32946146" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -326,27 +328,9 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Zadanie3.1.py" />
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/datasets/samples_generator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="36" column="4" lean-forward="false" selection-start-line="36" selection-start-column="4" selection-end-line="36" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/neighbors/nearest_centroid.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="21" column="6" lean-forward="false" selection-start-line="21" selection-start-column="6" selection-end-line="21" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/svm/classes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9112">
-          <caret line="545" column="12" lean-forward="false" selection-start-line="545" selection-start-column="12" selection-end-line="545" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/datasets/samples_generator.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/neighbors/nearest_centroid.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/svm/classes.py" />
     <entry file="file://$PROJECT_DIR$/Zadanie5.1.py" />
     <entry file="file://$PROJECT_DIR$/classifiers.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -356,27 +340,9 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Zadanie3.1.py" />
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/datasets/samples_generator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="36" column="4" lean-forward="false" selection-start-line="36" selection-start-column="4" selection-end-line="36" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/neighbors/nearest_centroid.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="21" column="6" lean-forward="false" selection-start-line="21" selection-start-column="6" selection-end-line="21" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/svm/classes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9112">
-          <caret line="545" column="12" lean-forward="false" selection-start-line="545" selection-start-column="12" selection-end-line="545" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/datasets/samples_generator.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/neighbors/nearest_centroid.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/svm/classes.py" />
     <entry file="file://$PROJECT_DIR$/Zadanie5.1.py" />
     <entry file="file://$PROJECT_DIR$/classifiers.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -385,27 +351,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/neighbors/nearest_centroid.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="21" column="6" lean-forward="false" selection-start-line="21" selection-start-column="6" selection-end-line="21" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/datasets/samples_generator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="36" column="4" lean-forward="false" selection-start-line="36" selection-start-column="4" selection-end-line="36" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/svm/classes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9112">
-          <caret line="545" column="12" lean-forward="true" selection-start-line="545" selection-start-column="12" selection-end-line="545" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/neighbors/nearest_centroid.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/datasets/samples_generator.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/svm/classes.py" />
     <entry file="file://$PROJECT_DIR$/classifiers.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -413,27 +361,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/neighbors/nearest_centroid.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="21" column="6" lean-forward="false" selection-start-line="21" selection-start-column="6" selection-end-line="21" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/svm/classes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9112">
-          <caret line="545" column="12" lean-forward="true" selection-start-line="545" selection-start-column="12" selection-end-line="545" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/neighbors/nearest_centroid.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="21" column="6" lean-forward="false" selection-start-line="21" selection-start-column="6" selection-end-line="21" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/neighbors/nearest_centroid.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/svm/classes.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/neighbors/nearest_centroid.py" />
     <entry file="file://$PROJECT_DIR$/Zadanie5.1.py" />
     <entry file="file://$PROJECT_DIR$/Zadanie4.1.py" />
     <entry file="file://$PROJECT_DIR$/Zadanie6.1.py" />
@@ -447,58 +377,16 @@
     <entry file="file://$PROJECT_DIR$/Zadanie1.2.py" />
     <entry file="file://$PROJECT_DIR$/Zadanie7.1.py" />
     <entry file="file://$PROJECT_DIR$/Zadanie3.1.py" />
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/tensorflow/contrib/learn/python/learn/estimators/estimator.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6324">
-          <caret line="428" column="6" lean-forward="false" selection-start-line="428" selection-start-column="6" selection-end-line="428" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/tensorflow/contrib/learn/python/learn/estimators/estimator.py" />
     <entry file="file://$PROJECT_DIR$/tfclassif.py" />
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/scipy/sparse/linalg/isolve/iterative.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="0" lean-forward="false" selection-start-line="6" selection-start-column="0" selection-end-line="6" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/model_selection/_validation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3451">
-          <caret line="233" column="12" lean-forward="true" selection-start-line="233" selection-start-column="12" selection-end-line="233" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/model_selection/_split.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="32725">
-          <caret line="1944" column="14" lean-forward="false" selection-start-line="1944" selection-start-column="4" selection-end-line="1944" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/matplotlib/pyplot.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="3304" column="4" lean-forward="false" selection-start-line="3304" selection-start-column="4" selection-end-line="3304" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/scipy/sparse/linalg/isolve/iterative.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/model_selection/_validation.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/model_selection/_split.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/matplotlib/pyplot.py" />
     <entry file="file://$PROJECT_DIR$/plot_lda_qda.py" />
     <entry file="file://$PROJECT_DIR$/plot_multilabel.py" />
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="933">
-          <caret line="217" column="10" lean-forward="true" selection-start-line="217" selection-start-column="10" selection-end-line="217" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/svm/classes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1547">
-          <caret line="100" column="9" lean-forward="false" selection-start-line="100" selection-start-column="4" selection-end-line="100" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/base.py" />
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/svm/classes.py" />
     <entry file="file://$PROJECT_DIR$/regre.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
@@ -513,13 +401,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.PyCharmCE2017.2/system/python_stubs/-1389958170/builtins.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="3646" column="8" lean-forward="false" selection-start-line="3646" selection-start-column="8" selection-end-line="3646" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/.PyCharmCE2017.2/system/python_stubs/-1389958170/builtins.py" />
     <entry file="file://$PROJECT_DIR$/plot_classifier_comparison.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="202">
@@ -527,36 +409,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/datasets/samples_generator.py">
+    <entry file="file://D:/Program Files/Python/Lib/site-packages/sklearn/datasets/samples_generator.py" />
+    <entry file="file://D:/Program Files/Python/Lib/codecs.py" />
+    <entry file="file://$PROJECT_DIR$/my_library.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1559">
-          <caret line="1660" column="0" lean-forward="false" selection-start-line="1660" selection-start-column="0" selection-end-line="1660" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://D:/Program Files/Python/Lib/codecs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="172">
-          <caret line="319" column="0" lean-forward="false" selection-start-line="319" selection-start-column="0" selection-end-line="319" selection-end-column="0" />
+        <state relative-caret-position="286">
+          <caret line="47" column="28" lean-forward="false" selection-start-line="47" selection-start-column="28" selection-end-line="47" selection-end-column="28" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/densityExamination.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="57" column="23" lean-forward="false" selection-start-line="57" selection-start-column="23" selection-end-line="57" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/my_library.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="448">
-          <caret line="50" column="17" lean-forward="false" selection-start-line="50" selection-start-column="17" selection-end-line="50" selection-end-column="17" />
+        <state relative-caret-position="60">
+          <caret line="3" column="12" lean-forward="false" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="12" />
           <folding />
         </state>
       </provider>
