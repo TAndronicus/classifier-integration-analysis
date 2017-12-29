@@ -1,12 +1,18 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.datasets import make_classification
-from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
+from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import RidgeClassifier
+from sklearn.linear_model import PassiveAggressiveClassifier
+from sklearn.linear_model import RidgeClassifierCV
 
 import my_library
 
-are_samples_generated = True
+if hasattr(LinearSVC, 'coef_'):
+    raise Exception('No coef_ attr')
+
+are_samples_generated = False
 number_of_samples_if_generated = 900
 number_of_dataset_if_not_generated = 12
 plot_mesh_step_size = .2
@@ -17,7 +23,7 @@ training2testing_quotient = 2 / 3
 
 # Prepare classifiers
 print('Preparing classifiers')
-clfs = my_library.initialize_classifiers(number_of_classifiers, LinearSVC())
+clfs = my_library.initialize_classifiers(number_of_classifiers, LinearSVC(max_iter = 1e8, tol = 1e-10))
 
 # Prepare raw data
 print('Prepare raw data')
@@ -25,12 +31,11 @@ if are_samples_generated:
     X, y = make_classification(n_features=2, n_redundant=0, n_informative=1, n_clusters_per_class=1, n_samples=number_of_samples_if_generated, class_sep=2.7, hypercube=False, random_state=2)
 else:
     X, y = my_library.load_samples_from_datasets(number_of_dataset_if_not_generated)
-    #X, y = my_library.load_samples_from_file('Dane_9_12_2017.xlsx')
-X = StandardScaler().fit_transform(X)
+    # X, y = my_library.load_samples_from_file('Dane_9_12_2017.xlsx')
 
 # Splitting between classifiers
 print('Split between classifiers')
-X_unsplitted, y_unsplitted, X_final_test, y_final_test = my_library.divide_samples_between_classifiers(X, y, number_of_classifiers)
+X_unsplitted, y_unsplitted, X_final_test, y_final_test = my_library.split_sorted_samples_between_classifiers(X, y, number_of_classifiers)
 
 # Splitting between training and testing
 print('Split between training and testing')
@@ -40,7 +45,9 @@ Xs_train, Xs_test, ys_train, ys_test = my_library.divide_samples_between_trainin
 # Getting data for plot
 print('Get data for plot')
 x_min, x_max, y_min, y_max = my_library.get_samples_limits(X)
-x_min_plot, x_max_plot, y_min_plot, y_max_plot = x_min - .5, x_max + .5, y_min - .5, y_max + .5
+x_shift = 0.1 * (x_max - x_min)
+y_shift = 0.1 * (y_max - y_min)
+x_min_plot, x_max_plot, y_min_plot, y_max_plot = x_min - x_shift, x_max + x_shift, y_min - y_shift, y_max + y_shift
 xx, yy = np.meshgrid(np.arange(x_min_plot, x_max_plot, plot_mesh_step_size), np.arange(y_min_plot, y_max_plot, plot_mesh_step_size))
 
 # Training and testing classifiers
@@ -59,9 +66,23 @@ for clf, X_train, X_test, y_train, y_test in zip(clfs, Xs_train, Xs_test, ys_tra
             score.append(0)
     scores.append(score)
     a, b = my_library.extract_coefficients(clf)
+
+
+    for j in range(number_of_space_parts):
+        X_part, y_part = my_library.prepare_samples_for_subspace(X_test, y_test, X, j, number_of_space_parts)
+        propperly_classified, all_classified = 0, 0
+        for k in range(len(X_part)):
+            if (a * X_part[k][0] + b > X_part[k][1]) ^ (y_part[k] == 1):
+                propperly_classified += 1
+            all_classified += 1
+        if not(all_classified == 0):
+            print(propperly_classified / all_classified)
+        else:
+            print('heh')
+
     coefficients.append([a, b])
     # Prepare plot
-    ax = plt.subplot(1, number_of_classifiers + 1, i)
+    ax = plt.subplot(1, number_of_classifiers * 2 + 1, i)
     ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train)
     x = np.linspace(x_min_plot, x_max_plot)
     y = a * x + b
@@ -70,8 +91,18 @@ for clf, X_train, X_test, y_train, y_test in zip(clfs, Xs_train, Xs_test, ys_tra
     ax.set_ylim(yy.min(), yy.max())
     i += 1
 
+    ax = plt.subplot(1, number_of_classifiers * 2 + 1, i)
+    if hasattr(clf, "decision_function"):
+        Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
+    else:
+        Z = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
+
+    Z = Z.reshape(xx.shape)
+    ax.contourf(xx, yy, Z, alpha = .8)
+    i += 1
+
 # Prepare plot of composite
-ax = plt.subplot(1, len(clfs) + 1, i)
+ax = plt.subplot(1, number_of_classifiers * 2 + 1, i)
 
 # Preparing composite classifier
 print('Prepare composite classifier')
