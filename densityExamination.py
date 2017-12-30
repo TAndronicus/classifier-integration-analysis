@@ -19,9 +19,10 @@ number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
 training2testing_quotient = 2 / 3
 draw_color_plot = False
+write_computed_scores = False
 
-# Prepare classifiers
-print('Preparing classifiers')
+# Preparing classifiers
+print('Prepare classifiers')
 clfs = my_library.initialize_classifiers(number_of_classifiers, clf) # LinearSVC(max_iter = 1e8, tol = 1e-10))
 
 # Prepare raw data
@@ -78,17 +79,18 @@ for clf, X_train, X_test, y_train, y_test in zip(clfs, Xs_train, Xs_test, ys_tra
         a, b = my_library.extract_coefficients_for_mean(clf)
 
 
-    for j in range(number_of_space_parts):
-        X_part, y_part = my_library.prepare_samples_for_subspace(X_test, y_test, X, j, number_of_space_parts)
-        propperly_classified, all_classified = 0, 0
-        for k in range(len(X_part)):
-            if (a * X_part[k][0] + b > X_part[k][1]) ^ (y_part[k] == 1):
-                propperly_classified += 1
-            all_classified += 1
-        if not(all_classified == 0):
-            print(propperly_classified / all_classified)
-        else:
-            print('heh')
+    if write_computed_scores:
+        for j in range(number_of_space_parts):
+            X_part, y_part = my_library.prepare_samples_for_subspace(X_test, y_test, X, j, number_of_space_parts)
+            propperly_classified, all_classified = 0, 0
+            for k in range(len(X_part)):
+                if (a * X_part[k][0] + b > X_part[k][1]) ^ (y_part[k] == 1):
+                    propperly_classified += 1
+                all_classified += 1
+            if not(all_classified == 0):
+                print(propperly_classified / all_classified)
+            else:
+                print('No samples')
 
     coefficients.append([a, b])
     # Prepare plot

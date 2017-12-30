@@ -16,12 +16,14 @@ def determine_clf_type(clf):
         clf.coef_
         return ClfType.LINEAR
     except:
-        print('No coef_ attribute')
+        # print('No coef_ attribute')
+        pass
     try:
         clf.centroids_
         return ClfType.MEAN
     except:
-        print('No centroids_ attribute')
+        # print('No centroids_ attribute')
+        print('No attribute found')
 
 
 def initialize_classifiers(number_of_classifiers, classifier):
