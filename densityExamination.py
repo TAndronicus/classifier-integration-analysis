@@ -9,8 +9,8 @@ from sklearn.linear_model import RidgeClassifierCV
 from sklearn.neighbors import NearestCentroid
 import my_library
 
-clf = NearestCentroid()
-are_samples_generated = False
+clf = NearestCentroid() # LinearSVC(max_iter = 1e8, tol = 1e-10))
+are_samples_generated = True
 number_of_samples_if_generated = 900
 number_of_dataset_if_not_generated = 12
 plot_mesh_step_size = .2
@@ -23,7 +23,7 @@ write_computed_scores = False
 
 # Preparing classifiers
 print('Prepare classifiers')
-clfs = my_library.initialize_classifiers(number_of_classifiers, clf) # LinearSVC(max_iter = 1e8, tol = 1e-10))
+clfs = my_library.initialize_classifiers(number_of_classifiers, clf)
 
 # Prepare raw data
 print('Prepare raw data')
@@ -78,8 +78,9 @@ for clf, X_train, X_test, y_train, y_test in zip(clfs, Xs_train, Xs_test, ys_tra
     elif type_of_classifier == my_library.ClfType.MEAN:
         a, b = my_library.extract_coefficients_for_mean(clf)
 
-
     if write_computed_scores:
+        # Computing scores manually
+        print('Compute scores manually')
         for j in range(number_of_space_parts):
             X_part, y_part = my_library.prepare_samples_for_subspace(X_test, y_test, X, j, number_of_space_parts)
             propperly_classified, all_classified = 0, 0
@@ -119,6 +120,7 @@ for clf, X_train, X_test, y_train, y_test in zip(clfs, Xs_train, Xs_test, ys_tra
 
 # Prepare plot of composite
 ax = plt.subplot(1, number_of_subplots, i)
+ax.scatter(X_final_test[:, 0], X_final_test[:, 1], c=y_final_test)
 
 # Preparing composite classifier
 print('Prepare composite classifier')
