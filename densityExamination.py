@@ -6,12 +6,10 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.linear_model import RidgeClassifier
 from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.linear_model import RidgeClassifierCV
-
+from sklearn.neighbors import NearestCentroid
 import my_library
 
-if hasattr(LinearSVC, 'coef_'):
-    raise Exception('No coef_ attr')
-
+clf = NearestCentroid()
 are_samples_generated = False
 number_of_samples_if_generated = 900
 number_of_dataset_if_not_generated = 12
@@ -20,20 +18,22 @@ number_of_space_parts = 5
 number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
 training2testing_quotient = 2 / 3
+draw_color_plot = False
 
 # Prepare classifiers
 print('Preparing classifiers')
-clfs = my_library.initialize_classifiers(number_of_classifiers, LinearSVC(max_iter = 1e8, tol = 1e-10))
+clfs = my_library.initialize_classifiers(number_of_classifiers, clf) # LinearSVC(max_iter = 1e8, tol = 1e-10))
 
 # Prepare raw data
 print('Prepare raw data')
 if are_samples_generated:
     X, y = make_classification(n_features=2, n_redundant=0, n_informative=1, n_clusters_per_class=1, n_samples=number_of_samples_if_generated, class_sep=2.7, hypercube=False, random_state=2)
     X0, X1 = my_library.divide_generated_samples(X, y)
-    #X, y = my_library.compose_sorted_parts(X0, X1)
+    X, y = my_library.compose_sorted_parts(X0, X1)
 else:
     X, y = my_library.load_samples_from_datasets(number_of_dataset_if_not_generated)
     # X, y = my_library.load_samples_from_file('Dane_9_12_2017.xlsx')
+
 
 # Splitting between classifiers
 print('Split between classifiers')
@@ -51,6 +51,10 @@ x_shift = 0.1 * (x_max - x_min)
 y_shift = 0.1 * (y_max - y_min)
 x_min_plot, x_max_plot, y_min_plot, y_max_plot = x_min - x_shift, x_max + x_shift, y_min - y_shift, y_max + y_shift
 xx, yy = np.meshgrid(np.arange(x_min_plot, x_max_plot, plot_mesh_step_size), np.arange(y_min_plot, y_max_plot, plot_mesh_step_size))
+if draw_color_plot:
+    number_of_subplots =  number_of_classifiers * 2 + 1
+else:
+    number_of_subplots = number_of_classifiers + 1
 
 # Training and testing classifiers
 print('Train and test classifiers')
@@ -59,6 +63,7 @@ for clf, X_train, X_test, y_train, y_test in zip(clfs, Xs_train, Xs_test, ys_tra
     score = []
     # Training classifier
     clf.fit(X_train, y_train)
+    type_of_classifier = my_library.determine_clf_type(clf)
     # Testing classifier for every subspace
     for j in range(number_of_space_parts):
         X_part, y_part = my_library.prepare_samples_for_subspace(X_test, y_test, X, j, number_of_space_parts)
@@ -67,7 +72,10 @@ for clf, X_train, X_test, y_train, y_test in zip(clfs, Xs_train, Xs_test, ys_tra
         else:
             score.append(0)
     scores.append(score)
-    a, b = my_library.extract_coefficients(clf)
+    if type_of_classifier == my_library.ClfType.LINEAR:
+        a, b = my_library.extract_coefficients_for_linear(clf)
+    elif type_of_classifier == my_library.ClfType.MEAN:
+        a, b = my_library.extract_coefficients_for_mean(clf)
 
 
     for j in range(number_of_space_parts):
@@ -84,7 +92,7 @@ for clf, X_train, X_test, y_train, y_test in zip(clfs, Xs_train, Xs_test, ys_tra
 
     coefficients.append([a, b])
     # Prepare plot
-    ax = plt.subplot(1, number_of_classifiers * 2 + 1, i)
+    ax = plt.subplot(1, number_of_subplots, i)
     ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train)
     x = np.linspace(x_min_plot, x_max_plot)
     y = a * x + b
@@ -93,18 +101,22 @@ for clf, X_train, X_test, y_train, y_test in zip(clfs, Xs_train, Xs_test, ys_tra
     ax.set_ylim(yy.min(), yy.max())
     i += 1
 
-    ax = plt.subplot(1, number_of_classifiers * 2 + 1, i)
-    if hasattr(clf, "decision_function"):
-        Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
-    else:
-        Z = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
-
-    Z = Z.reshape(xx.shape)
-    ax.contourf(xx, yy, Z, alpha = .8)
-    i += 1
+    if draw_color_plot:
+        # Draw color plot
+        print('Drawing color plot')
+        ax = plt.subplot(1, number_of_subplots, i)
+        if hasattr(clf, 'decision_function'):
+            Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
+        elif hasattr(clf, 'predict_proba'):
+            Z = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
+        else:
+            Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+        Z = Z.reshape(xx.shape)
+        ax.contourf(xx, yy, Z, alpha = .8)
+        i += 1
 
 # Prepare plot of composite
-ax = plt.subplot(1, number_of_classifiers * 2 + 1, i)
+ax = plt.subplot(1, number_of_subplots, i)
 
 # Preparing composite classifier
 print('Prepare composite classifier')
