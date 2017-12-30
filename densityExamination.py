@@ -29,6 +29,8 @@ clfs = my_library.initialize_classifiers(number_of_classifiers, LinearSVC(max_it
 print('Prepare raw data')
 if are_samples_generated:
     X, y = make_classification(n_features=2, n_redundant=0, n_informative=1, n_clusters_per_class=1, n_samples=number_of_samples_if_generated, class_sep=2.7, hypercube=False, random_state=2)
+    X0, X1 = my_library.divide_generated_samples(X, y)
+    #X, y = my_library.compose_sorted_parts(X0, X1)
 else:
     X, y = my_library.load_samples_from_datasets(number_of_dataset_if_not_generated)
     # X, y = my_library.load_samples_from_file('Dane_9_12_2017.xlsx')

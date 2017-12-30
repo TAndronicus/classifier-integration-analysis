@@ -65,12 +65,12 @@ def load_samples_from_datasets(number):
         line_number += 1
     # X = SelectKBest(k = 2).fit_transform(X, y)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
-    X, y = compose_sorted_parts(X0, X1, sheet.nrows)
+    X, y = compose_sorted_parts(X0, X1)
     return X, y
 
 
-def compose_sorted_parts(X0, X1, nrows):
-    X, y = np.zeros((nrows, 2)), np.zeros(nrows, dtype=np.int)
+def compose_sorted_parts(X0, X1):
+    X, y = np.zeros((len(X0) + len(X1), 2)), np.zeros(len(X0) + len(X1), dtype=np.int)
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
     for i in range(len(X0)):
         X[i, :], y[i] = X0[i], 0
@@ -110,6 +110,16 @@ def sort_results(X, y):
         X_result[i, :] = X_result_array[i]
         y_result[i] = y_result_array[i]
     return X_result, y_result
+
+
+def divide_generated_samples(X, y):
+    X0, X1 = [], []
+    for i in range(len(y)):
+        if y[i] == 0:
+            X0.append(X[i, :])
+        else:
+            X1.append(X[i, :])
+    return  X0, X1
 
 
 def divide_samples_between_classifiers(X, y, number_of_classifiers):
