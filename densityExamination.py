@@ -40,7 +40,7 @@ X_unsplitted, y_unsplitted, X_final_test, y_final_test = my_library.split_sorted
 # Splitting between training and testing
 print('Split between training and testing')
 scores, coefficients = [], []
-Xs_train, Xs_test, ys_train, ys_test = my_library.divide_samples_between_training_and_testing(X_unsplitted, y_unsplitted, training2testing_quotient)
+Xs_train, Xs_test, ys_train, ys_test = my_library.split_sorted_samples_between_training_and_testing(X_unsplitted, y_unsplitted, training2testing_quotient)
 
 # Getting data for plot
 print('Get data for plot')

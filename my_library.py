@@ -58,12 +58,13 @@ def load_samples_from_datasets(number):
         row = []
         for i in range(2):  # range(number_of_columns - 1):
             row.append(float(line[i].value))
-        if(int(line[number_of_columns - 1].value) == 0):
+        if int(line[number_of_columns - 1].value) == 0:
             X0.append(row)
         else:
             X1.append(row)
         line_number += 1
     # X = SelectKBest(k = 2).fit_transform(X, y)
+    print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X, y = compose_sorted_parts(X0, X1, sheet.nrows)
     return X, y
 
@@ -157,15 +158,53 @@ def divide_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quot
     :param X_unsplitted: [X(1), X(2), ..., X(n - 1)]
     :param y_unsplitted: [y(1), y(2), ..., y(n - 1)]
     :param quotient:
-    :return:
+    :return: [X_train(1), X_train(2), ..., X_train(n - 1)], [X_test(1), X_test(2), ..., X_test(n - 1)],
+    [y_train(1), y_train(2), ..., y_train(n - 1)], [y_test(1), y_test(2), ..., y_test(n - 1)]
     """
-    X_train, X_test, y_train, y_test, X_test_whole, y_test_whole = [], [], [], [], [], []
+    X_train, X_test, y_train, y_test = [], [], [], []
     for X_one, y_one in zip(X_unsplitted, y_unsplitted):
         X_train_part, X_test_part, y_train_part, y_test_part = train_test_split(X_one, y_one, train_size=int(len(X_one) * quotient))
         X_train.append(X_train_part)
         X_test.append(X_test_part)
         y_train.append(y_train_part)
         y_test.append(y_test_part)
+    return X_train, X_test, y_train, y_test
+
+
+def split_sorted_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quotient):
+    X_train, X_test, y_train, y_test = [], [], [], []
+    for X_one, y_one in zip(X_unsplitted, y_unsplitted):
+        X_train_part, X_test_part, y_train_part, y_test_part = train_test_sorted_split(X_one, y_one, quotient)
+        X_train.append(X_train_part)
+        X_test.append(X_test_part)
+        y_train.append(y_train_part)
+        y_test.append(y_test_part)
+    return X_train, X_test, y_train, y_test
+
+
+def train_test_sorted_split(X_one, y_one, quotient):
+    quotient_freq = 1 / (1 - quotient)
+    if quotient_freq - int(quotient_freq) - 1 < 1e-3:
+        quotient_freq = int(quotient_freq) + 1
+    else:
+        quotient_freq = int(quotient_freq)
+    length = int(len(y_one) / quotient_freq)
+    X_train, X_test, y_train, y_test = np.zeros((length * (quotient_freq - 1), 2)), np.zeros((length, 2)), np.zeros(length * (quotient_freq - 1), dtype=np.int), \
+                                       np.zeros(length, dtype=np.int)
+    counter = 0
+    print(len(y_train))
+    for i in range(length):
+        for j in range(quotient_freq - 1):
+            X_train[counter, :] = X_one[i * quotient_freq + j, :]
+            y_train[counter] = y_one[i * quotient_freq + j]
+            counter += 1
+            print(counter)
+        X_test[i, :] = X_one[(i + 1) * quotient_freq - 1]
+        y_test[i] = y_one[(i + 1) * quotient_freq - 1]
+    print(len(X_test))
+    print(len(X_train))
+    print(X_test)
+    print(y_test)
     return X_train, X_test, y_train, y_test
 
 
