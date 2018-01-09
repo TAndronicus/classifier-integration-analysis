@@ -3,7 +3,6 @@ import xlrd
 import numpy as np
 from sklearn.feature_selection import SelectKBest
 from enum import Enum
-from deprecation import deprecated
 
 
 def determine_clf_type(clf):
@@ -39,7 +38,6 @@ def initialize_classifiers(number_of_classifiers, classifier):
     return clfs
 
 
-@deprecated()
 def load_samples_from_file(filename):
     """Loads data from file
 
@@ -130,7 +128,6 @@ def sort_attributes(X):
     return X_result
 
 
-@deprecated('Does not sort by classes (y is not taken into consideration)')
 def sort_results(X, y):
     """Sorts attribute and class arrays
 
@@ -172,7 +169,6 @@ def divide_generated_samples(X, y):
     return  X0, X1
 
 
-@deprecated('Does not take sorting into consideration')
 def divide_samples_between_classifiers(X, y, number_of_classifiers):
     """Divides sample into parts for every classifier
 
@@ -222,7 +218,6 @@ def split_sorted_samples_between_classifiers(X, y, number_of_classifiers):
     return X_whole, y_whole, X_final_test, y_final_test
 
 
-@deprecated('Does not take sorting into consideration')
 def divide_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quotient):
     """Divides sample into parts for ttaining and testing
 
