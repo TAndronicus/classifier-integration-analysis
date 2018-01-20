@@ -33,7 +33,7 @@ def initialize_classifiers(number_of_classifiers, type_of_classifier):
     """Generates list of classifiers for analysis
 
     :param number_of_classifiers: Number of classifiers
-    :param classifier: type of Sklearn classifier
+    :param type_of_classifier: type of Sklearn classifier
     :return: List of classifiers: [clf, ..., clf]
     """
     clfs = []
@@ -47,6 +47,7 @@ def initialize_classifiers(number_of_classifiers, type_of_classifier):
         raise Exception('Classifier type not defined')
     return clfs
 
+
 def prepare_raw_data(are_samples_generated, number_of_samples_if_generated, number_of_dataset_if_not_generated):
     """Prepares raw data for classification
 
@@ -56,7 +57,8 @@ def prepare_raw_data(are_samples_generated, number_of_samples_if_generated, numb
     :return: X, y: np.array, np.array
     """
     if are_samples_generated:
-        X, y = make_classification(n_features=2, n_redundant=0, n_informative=1, n_clusters_per_class=1, n_samples=number_of_samples_if_generated, class_sep=2.7, hypercube=False, random_state=2)
+        X, y = make_classification(n_features=2, n_redundant=0, n_informative=1, n_clusters_per_class=1, n_samples=number_of_samples_if_generated,
+                                   class_sep=2.7, hypercube=False, random_state=2)
         X0, X1 = divide_generated_samples(X, y)
         return compose_sorted_parts(X0, X1)
     else:
@@ -167,11 +169,13 @@ def assert_distribution(X0, X1, number_of_classifiers, number_of_space_parts):
             if len(X0) > len(X1):
                 subtraction = min(counter0, remainder)
                 rest = max(counter0, remainder) - subtraction
-                return assert_distribution(np.hstack((X0[:index0 - subtraction, :], X0[remainder:, :])), np.hstack((X1[:index1 - rest, :], X1[remainder:, :])), number_of_classifiers, number_of_space_parts)
+                return assert_distribution(np.hstack((X0[:index0 - subtraction, :], X0[remainder:, :])),
+                                           np.hstack((X1[:index1 - rest, :], X1[remainder:, :])), number_of_classifiers, number_of_space_parts)
             else:
                 subtraction = min(counter1, remainder)
                 rest = max(counter1, remainder) - subtraction
-                return assert_distribution(np.hstack((X0[:index0 - rest, :], X0[remainder:, :])), np.hstack((X1[:index1 - subtraction, :], X1[remainder:, :])), number_of_classifiers, number_of_space_parts)
+                return assert_distribution(np.hstack((X0[:index0 - rest, :], X0[remainder:, :])),
+                                           np.hstack((X1[:index1 - subtraction, :], X1[remainder:, :])), number_of_classifiers, number_of_space_parts)
     return X0, X1
 
 
@@ -249,7 +253,7 @@ def divide_generated_samples(X, y):
             X0.append(X[i, :])
         else:
             X1.append(X[i, :])
-    return  X0, X1
+    return X0, X1
 
 
 def divide_samples_between_classifiers(X, y, number_of_classifiers):
@@ -387,8 +391,8 @@ def train_test_sorted_split(X_one, y_one, quotient):
     else:
         quotient_freq = int(quotient_freq)
     length = int(len(y_one) / quotient_freq)
-    X_train, X_test, y_train, y_test = np.zeros((length * (quotient_freq - 1), 2)), np.zeros((length, 2)), np.zeros(length * (quotient_freq - 1), dtype=np.int), \
-                                       np.zeros(length, dtype=np.int)
+    X_train, X_test, y_train, y_test = np.zeros((length * (quotient_freq - 1), 2)), \
+                                       np.zeros((length, 2)), np.zeros(length * (quotient_freq - 1), dtype=np.int), np.zeros(length, dtype=np.int)
     counter = 0
     for i in range(length):
         for j in range(quotient_freq - 1):
@@ -611,7 +615,8 @@ def test_classifiers(clfs, number_of_space_parts, X_validation, y_validation, X,
     return scores
 
 
-def prepare_composite_classifier(X_test, y_test, X, number_of_space_parts, number_of_classifiers, number_of_best_classifiers, coefficients, scores, plot_mesh_step_size, number_of_subplots):
+def prepare_composite_classifier(X_test, y_test, X, number_of_space_parts, number_of_classifiers, number_of_best_classifiers, coefficients, scores,
+                                 plot_mesh_step_size, number_of_subplots):
     """Prepares composite classifiers
 
     :param X_test: np.array
@@ -684,3 +689,4 @@ class ClfType(Enum):
     """
     LINEAR = 0
     MEAN = 1
+    
