@@ -22,21 +22,13 @@ X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = MyLib
 xx, yy, x_min_plot, x_max_plot = MyLibrary.get_plot_data(X, plot_mesh_step_size)
 number_of_subplots = MyLibrary.determine_number_of_subplots(draw_color_plot, number_of_classifiers)
 
-clfs, coefficients = MyLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, type_of_classifier, number_of_subplots, X, plot_mesh_step_size, draw_color_plot)
+clfs, coefficients = MyLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, type_of_classifier,
+                                                 number_of_subplots, X, plot_mesh_step_size, draw_color_plot)
 
 scores = MyLibrary.test_classifiers(clfs, number_of_space_parts, X_validation, y_validation, X, coefficients, write_computed_scores)
 
-# Prepare plot of composite
-ax = plt.subplot(1, number_of_subplots, number_of_subplots)
-ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test)
+scores = MyLibrary.prepare_composite_classifier(X_test, y_test, X, number_of_space_parts, number_of_classifiers,
+                                                number_of_best_classifiers, coefficients, scores, plot_mesh_step_size, number_of_subplots)
 
-# Preparing composite classifier
-scores = MyLibrary.prepare_composite_classifier(X_test, y_test, X, number_of_space_parts, number_of_classifiers, number_of_best_classifiers, coefficients, scores, plot_mesh_step_size, ax)
-
-# Print resilts
-i = 1
-for row in scores:
-    print('Classifier ' + str(i))
-    print(row)
-    i += 1
+MyLibrary.print_results(scores)
 plt.show()
