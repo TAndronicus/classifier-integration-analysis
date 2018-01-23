@@ -31,6 +31,7 @@ print('Prepare raw data')
 if are_samples_generated:
     X, y = make_classification(n_features=2, n_redundant=0, n_informative=1, n_clusters_per_class=1, n_samples=number_of_samples_if_generated, class_sep=2.7, hypercube=False, random_state=2)
     X0, X1 = MyLibrary.divide_generated_samples(X, y)
+    X0, X1 = MyLibrary.sort_attributes(X0), MyLibrary.sort_attributes(X1)
     X, y = MyLibrary.compose_sorted_parts(X0, X1)
 else:
     X, y = MyLibrary.load_samples_from_datasets(number_of_dataset_if_not_generated)

@@ -27,6 +27,7 @@ def determine_clf_type(clf):
     except:
         # print('No centroids_ attribute')
         print('No attribute found')
+    raise Exception('Classifier not defined')
 
 
 def initialize_classifiers(number_of_classifiers, type_of_classifier):
@@ -48,7 +49,8 @@ def initialize_classifiers(number_of_classifiers, type_of_classifier):
     return clfs
 
 
-def prepare_raw_data(are_samples_generated, number_of_samples_if_generated, number_of_dataset_if_not_generated):
+def prepare_raw_data(are_samples_generated = True, number_of_samples_if_generated = 100, number_of_dataset_if_not_generated = 12, number_of_classifiers = 3,
+                     number_of_space_parts = 5):
     """Prepares raw data for classification
 
     :param are_samples_generated: boolean
@@ -57,12 +59,19 @@ def prepare_raw_data(are_samples_generated, number_of_samples_if_generated, numb
     :return: X, y: np.array, np.array
     """
     if are_samples_generated:
-        X, y = make_classification(n_features=2, n_redundant=0, n_informative=1, n_clusters_per_class=1, n_samples=number_of_samples_if_generated,
-                                   class_sep=2.7, hypercube=False, random_state=2)
+        X, y = make_classification(n_features = 2, n_redundant = 0, n_informative = 1, n_clusters_per_class = 1, n_samples = number_of_samples_if_generated,
+                                   class_sep = 2.7, hypercube = False, random_state = 2)
         X0, X1 = divide_generated_samples(X, y)
+        X0, X1 = sort_attributes(X0), sort_attributes(X1)
+        length0, length1 = len(X0), len(X1)
+        while True:
+            X0, X1 = assert_distribution(X0, X1, number_of_classifiers, number_of_space_parts)
+            if len(X0) == length0 and len(X1) == length1:
+                break
+            length0, length1 = len(X0), len(X1)
         return compose_sorted_parts(X0, X1)
     else:
-        return load_samples_from_datasets(number_of_dataset_if_not_generated)
+        return load_samples_from_datasets(number_of_dataset_if_not_generated, number_of_classifiers, number_of_space_parts)
 
 
 def load_samples_from_file(filename):
@@ -78,12 +87,12 @@ def load_samples_from_file(filename):
     line_number = 0
     line = sheet.row(line_number)
     number_of_columns = len(line)
-    X, y = np.zeros((sheet.nrows, number_of_columns - 1)), np.zeros(sheet.nrows, dtype=np.int)
+    X, y = np.zeros((sheet.nrows, 2)), np.zeros(sheet.nrows, dtype = np.int)
     while line_number < sheet.nrows - 1:
         line_number += 1
         line = sheet.row(line_number)
         row = []
-        for i in range(number_of_columns - 1):
+        for i in range(2):  # range(number_of_columns - 1):
             row.append(float(line[i].value))
         X[line_number - 1, :] = row
         y[line_number - 1] = int(line[number_of_columns - 1].value)
@@ -91,10 +100,12 @@ def load_samples_from_file(filename):
     return X, y
 
 
-def load_samples_from_datasets(number):
+def load_samples_from_datasets(number = 12, number_of_classifiers = 3, number_of_space_parts = 5):
     """Loads data from dataset (xlsx file with data)
 
-    :param number: Number of sheet
+    :param number: int, number of sheet
+    :param number_of_space_parts: int
+    :param number_of_classifiers: int
     :return: X, y: np.array, np.array - samples for classification
     """
     file = xlrd.open_workbook('datasets.xlsx')
@@ -115,11 +126,18 @@ def load_samples_from_datasets(number):
         line_number += 1
     # X = SelectKBest(k = 2).fit_transform(X, y)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
+    X0, X1 = sort_attributes(X0), sort_attributes(X1)
+    length0, length1 = len(X0), len(X1)
+    while True:
+        X0, X1 = assert_distribution(X0, X1, number_of_classifiers, number_of_space_parts)
+        if len(X0) == length0 and len(X1) == length1:
+            break
+        length0, length1 = len(X0), len(X1)
     X, y = compose_sorted_parts(X0, X1)
     return X, y
 
 
-def assert_distribution(X0, X1, number_of_classifiers, number_of_space_parts):
+def assert_distribution(X0, X1, number_of_classifiers = 3, number_of_space_parts = 5):
     """Asserts that samples can be divided into subspaces with the same amount of data
 
     :param X0: np.array, data with class 0
@@ -128,34 +146,35 @@ def assert_distribution(X0, X1, number_of_classifiers, number_of_space_parts):
     :param number_of_space_parts: int
     :return: X0, X1: np.array, np.array, data prepared to be divided into number_of_classifiers + 2 parts of same length
     """
-    x0_min, x0_max, y_min, y_max = get_samples_limits(X0)
-    x1_min, x1_max, y_min, y_max = get_samples_limits(X1)
-    index0, index1 = 0, 0
+    print('len0: {}, len1: {}'.format(len(X0), len(X1)))
+    x0_min, x0_max = get_subdata_limits(X0)
+    x1_min, x1_max = get_subdata_limits(X1)
+    x_min, x_max = min(x0_min, x1_min), max(x0_max, x1_max)
     for i in range(number_of_space_parts):
-        counter0, counter1 = 0, 0
+        counter0, counter1, index0, index1 = 0, 0, 0, 0
         while True:
-            if x0_min + i * (x0_max - x0_min) <= X0[index0, 0] <= x0_min + (i + 1) * (x0_max - x0_min):
+            if index0 == len(X0):
+                break
+            if x_min + i * (x_max - x_min) / number_of_space_parts <= X0[index0][0] <= x_min + (i + 1) * (x_max - x_min) / number_of_space_parts:
                 counter0 += 1
                 index0 += 1
                 continue
             if counter0 > 0:
                 break
-            if index0 > len(X0):
-                raise Exception('No samples')
             index0 += 1
         while True:
-            if x1_min + i * (x1_max - x1_min) <= X1[index1, 0] <= x1_min + (i + 1) * (x1_max - x1_min):
+            if index1 == len(X1):
+                break
+            if x_min + i * (x_max - x_min) / number_of_space_parts <= X1[index1][0] <= x_min + (i + 1) * (x_max - x_min) / number_of_space_parts:
                 counter1 += 1
                 index1 += 1
                 continue
             if counter1 > 0:
                 break
-            if index1 > len(X0):
-                raise Exception('No samples')
             index1 += 1
         if counter0 + counter1 < number_of_classifiers + 2:
             print('Only {} samples in {}. subspace'.format(counter0 + counter1, i + 1))
-            raise Exception('Not enough samples')
+            # raise Exception('Not enough samples')
         remainder = (counter0 + counter1) % (number_of_classifiers + 2)
         if remainder != 0:
             if i == 0:
@@ -167,27 +186,177 @@ def assert_distribution(X0, X1, number_of_classifiers, number_of_space_parts):
                     return assert_distribution(X0[:-1], X1, number_of_classifiers, number_of_space_parts)
                 return assert_distribution(X0, X1[:-1], number_of_classifiers, number_of_space_parts)
             if len(X0) > len(X1):
-                subtraction = min(counter0, remainder)
-                rest = max(counter0, remainder) - subtraction
-                return assert_distribution(np.hstack((X0[:index0 - subtraction, :], X0[remainder:, :])),
-                                           np.hstack((X1[:index1 - rest, :], X1[remainder:, :])), number_of_classifiers, number_of_space_parts)
+                if counter0 < remainder:
+                    subtraction, rest = counter0, remainder - counter0
+                else:
+                    subtraction, rest = remainder, 0
+                X0 = np.vstack((X0[:index0 - subtraction], X0[index0:]))
+                X1 = np.vstack((X1[:index1 - rest], X1[index1:]))
             else:
-                subtraction = min(counter1, remainder)
-                rest = max(counter1, remainder) - subtraction
-                return assert_distribution(np.hstack((X0[:index0 - rest, :], X0[remainder:, :])),
-                                           np.hstack((X1[:index1 - subtraction, :], X1[remainder:, :])), number_of_classifiers, number_of_space_parts)
+                if counter1 < remainder:
+                    subtraction, rest = counter1, remainder - counter1
+                else:
+                    subtraction, rest = remainder, 0
+                X0 = np.vstack((X0[:index0 - rest], X0[index0:]))
+                X1 = np.vstack((X1[:index1 - subtraction], X1[index1:]))
+    print('len0: {}, len1: {}'.format(len(X0), len(X1)))
     return X0, X1
 
 
+def assert_distribution_simplified(X0, X1, number_of_classifiers = 3, number_of_space_parts = 5):
+    """Asserts that samples can be divided into subspaces with the same amount of data
+
+    :param X0: np.array, data with class 0
+    :param X1: np.array, data with class 1
+    :param number_of_classifiers: int
+    :param number_of_space_parts: int
+    :return: X0, X1: np.array, np.array, data prepared to be divided into number_of_classifiers + 2 parts of same length
+    """
+    x_min, x_max = get_extrema_for_subspaces(X0, X1)
+    previous_index0, previous_index1 = 0, 0
+    for i in range(number_of_space_parts):
+        print('Before assertion: len0: {}, len1: {}'.format(len(X0), len(X1)))
+        counter0, index0 = get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X0, x_min, x_max, i, number_of_space_parts)
+        counter1, index1 = get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X1, x_min, x_max, i, number_of_space_parts)
+        if counter0 + counter1 < number_of_classifiers + 2:
+            print('Only {} samples in {}. subspace'.format(counter0 + counter1, i + 1))
+            # raise Exception('Not enough samples')
+        remainder = (counter0 + counter1) % (number_of_classifiers + 2)
+        if remainder != 0:
+            if i != number_of_space_parts - 1:
+                relative_index0, relative_index1, is_last = index0, index1, False
+            else:
+                relative_index0, relative_index1, is_last = previous_index0, previous_index1, True
+            if counter0 > counter1:
+                counter, is_first_bigger = counter0, True
+            else:
+                counter, is_first_bigger = counter1, False
+            X0, X1 = limit_datasets(X0, X1, counter, remainder, relative_index0, relative_index1, is_first_bigger, is_last)
+        previous_index0, previous_index1 = index0, index1
+    print('After assertion: len0: {}, len1: {}'.format(len(X0), len(X1)))
+    return X0, X1
+
+
+def get_extrema_for_subspaces(X0, X1):
+    """Returns minimum and maximum bor both datasets
+
+    :param X0: np.array
+    :param X1: np.array
+    :return: minimum, maximum: float, float
+    """
+    x0_min, x0_max = get_subdata_limits(X0)
+    x1_min, x1_max = get_subdata_limits(X1)
+    return min(x0_min, x1_min), max(x0_max, x1_max)
+
+
+def get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X0, x_min, x_max, i, number_of_space_parts = 5):
+    """Returns of count of data in subspace as well as index of the first element of next subspace
+
+    :param X0: np.array
+    :param x_min: float
+    :param x_max: float
+    :param i: int, number of subspace - 1
+    :param number_of_space_parts: int
+    :return: counter, index: int, int
+    """
+    counter, index = 0, 0
+    while True:
+        if index == len(X0):
+            break
+        if x_min + i * (x_max - x_min) / number_of_space_parts <= X0[index][0] <= x_min + (i + 1) * (x_max - x_min) / number_of_space_parts:
+            counter += 1
+            index += 1
+            continue
+        if counter > 0:
+            break
+        index += 1
+    return counter, index
+
+
+def set_subtraction_and_rest(counter, remainder):
+    """Calculates substracion and rest for limiting datasets
+
+    :param counter: int
+    :param remainder: int
+    :return: substraction, rest: int, int
+    """
+    if counter < remainder:
+        return counter, remainder - counter
+    else:
+        return remainder, 0
+
+
+def limit_datasets_for_every_subspace_but_last(X0, X1, counter, remainder, index0, index1, is_first_bigger):
+    """Returns limited datasets for every subspace but last one
+
+    :param X0: np.array
+    :param X1: np.array
+    :param counter: int
+    :param remainder: int
+    :param index0: int
+    :param index1: int
+    :param is_first_bigger: boolean, true if there is more data in analysiert subspace in the first dataset
+    :return: X0, X1: np.array, np.array
+    """
+    subtraction, rest = set_subtraction_and_rest(counter, remainder)
+    if is_first_bigger:
+        first_subtraction, second_subtraction = subtraction, rest
+    else:
+        first_subtraction, second_subtraction = rest, subtraction
+    X0 = np.vstack((X0[:index0 - first_subtraction], X0[index0:]))
+    X1 = np.vstack((X1[:index1 - second_subtraction], X1[index1:]))
+    return X0, X1
+
+
+def limit_datasets_for_last_subspace(X0, X1, counter, remainder, previous_index0, previous_index1, is_first_bigger):
+    """Returns limited datasets for last subspace
+
+    :param X0: np.array
+    :param X1: np.array
+    :param counter: int
+    :param remainder: int
+    :param previous_index0: int
+    :param previous_index1: int
+    :param is_first_bigger: boolean, true if there is more data in analysiert subspace in the first dataset
+    :return: X0, X1: np.array, np.array
+    """
+    subtraction, rest = set_subtraction_and_rest(counter, remainder)
+    if is_first_bigger:
+        first_subtraction, second_subtraction = subtraction, rest
+    else:
+        first_subtraction, second_subtraction = rest, subtraction
+    X0 = np.vstack((X0[:previous_index0], X0[previous_index0 + first_subtraction:]))
+    X1 = np.vstack((X1[:previous_index1], X1[previous_index1 + second_subtraction:]))
+    return X0, X1
+
+
+def limit_datasets(X0, X1, counter, remainder, relative_index0, relative_index1, is_first_bigger, is_last):
+    """Returns limited datasets
+
+    :param X0: np.array
+    :param X1: np.array
+    :param counter: int
+    :param remainder: int
+    :param relative_index0: int
+    :param relative_index1: int
+    :param is_first_bigger: boolean
+    :param is_last: boolean, true if it is last subspace
+    :return: X0, X1: np.array, np.array
+    """
+    if is_last:
+        return limit_datasets_for_last_subspace(X0, X1, counter, remainder, relative_index0, relative_index1, is_first_bigger)
+    else:
+        return limit_datasets_for_every_subspace_but_last(X0, X1, counter, remainder, relative_index0, relative_index1, is_first_bigger)
+
+
 def compose_sorted_parts(X0, X1):
-    """Composes classification data from 1 and 0 parts
+    """Composes classification data from 1 and 0 parts, datasets must be sorted
 
     :param X0: [], data, where y = 0
     :param X1: [], data, where y = 1
     :return: X, y: np.array, np.array - samples for classification
     """
-    X, y = np.zeros((len(X0) + len(X1), 2)), np.zeros(len(X0) + len(X1), dtype=np.int)
-    X0, X1 = sort_attributes(X0), sort_attributes(X1)
+    X, y = np.zeros((len(X0) + len(X1), 2)), np.zeros(len(X0) + len(X1), dtype = np.int)
     for i in range(len(X0)):
         X[i, :], y[i] = X0[i], 0
     for i in range(len(X1)):
@@ -199,7 +368,7 @@ def sort_attributes(X):
     """Sorts attribute array
 
     :param X: []
-    :return: np.array
+    :return: X: np.array
     """
     length, X_result_array = len(X), []
     for input_index in range(length):
@@ -233,7 +402,7 @@ def sort_results(X, y):
             output_index += 1
         X_result_array.insert(output_index, X[input_index, :])
         y_result_array.insert(output_index, y[input_index])
-    X_result, y_result = np.zeros((length, 2)), np.zeros(length, dtype=np.int)
+    X_result, y_result = np.zeros((length, 2)), np.zeros(length, dtype = np.int)
     for i in range(length):
         X_result[i, :] = X_result_array[i]
         y_result[i] = y_result_array[i]
@@ -256,7 +425,7 @@ def divide_generated_samples(X, y):
     return X0, X1
 
 
-def divide_samples_between_classifiers(X, y, number_of_classifiers):
+def divide_samples_between_classifiers(X, y, number_of_classifiers = 3):
     """Divides sample into parts for every classifier
 
     Warning: does not take sorting into consideration
@@ -270,10 +439,10 @@ def divide_samples_between_classifiers(X, y, number_of_classifiers):
     number_of_samples = len(X)
     X_whole, y_whole, X_rest, y_rest = [], [], [], []
     X_final_test, X_rest, y_final_test, y_rest = \
-        train_test_split(X, y, train_size=int(number_of_samples / (number_of_classifiers + 1)))
+        train_test_split(X, y, train_size = int(number_of_samples / (number_of_classifiers + 1)))
     for i in range(number_of_classifiers - 1):
         X_part, X_rest, y_part, y_rest = \
-            train_test_split(X_rest, y_rest, train_size=int(number_of_samples / (number_of_classifiers + 1)))
+            train_test_split(X_rest, y_rest, train_size = int(number_of_samples / (number_of_classifiers + 1)))
         X_whole.append(X_part)
         y_whole.append(y_part)
     X_whole.append(X_rest)
@@ -281,7 +450,7 @@ def divide_samples_between_classifiers(X, y, number_of_classifiers):
     return X_whole, y_whole, X_final_test, y_final_test
 
 
-def split_sorted_samples_between_classifiers(X, y, number_of_classifiers):
+def split_sorted_samples_between_classifiers(X, y, number_of_classifiers = 3):
     """Splits sorted samples between classifiers
 
     :param X: np.array
@@ -291,9 +460,9 @@ def split_sorted_samples_between_classifiers(X, y, number_of_classifiers):
     [np.array(1), np.array(2), ..., np.array(number_of_classifiers)], np.array, np.array
     """
     length = int(len(X) / (number_of_classifiers + 1))
-    X_whole, y_whole, X_final_test, y_final_test = [], [], np.zeros((length, 2)), np.zeros(length, dtype=np.int)
+    X_whole, y_whole, X_final_test, y_final_test = [], [], np.zeros((length, 2)), np.zeros(length, dtype = np.int)
     for i in range(number_of_classifiers):
-        X_temp, y_temp = np.zeros((length, 2)), np.zeros(length, dtype=np.int)
+        X_temp, y_temp = np.zeros((length, 2)), np.zeros(length, dtype = np.int)
         for j in range(length):
             X_temp[j, :] = (X[j * (number_of_classifiers + 1) + i, :])
             y_temp[j] = (y[j * (number_of_classifiers + 1) + i])
@@ -305,7 +474,7 @@ def split_sorted_samples_between_classifiers(X, y, number_of_classifiers):
     return X_whole, y_whole, X_final_test, y_final_test
 
 
-def divide_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quotient):
+def divide_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quotient = 2 / 3):
     """Divides sample into parts for ttaining and testing
 
     Warning: does not take sorting into consideration
@@ -317,7 +486,7 @@ def divide_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quot
     """
     X_train, X_test, y_train, y_test = [], [], [], []
     for X_one, y_one in zip(X_unsplitted, y_unsplitted):
-        X_train_part, X_test_part, y_train_part, y_test_part = train_test_split(X_one, y_one, train_size=int(len(X_one) * quotient))
+        X_train_part, X_test_part, y_train_part, y_test_part = train_test_split(X_one, y_one, train_size = int(len(X_one) * quotient))
         X_train.append(X_train_part)
         X_test.append(X_test_part)
         y_train.append(y_train_part)
@@ -325,7 +494,7 @@ def divide_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quot
     return X_train, X_test, y_train, y_test
 
 
-def split_sorted_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quotient):
+def split_sorted_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quotient = 2 / 3):
     """Splits sorted samples for testing and training
 
     :param X_unsplitted: [np.array(1), np.array(2), ..., np.array(n - 1)]
@@ -344,7 +513,7 @@ def split_sorted_samples_between_training_and_testing(X_unsplitted, y_unsplitted
     return X_train, X_test, y_train, y_test
 
 
-def split_sorted_samples(X, y, number_of_classifiers, number_of_space_parts):
+def split_sorted_samples(X, y, number_of_classifiers = 3, number_of_space_parts = 5):
     """Splits raw data into number_of_classifiers + 2 parts of same length
 
     :param X: np.array, array with sorted data
@@ -360,9 +529,9 @@ def split_sorted_samples(X, y, number_of_classifiers, number_of_space_parts):
         raise Exception('Not enough samples')
     length = int(len(X) / (number_of_classifiers + 2))
     X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
-        [], [], np.zeros((length, 2)), np.zeros(length, dtype=np.int), np.zeros((length, 2)), np.zeros(length, dtype=np.int)
+        [], [], np.zeros((length, 2)), np.zeros(length, dtype = np.int), np.zeros((length, 2)), np.zeros(length, dtype = np.int)
     for i in range(number_of_classifiers):
-        X_temp, y_temp = np.zeros((length, 2)), np.zeros(length, dtype=np.int)
+        X_temp, y_temp = np.zeros((length, 2)), np.zeros(length, dtype = np.int)
         for j in range(length):
             X_temp[j, :] = (X[j * (number_of_classifiers + 1) + i, :])
             y_temp[j] = (y[j * (number_of_classifiers + 1) + i])
@@ -377,7 +546,7 @@ def split_sorted_samples(X, y, number_of_classifiers, number_of_space_parts):
     return X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test
 
 
-def train_test_sorted_split(X_one, y_one, quotient):
+def train_test_sorted_split(X_one, y_one, quotient = 2 / 3):
     """Splits dataset into training and testing
 
     :param X_one: np.array
@@ -391,8 +560,8 @@ def train_test_sorted_split(X_one, y_one, quotient):
     else:
         quotient_freq = int(quotient_freq)
     length = int(len(y_one) / quotient_freq)
-    X_train, X_test, y_train, y_test = np.zeros((length * (quotient_freq - 1), 2)), \
-                                       np.zeros((length, 2)), np.zeros(length * (quotient_freq - 1), dtype=np.int), np.zeros(length, dtype=np.int)
+    X_train, X_test, y_train, y_test = np.zeros((length * (quotient_freq - 1), 2)), np.zeros((length, 2)), \
+                                       np.zeros(length * (quotient_freq - 1), dtype = np.int), np.zeros(length, dtype = np.int)
     counter = 0
     for i in range(length):
         for j in range(quotient_freq - 1):
@@ -404,7 +573,7 @@ def train_test_sorted_split(X_one, y_one, quotient):
     return X_train, X_test, y_train, y_test
 
 
-def prepare_samples_for_subspace(X_test, y_test, X, j, partitioning):
+def prepare_samples_for_subspace(X_test, y_test, X, j, partitioning = 5):
     """Preparing sample for testing in j-th subspace
 
     :param X_test: np.array
@@ -429,7 +598,22 @@ def get_samples_limits(X):
     return X[:, 0].min(), X[:, 0].max(), X[:, 1].min(), X[:, 1].max()
 
 
-def get_plot_data(X, plot_mesh_step_size):
+def get_subdata_limits(X):
+    """Gets limits of one dimensional dataset
+
+    :param X: np.array
+    :return: minimum, maximum: float, float
+    """
+    minimum, maximum = X[0][0], X[0][0]
+    for i in range(len(X)):
+        if X[i][0] < minimum:
+            minimum = X[i][0]
+        if X[i][0] > maximum:
+            maximum = X[i][0]
+    return minimum, maximum
+
+
+def get_plot_data(X, plot_mesh_step_size = .2):
     """Prepares data for plot generation
 
     :param X: np.array
@@ -445,7 +629,7 @@ def get_plot_data(X, plot_mesh_step_size):
     return xx, yy, x_min_plot, x_max_plot
 
 
-def determine_number_of_subplots(draw_color_plot, number_of_classifiers):
+def determine_number_of_subplots(draw_color_plot = False, number_of_classifiers = 3):
     """Checks number of subplots to draw
     
     :param draw_color_plot: boolean, if true - draws plots generated by scikit
@@ -457,7 +641,7 @@ def determine_number_of_subplots(draw_color_plot, number_of_classifiers):
     return number_of_classifiers + 1
 
 
-def train_classifiers(clfs, X_whole_train, y_whole_train, type_of_classifier, number_of_subplots, X, plot_mesh_step_size, draw_color_plot):
+def train_classifiers(clfs, X_whole_train, y_whole_train, type_of_classifier, number_of_subplots, X, plot_mesh_step_size = .2, draw_color_plot = False):
     """Trains classifiers
 
     :param clfs: [], scikit classifiers
@@ -482,13 +666,12 @@ def train_classifiers(clfs, X_whole_train, y_whole_train, type_of_classifier, nu
             a, b = extract_coefficients_for_linear(clf)
         elif type_of_classifier == ClfType.MEAN:
             a, b = extract_coefficients_for_mean(clf)
-        print(a)
 
         coefficients.append([a, b])
 
         # Prepare plot
         ax = plt.subplot(1, number_of_subplots, current_subplot)
-        ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train)
+        ax.scatter(X_train[:, 0], X_train[:, 1], c = y_train)
         x = np.linspace(x_min_plot, x_max_plot)
         y = a * x + b
         ax.plot(x, y)
@@ -507,7 +690,7 @@ def train_classifiers(clfs, X_whole_train, y_whole_train, type_of_classifier, nu
             else:
                 Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
             Z = Z.reshape(xx.shape)
-            ax.contourf(xx, yy, Z, alpha=.8)
+            ax.contourf(xx, yy, Z, alpha = .8)
             current_subplot += 1
     return trained_clfs, coefficients
 
@@ -558,7 +741,7 @@ def evaluate_average_coefficients_from_n_best(coefficients, number_of_classifier
     return a / number_of_best_classifiers, b / number_of_best_classifiers
 
 
-def get_subspace_limits(X, j, number_of_subspaces):
+def get_subspace_limits(X, j, number_of_subspaces = 5):
     """Gets limits of j-th subspace
 
     :param X: np.array
@@ -572,7 +755,7 @@ def get_subspace_limits(X, j, number_of_subspaces):
     return x_subspace_max, x_subspace_min
 
 
-def test_classifiers(clfs, number_of_space_parts, X_validation, y_validation, X, coefficients, write_computed_scores):
+def test_classifiers(clfs, X_validation, y_validation, X, coefficients, number_of_space_parts = 5, write_computed_scores = False):
     """Tests classifiers
 
     :param clfs: clfs: [], scikit classifiers
@@ -615,8 +798,8 @@ def test_classifiers(clfs, number_of_space_parts, X_validation, y_validation, X,
     return scores
 
 
-def prepare_composite_classifier(X_test, y_test, X, number_of_space_parts, number_of_classifiers, number_of_best_classifiers, coefficients, scores,
-                                 plot_mesh_step_size, number_of_subplots):
+def prepare_composite_classifier(X_test, y_test, X, number_of_best_classifiers, coefficients, scores, number_of_subplots, number_of_space_parts = 5,
+                                 number_of_classifiers = 3, plot_mesh_step_size = .2):
     """Prepares composite classifiers
 
     :param X_test: np.array
@@ -634,7 +817,7 @@ def prepare_composite_classifier(X_test, y_test, X, number_of_space_parts, numbe
     print('Preparing composite classifier')
     score, flip_index = [], 0
     ax = plt.subplot(1, number_of_subplots, number_of_subplots)
-    ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test)
+    ax.scatter(X_test[:, 0], X_test[:, 1], c = y_test)
     for j in range(number_of_space_parts):
         x_subspace_min, x_subspace_max = get_subspace_limits(X, j, number_of_space_parts)
         x = np.linspace(x_subspace_min, x_subspace_max)
@@ -689,4 +872,3 @@ class ClfType(Enum):
     """
     LINEAR = 0
     MEAN = 1
-    
