@@ -785,19 +785,21 @@ def test_classifiers(clfs, X_validation, y_validation, X, coefficients, number_o
     :param X: np.array
     :param coefficients: []
     :param write_computed_scores: boolean
-    :return: scores: []
+    :return: scores, cumulated_scores: [], []
     """
-    scores, i = [], 0
+    scores, cumulated_scores, i = [], [], 0
     for clf in clfs:
-        score = []
+        score, cumulated_score = [], 0
         for j in range(number_of_space_parts):
             X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, X, j, number_of_space_parts)
             if len(X_part) > 0:
                 score.append(clf.score(X_part, y_part))
+                cumulated_score += clf.score(X_part, y_part) * len(X_part)
             else:
                 score.append(0)
+        cumulated_score /= len(X_validation)
         scores.append(score)
-
+        cumulated_scores.append(cumulated_score)
         a, b = coefficients[i]
 
         if write_computed_scores:
@@ -815,7 +817,7 @@ def test_classifiers(clfs, X_validation, y_validation, X, coefficients, number_o
                 else:
                     print('No samples')
         i += 1
-    return scores
+    return scores, cumulated_scores
 
 
 def prepare_composite_classifier(X_test, y_test, X, number_of_best_classifiers, coefficients, scores, number_of_subplots, number_of_space_parts = 5,
@@ -835,7 +837,7 @@ def prepare_composite_classifier(X_test, y_test, X, number_of_best_classifiers, 
     :return: scores: []
     """
     print('Preparing composite classifier')
-    score, flip_index = [], 0
+    score, part_lengths, flip_index = [], [], 0
     ax = plt.subplot(1, number_of_subplots, number_of_subplots)
     ax.scatter(X_test[:, 0], X_test[:, 1], c = y_test)
     for j in range(number_of_space_parts):
@@ -862,14 +864,35 @@ def prepare_composite_classifier(X_test, y_test, X, number_of_best_classifiers, 
                 flip_index -= 1
         else:
             score.append(0)
+        part_lengths.append(len(X_part))
     if flip_index > 0:
         for k in range(len(score)):
             score[k] = 1 - score[k]
+    cumulated_score = 0
+    for i in range(len(score)):
+        cumulated_score += score[i] * part_lengths[i]
+    cumulated_score /= len(X_test)
     scores.append(score)
     xx, yy, x_min_plot, x_max_plot = get_plot_data(X, plot_mesh_step_size)
     ax.set_xlim(xx.min(), xx.max())
     ax.set_ylim(yy.min(), yy.max())
-    return scores
+    return scores, cumulated_score
+
+
+def get_number_of_samples_in_subspace(X, j, number_of_subspaces = 5):
+    """Returns number of samples in j-th subspace
+
+    :param X: np.array
+    :param j: int
+    :param number_of_subspaces: int
+    :return: count: int
+    """
+    x_subspace_max, x_subspace_min = get_subspace_limits(X, j, number_of_subspaces)
+    count = 0
+    for i in range(len(X)):
+        if x_subspace_min <= X[i][0] <= x_subspace_max:
+            count += 1
+    return count
 
 
 def print_results(scores):
@@ -883,6 +906,19 @@ def print_results(scores):
         print('Classifier ' + str(i))
         print(row)
         i += 1
+
+
+def print_results_with_cumulated_score(scores, cumulated_scores):
+    """Prints partial and overall results
+
+    :param scores: []
+    :param cumulated_scores: []
+    :return: void
+    """
+    for i in range(len(scores)):
+        print('Scores for {}. classifier'.format(i + 1))
+        print(scores[i])
+        print('Overall result: {}'.format(cumulated_scores[i]))
 
 
 class ClfType(Enum):
