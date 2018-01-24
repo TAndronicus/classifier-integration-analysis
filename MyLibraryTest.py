@@ -469,5 +469,37 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertEqual(self.NUMBER_OF_CLASSIFIERS + 1, target)
 
+    def test_should_evaluate_average_coefficients_from_n_best(self):
+        # given
+        coefficients = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]]
+        scores = [[0.25], [0], [0.5], [0.75], [1]]
+        # when
+        a, b = MyLibrary.evaluate_average_coefficients_from_n_best(coefficients, scores, 0, number_of_best_classifiers = 3, number_of_classifiers = len(scores))
+        # then
+        self.assertEqual((coefficients[2][0] + coefficients[3][0] + coefficients[4][0]) / 3, a)
+        self.assertEqual((coefficients[2][1] + coefficients[3][1] + coefficients[4][1]) / 3, b)
+
+    def test_should_evaluate_weighted_average_coefficients_from_n_best(self):
+        # given
+        coefficients = [[1, 2], [3, 4], [5, 6], [7, 8]]
+        scores = [[0], [0.25], [0.5], [0.75]]
+        # when
+        a, b = MyLibrary.evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, 0, number_of_best_classifiers = 2, number_of_classifiers = len(scores))
+        # then
+        self.assertEqual((coefficients[2][0] * scores[2][0] + coefficients[3][0] * scores[3][0]) / (scores[2][0] + scores[3][0]), a)
+        self.assertEqual((coefficients[2][1] * scores[2][0] + coefficients[3][1] * scores[3][0]) / (scores[2][0] + scores[3][0]), b)
+
+    def test_should_return_subspace_limits(self):
+        # given
+        X = np.array([[0.1, 0], [1.3, 1], [2.5, 2], [3.7, 3], [7.9, 7], [8.7, 8], [9.5, 9], [10.3, 10]])
+        number_of_subspace = 2
+        # when
+        x_subspace_max, x_subspace_min = MyLibrary.get_subspace_limits(X, number_of_subspace)
+        x_expexted_max, x_expexted_min = X[0][0] + (number_of_subspace + 1) * (X[-1][0] - X[0][0]) / self.NUMBER_OF_SUBSPACES, X[0][0] + number_of_subspace * (X[-1][0] - X[0][0]) / self.NUMBER_OF_SUBSPACES
+        # then
+        self.assertEqual(x_expexted_min, x_subspace_min)
+        self.assertEqual(x_expexted_max, x_subspace_max)
+
+
 if __name__ == '__main__':
     unittest.main()

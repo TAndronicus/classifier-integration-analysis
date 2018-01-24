@@ -129,7 +129,7 @@ score, flip_index = [], 0
 for j in range(number_of_space_parts):
     x_subspace_min, x_subspace_max = MyLibrary.get_subspace_limits(X, j, number_of_space_parts)
     x = np.linspace(x_subspace_min, x_subspace_max)
-    a, b = MyLibrary.evaluate_average_coefficients_from_n_best(coefficients, number_of_classifiers, scores, j, number_of_best_classifiers)
+    a, b = MyLibrary.evaluate_average_coefficients_from_n_best(coefficients, scores, j, number_of_best_classifiers, number_of_classifiers)
     y = a * x + b
     ax.plot(x, y)
     X_part, y_part = MyLibrary.prepare_samples_for_subspace(X_final_test, y_final_test, X, j, number_of_space_parts)

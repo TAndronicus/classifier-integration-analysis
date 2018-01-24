@@ -56,6 +56,8 @@ def prepare_raw_data(are_samples_generated = True, number_of_samples_if_generate
     :param are_samples_generated: boolean
     :param number_of_samples_if_generated: int
     :param number_of_dataset_if_not_generated: int
+    :param number_of_classifiers: int
+    :param number_of_space_parts: int
     :return: X, y: np.array, np.array
     """
     if are_samples_generated:
@@ -214,8 +216,8 @@ def assert_distribution_simplified(X0, X1, number_of_classifiers = 3, number_of_
     """
     x_min, x_max = get_extrema_for_subspaces(X0, X1)
     previous_index0, previous_index1 = 0, 0
+    print('Before assertion: len0: {}, len1: {}'.format(len(X0), len(X1)))
     for i in range(number_of_space_parts):
-        print('Before assertion: len0: {}, len1: {}'.format(len(X0), len(X1)))
         counter0, index0 = get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X0, x_min, x_max, i, number_of_space_parts)
         counter1, index1 = get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X1, x_min, x_max, i, number_of_space_parts)
         if counter0 + counter1 < number_of_classifiers + 2:
@@ -659,7 +661,6 @@ def train_classifiers(clfs, X_whole_train, y_whole_train, type_of_classifier, nu
     xx, yy, x_min_plot, x_max_plot = get_plot_data(X, plot_mesh_step_size)
     for clf, X_train, y_train in zip(clfs, X_whole_train, y_whole_train):
         clf.fit(X_train, y_train)
-        print(clf.coef_)
         trained_clfs.append(clf)
 
         if type_of_classifier == ClfType.LINEAR:
@@ -719,8 +720,7 @@ def extract_coefficients_for_mean(clf):
     return a, b
 
 
-def evaluate_average_coefficients_from_n_best(coefficients, number_of_classifiers,
-                                              scores, j, number_of_best_classifiers):
+def evaluate_average_coefficients_from_n_best(coefficients, scores, j, number_of_best_classifiers = 2, number_of_classifiers = 3):
     """Evaluates coefficients from n best classifiers in j-th subspace
 
     :param coefficients: []
@@ -730,15 +730,35 @@ def evaluate_average_coefficients_from_n_best(coefficients, number_of_classifier
     :param number_of_best_classifiers: int
     :return: a, b: float, float
     """
-    a, b, sumOfScores, params = 0, 0, 0, []
+    a, b, params = 0, 0, []
     for i in range(number_of_classifiers):
         params.append([scores[i][j], coefficients[i]])
     params.sort()
     for i in range(number_of_best_classifiers):
-        sumOfScores += params[i][0]
-        a += params[i][1][0]
-        b += params[i][1][1]
+        a += params[number_of_classifiers - 1 - i][1][0]
+        b += params[number_of_classifiers - 1 - i][1][1]
     return a / number_of_best_classifiers, b / number_of_best_classifiers
+
+
+def evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, j, number_of_best_classifiers = 2, number_of_classifiers = 3):
+    """Evaluates coefficients from n best classifiers in j-th subspace
+
+    :param coefficients: []
+    :param number_of_classifiers: int
+    :param scores: []
+    :param j: int
+    :param number_of_best_classifiers: int
+    :return: a, b: float, float
+    """
+    a, b, params, scoreSum = 0, 0, [], 0
+    for i in range(number_of_classifiers):
+        params.append([scores[i][j], coefficients[i]])
+    params.sort()
+    for i in range(number_of_best_classifiers):
+        scoreSum += params[number_of_classifiers - 1 - i][0]
+        a += params[number_of_classifiers - 1 - i][1][0] * params[number_of_classifiers - 1 - i][0]
+        b += params[number_of_classifiers - 1 - i][1][1] * params[number_of_classifiers - 1 - i][0]
+    return a / scoreSum, b / scoreSum
 
 
 def get_subspace_limits(X, j, number_of_subspaces = 5):
@@ -821,7 +841,7 @@ def prepare_composite_classifier(X_test, y_test, X, number_of_best_classifiers, 
     for j in range(number_of_space_parts):
         x_subspace_min, x_subspace_max = get_subspace_limits(X, j, number_of_space_parts)
         x = np.linspace(x_subspace_min, x_subspace_max)
-        a, b = evaluate_average_coefficients_from_n_best(coefficients, number_of_classifiers, scores, j, number_of_best_classifiers)
+        a, b = evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, j, number_of_best_classifiers, number_of_classifiers)
         y = a * x + b
         ax.plot(x, y)
         X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, number_of_space_parts)
