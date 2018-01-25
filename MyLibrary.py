@@ -65,12 +65,7 @@ def prepare_raw_data(are_samples_generated = True, number_of_samples_if_generate
                                    class_sep = 2.7, hypercube = False, random_state = 2)
         X0, X1 = divide_generated_samples(X, y)
         X0, X1 = sort_attributes(X0), sort_attributes(X1)
-        length0, length1 = len(X0), len(X1)
-        while True:
-            X0, X1 = assert_distribution(X0, X1, number_of_classifiers, number_of_space_parts)
-            if len(X0) == length0 and len(X1) == length1:
-                break
-            length0, length1 = len(X0), len(X1)
+        X0, X1 = assert_distribution_simplified(X0, X1, number_of_classifiers, number_of_space_parts)
         return compose_sorted_parts(X0, X1)
     else:
         return load_samples_from_datasets(number_of_dataset_if_not_generated, number_of_classifiers, number_of_space_parts)
@@ -129,12 +124,7 @@ def load_samples_from_datasets(number = 12, number_of_classifiers = 3, number_of
     # X = SelectKBest(k = 2).fit_transform(X, y)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
-    length0, length1 = len(X0), len(X1)
-    while True:
-        X0, X1 = assert_distribution(X0, X1, number_of_classifiers, number_of_space_parts)
-        if len(X0) == length0 and len(X1) == length1:
-            break
-        length0, length1 = len(X0), len(X1)
+    assert_distribution(X0, X1, number_of_classifiers, number_of_space_parts)
     X, y = compose_sorted_parts(X0, X1)
     return X, y
 
@@ -919,6 +909,47 @@ def print_results_with_cumulated_score(scores, cumulated_scores):
         print('Scores for {}. classifier'.format(i + 1))
         print(scores[i])
         print('Overall result: {}'.format(cumulated_scores[i]))
+
+
+def generate_permutation(X_whole_train_old, y_whole_train_old, X_validation_old, y_validation_old, X_test_old, y_test_old):
+    """Returns permutation of datasets, which are moved right
+
+    :param X_whole_train_old: []
+    :param y_whole_train_old: []
+    :param X_validation_old: np.array
+    :param y_validation_old: np.array
+    :param X_test_old: np.array
+    :param y_test_old: np.array
+    :return: X_whole_train_new, y_whole_train_new, X_validation_new, y_validation_new, X_test_new, y_test_new: [], [], np.array, np.array, np.array, np.array
+    """
+    X_whole_train_new, y_whole_train_new = [], []
+    X_whole_train_new.append(X_test_old)
+    y_whole_train_new.append(y_test_old)
+    for i in range(len(X_whole_train_old) - 1):
+        X_whole_train_new.append(X_whole_train_old[i])
+        y_whole_train_new.append(y_whole_train_old[i])
+    X_validation_new, y_validation_new = X_whole_train_old[-1], y_whole_train_old[-1]
+    X_test_new, y_test_new = X_validation_old, y_validation_old
+    return X_whole_train_new, y_whole_train_new, X_validation_new, y_validation_new, X_test_new, y_test_new
+
+
+def print_permutation_results(score_pro_permutation):
+    """Prints scores after permutation
+
+    :param score_pro_permutation: []
+    :return: void
+    """
+    print("\n")
+    classifier_scores = np.zeros(len(score_pro_permutation[0]))
+    number_of_permutations = len(score_pro_permutation)
+    for i in range(number_of_permutations):
+        for j in range(len(score_pro_permutation[i])):
+            classifier_scores[j] += score_pro_permutation[i][j]
+    for i in range(len(classifier_scores)):
+        if i == len(classifier_scores):
+            print('Score for composite classifier: {}'.format(classifier_scores[i] / number_of_permutations))
+        else:
+            print('Score for {}. classifier: {}'.format(i, classifier_scores[i] / number_of_permutations))
 
 
 class ClfType(Enum):
