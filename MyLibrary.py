@@ -50,7 +50,7 @@ def initialize_classifiers(number_of_classifiers, type_of_classifier):
 
 
 def prepare_raw_data(are_samples_generated = True, number_of_samples_if_generated = 100, number_of_dataset_if_not_generated = 12, number_of_classifiers = 3,
-                     number_of_space_parts = 5):
+                     number_of_space_parts = 5, switch_columns_while_loading = False):
     """Prepares raw data for classification
 
     :param are_samples_generated: boolean
@@ -68,7 +68,7 @@ def prepare_raw_data(are_samples_generated = True, number_of_samples_if_generate
         X0, X1 = assert_distribution_simplified(X0, X1, number_of_classifiers, number_of_space_parts)
         return compose_sorted_parts(X0, X1)
     else:
-        return load_samples_from_datasets(number_of_dataset_if_not_generated, number_of_classifiers, number_of_space_parts)
+        return load_samples_from_datasets(number_of_dataset_if_not_generated, number_of_classifiers, number_of_space_parts, switch_columns_while_loading)
 
 
 def load_samples_from_file(filename):
@@ -97,7 +97,7 @@ def load_samples_from_file(filename):
     return X, y
 
 
-def load_samples_from_datasets(number = 12, number_of_classifiers = 3, number_of_space_parts = 5):
+def load_samples_from_datasets(number = 12, number_of_classifiers = 3, number_of_space_parts = 5, switch_columns_while_loading = False):
     """Loads data from dataset (xlsx file with data)
 
     :param number: int, number of sheet
@@ -115,7 +115,10 @@ def load_samples_from_datasets(number = 12, number_of_classifiers = 3, number_of
         line = sheet.row(line_number)
         row = []
         for i in range(2):  # range(number_of_columns - 1):
-            row.append(float(line[i].value))
+            if switch_columns_while_loading:
+                row.append(float(line[1 - i].value))
+            else:
+                row.append(float(line[i].value))
         if int(line[number_of_columns - 1].value) == 0:
             X0.append(row)
         else:
@@ -124,7 +127,7 @@ def load_samples_from_datasets(number = 12, number_of_classifiers = 3, number_of
     # X = SelectKBest(k = 2).fit_transform(X, y)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
-    assert_distribution(X0, X1, number_of_classifiers, number_of_space_parts)
+    assert_distribution_simplified(X0, X1, number_of_classifiers, number_of_space_parts)
     X, y = compose_sorted_parts(X0, X1)
     return X, y
 
@@ -204,6 +207,7 @@ def assert_distribution_simplified(X0, X1, number_of_classifiers = 3, number_of_
     :param number_of_space_parts: int
     :return: X0, X1: np.array, np.array, data prepared to be divided into number_of_classifiers + 2 parts of same length
     """
+    print('Validating dataset')
     x_min, x_max = get_extrema_for_subspaces(X0, X1)
     previous_index0, previous_index1 = 0, 0
     print('Before assertion: len0: {}, len1: {}'.format(len(X0), len(X1)))
@@ -946,7 +950,7 @@ def print_permutation_results(score_pro_permutation):
         for j in range(len(score_pro_permutation[i])):
             classifier_scores[j] += score_pro_permutation[i][j]
     for i in range(len(classifier_scores)):
-        if i == len(classifier_scores):
+        if i == len(classifier_scores) - 1:
             print('Score for composite classifier: {}'.format(classifier_scores[i] / number_of_permutations))
         else:
             print('Score for {}. classifier: {}'.format(i, classifier_scores[i] / number_of_permutations))

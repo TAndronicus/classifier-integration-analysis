@@ -3,21 +3,22 @@ import matplotlib.pyplot as plt
 import MyLibrary
 
 type_of_classifier = MyLibrary.ClfType.LINEAR
-are_samples_generated = True
+are_samples_generated = False
 number_of_samples_if_generated = 100
-number_of_dataset_if_not_generated = 12
+number_of_dataset_if_not_generated = 5
+switch_columns_while_loading = True
 plot_mesh_step_size = .2
 number_of_space_parts = 5
 number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
 draw_color_plot = False
 write_computed_scores = False
-show_plots = False
+show_plots = True
 
 clfs = MyLibrary.initialize_classifiers(number_of_classifiers, type_of_classifier)
 
 X, y = MyLibrary.prepare_raw_data(are_samples_generated, number_of_samples_if_generated, number_of_dataset_if_not_generated, number_of_classifiers,
-                                  number_of_space_parts)
+                                  number_of_space_parts, switch_columns_while_loading)
 
 
 X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = MyLibrary.split_sorted_samples(X, y, number_of_classifiers, number_of_space_parts)
