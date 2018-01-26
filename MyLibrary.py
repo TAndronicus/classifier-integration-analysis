@@ -529,16 +529,16 @@ def split_sorted_samples(X, y, number_of_classifiers = 3, number_of_space_parts 
     for i in range(number_of_classifiers):
         X_temp, y_temp = np.zeros((length, 2)), np.zeros(length, dtype = np.int)
         for j in range(length):
-            X_temp[j, :] = (X[j * (number_of_classifiers + 1) + i, :])
-            y_temp[j] = (y[j * (number_of_classifiers + 1) + i])
+            X_temp[j, :] = (X[j * (number_of_classifiers + 2) + i, :])
+            y_temp[j] = (y[j * (number_of_classifiers + 2) + i])
         X_whole_train.append(X_temp)
         y_whole_train.append(y_temp)
     for i in range(length):
-        X_validation[i, :] = (X[(i + 1) * number_of_classifiers - 2, :])
-        y_validation[i] = (y[(i + 1) * number_of_classifiers - 2])
+        X_validation[i, :] = (X[(i + 1) * (number_of_classifiers + 2) - 2, :])
+        y_validation[i] = (y[(i + 1) * (number_of_classifiers + 2) - 2])
     for i in range(length):
-        X_test[i, :] = (X[(i + 1) * number_of_classifiers - 1, :])
-        y_test[i] = (y[(i + 1) * number_of_classifiers - 1])
+        X_test[i, :] = (X[(i + 1) * (number_of_classifiers + 2) - 1, :])
+        y_test[i] = (y[(i + 1) * (number_of_classifiers + 2) - 1])
     return X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test
 
 

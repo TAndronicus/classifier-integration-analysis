@@ -5,8 +5,8 @@ import MyLibrary
 type_of_classifier = MyLibrary.ClfType.LINEAR
 are_samples_generated = False
 number_of_samples_if_generated = 100
-number_of_dataset_if_not_generated = 5
-switch_columns_while_loading = True
+number_of_dataset_if_not_generated = 9
+switch_columns_while_loading = False
 plot_mesh_step_size = .2
 number_of_space_parts = 5
 number_of_classifiers = 3
