@@ -93,7 +93,31 @@ def load_samples_from_file(filename):
             row.append(float(line[i].value))
         X[line_number - 1, :] = row
         y[line_number - 1] = int(line[number_of_columns - 1].value)
-    X = SelectKBest(k = 2).fit_transform(X, y)
+    return X, y
+
+
+def load_samples_from_file_sheet(filename, number_of_sheet = 0):
+    """Loads data from file
+
+    Warning: method does not sort data
+    Missing sorting and composing
+    :param filename: Name of file
+    :return: X, y: np.array, np.array - samples for classification
+    """
+    file = xlrd.open_workbook(filename)
+    sheet = file.sheet_by_index(number_of_sheet)
+    line_number = 0
+    line = sheet.row(line_number)
+    number_of_columns = len(line)
+    X, y = np.zeros((sheet.nrows, 2)), np.zeros(sheet.nrows, dtype = np.int)
+    while line_number < sheet.nrows - 1:
+        line_number += 1
+        line = sheet.row(line_number)
+        row = []
+        for i in range(2):  # range(number_of_columns - 1):
+            row.append(float(line[i].value))
+        X[line_number - 1, :] = row
+        y[line_number - 1] = int(line[number_of_columns - 1].value)
     return X, y
 
 
