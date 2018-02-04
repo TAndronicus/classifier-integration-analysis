@@ -16,7 +16,9 @@ class MyLibraryTest(unittest.TestCase):
     QUOTIENT = 2 / 3
 
     def setUp(self):
-        self.X, self.y = make_classification(n_features = 2, n_informative = 2, n_redundant = 0, n_repeated = 0, n_samples = 1000, class_sep=2.7, hypercube=False, random_state=2, n_clusters_per_class = 1)
+        self.X, self.y = \
+            make_classification(n_features = 2, n_informative = 2, n_redundant = 0, n_repeated = 0, n_samples = 1000,
+                                class_sep=2.7, hypercube=False, random_state=2, n_clusters_per_class = 1)
 
     def test_upper(self):
         self.assertEqual('foo'.upper(), 'FOO')
@@ -94,9 +96,11 @@ class MyLibraryTest(unittest.TestCase):
     def test_cumulative_length_of_returned_datasets_should_be_multiply_of_number_of_subspaces(self):
         # given
         X0_full = np.array(
-            [[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0], [84, 0], [84, 0], [84, 0], [100, 0], [100, 0]])
+            [[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0], [84, 0], [84, 0],
+             [84, 0], [100, 0], [100, 0]])
         X1_full = np.array(
-            [[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0], [100, 0], [100, 0], [100, 0]])
+            [[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0],
+             [100, 0], [100, 0], [100, 0]])
         # when
         X0, X1 = MyLibrary.assert_distribution(X0_full, X1_full)
         # then
@@ -104,8 +108,10 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_return_datasets_of_same_length(self):
         # given
-        X0_full = np.array([[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0], [84, 0], [84, 0], [84, 0], [100, 0], [100, 0]])
-        X1_full = np.array([[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0], [100, 0], [100, 0], [100, 0]])
+        X0_full = np.array([[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0],
+                            [84, 0], [84, 0], [84, 0], [100, 0], [100, 0]])
+        X1_full = np.array([[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0], [63, 0],
+                            [84, 0], [84, 0], [100, 0], [100, 0], [100, 0]])
         # when
         X0, X1 = MyLibrary.assert_distribution(X0_full, X1_full)
         # then
@@ -114,8 +120,10 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_cut_off_redundant_data_at_front(self):
         # given
-        X0_full = np.array([[0, 0], [0, 0], [0, 0], [1, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0], [84, 0], [84, 0], [84, 0], [100, 0], [100, 0]])
-        X1_full = np.array([[0, 0], [0, 0], [2, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0], [100, 0], [100, 0], [100, 0]])
+        X0_full = np.array([[0, 0], [0, 0], [0, 0], [1, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0],
+                            [63, 0], [84, 0], [84, 0], [84, 0], [100, 0], [100, 0]])
+        X1_full = np.array([[0, 0], [0, 0], [2, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0],
+                            [63, 0], [84, 0], [84, 0], [100, 0], [100, 0], [100, 0]])
         # when
         X0, X1 = MyLibrary.assert_distribution(X0_full, X1_full)
         # then
@@ -124,8 +132,10 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_cut_off_redundant_data_at_end(self):
         # given
-        X0_full = np.array([[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0], [84, 0], [84, 0], [84, 0], [90, 0], [95, 0], [100, 0], [100, 0]])
-        X1_full = np.array([[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0], [90, 0], [100, 0], [100, 0], [100, 0]])
+        X0_full = np.array([[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0],
+                            [84, 0], [84, 0], [84, 0], [90, 0], [95, 0], [100, 0], [100, 0]])
+        X1_full = np.array([[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0], [63, 0],
+                            [84, 0], [84, 0], [90, 0], [100, 0], [100, 0], [100, 0]])
         # when
         X0, X1 = MyLibrary.assert_distribution(X0_full, X1_full)
         # then
@@ -134,20 +144,24 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_cut_off_redundant_data_in_middle(self):
         # given
-        X0_full = np.array([[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [25, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0], [84, 0], [84, 0], [84, 0], [100, 0], [100, 0]])
-        X1_full = np.array([[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [45, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0], [85, 0], [100, 0], [100, 0], [100, 0]])
+        X0_full = np.array([[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [25, 0], [42, 0], [42, 0], [42, 0], [63, 0],
+                            [63, 0], [84, 0], [84, 0], [84, 0], [100, 0], [100, 0]])
+        X1_full = np.array([[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [45, 0], [63, 0], [63, 0],
+                            [63, 0], [84, 0], [84, 0], [85, 0], [100, 0], [100, 0], [100, 0]])
         # when
         X0, X1 = MyLibrary.assert_distribution(X0_full, X1_full)
         # then
         self.assertEqual(len(X0_full) - 1, len(X0))
         self.assertEqual(len(X1_full) - 2, len(X1))
 
-    def test_should_have_amount_of_data_as_multiple_of_number_of_classifiers_plus_2_in_every_subspace_for_own_dataset(self):
+    def test_should_have_amount_of_data_multiple_of_number_of_classifiers_plus_2_in_every_subspace_own_dataset(self):
         # given
         X0_full = np.array(
-            [[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [25, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0], [84, 0], [84, 0], [84, 0], [100, 0], [100, 0]])
+            [[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [25, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0], [84, 0],
+             [84, 0], [84, 0], [100, 0], [100, 0]])
         X1_full = np.array(
-            [[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [45, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0], [85, 0], [100, 0], [100, 0],
+            [[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [45, 0], [63, 0], [63, 0], [63, 0], [84, 0],
+             [84, 0], [85, 0], [100, 0], [100, 0],
              [100, 0]])
         lengths0, lengths1 = [], []
         # when
@@ -156,19 +170,22 @@ class MyLibraryTest(unittest.TestCase):
         for i in range(self.NUMBER_OF_SUBSPACES):
             amount = 0
             for j in range(len(X0)):
-                if min_x0 + i * (max_x0 - min_x0) / self.NUMBER_OF_SUBSPACES <= X0[j][0] <= min_x0 + (i + 1) * (max_x0 - min_x0) / self.NUMBER_OF_SUBSPACES:
+                if min_x0 + i * (max_x0 - min_x0) / self.NUMBER_OF_SUBSPACES <= X0[j][0] <= \
+                        min_x0 + (i + 1) * (max_x0 - min_x0) / self.NUMBER_OF_SUBSPACES:
                     amount += 1
             lengths0.append(amount)
             amount = 0
             for j in range(len(X1)):
-                if min_x1 + i * (max_x1 - min_x1) / self.NUMBER_OF_SUBSPACES <= X1[j][0] <= min_x1 + (i + 1) * (max_x1 - min_x1) / self.NUMBER_OF_SUBSPACES:
+                if min_x1 + i * (max_x1 - min_x1) / self.NUMBER_OF_SUBSPACES <= X1[j][0] <= \
+                        min_x1 + (i + 1) * (max_x1 - min_x1) / self.NUMBER_OF_SUBSPACES:
                     amount += 1
             lengths1.append(amount)
         # then
         for i in range(self.NUMBER_OF_SUBSPACES):
             self.assertEqual(0, (lengths0[i] + lengths1[i]) % (self.NUMBER_OF_CLASSIFIERS + 2))
 
-    def test_should_have_amount_of_data_as_multiple_of_number_of_classifiers_plus_2_in_every_subspace_for_generated_dataset(self):
+    def test_should_have_amount_of_data_multiple_of_number_of_classifiers_plus_2_in_every_subspace_generated_dataset(
+            self):
         # given
         X0_raw, X1_raw = MyLibrary.divide_generated_samples(self.X, self.y)
         X0_sorted, X1_sorted = MyLibrary.sort_attributes(X0_raw), MyLibrary.sort_attributes(X1_raw)
@@ -187,19 +204,21 @@ class MyLibraryTest(unittest.TestCase):
         for i in range(self.NUMBER_OF_SUBSPACES):
             amount = 0
             for j in range(len(X0)):
-                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X0[j][0] <= min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
+                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X0[j][0] <= \
+                        min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
                     amount += 1
             lengths0.append(amount)
             amount = 0
             for j in range(len(X1)):
-                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X1[j][0] <= min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
+                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X1[j][0] <= \
+                        min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
                     amount += 1
             lengths1.append(amount)
         # then
         for i in range(self.NUMBER_OF_SUBSPACES):
             self.assertEqual(0, (lengths0[i] + lengths1[i]) % (self.NUMBER_OF_CLASSIFIERS + 2))
 
-    def test_should_have_amount_of_data_as_multiple_of_number_of_classifiers_plus_2_in_every_subspace_for_generated_dataset_simplified(self):
+    def test_should_have_correct_amount_of_data_in_every_subspace_generated_dataset_simplified(self):
         # given
         X0_raw, X1_raw = MyLibrary.divide_generated_samples(self.X, self.y)
         X0_sorted, X1_sorted = MyLibrary.sort_attributes(X0_raw), MyLibrary.sort_attributes(X1_raw)
@@ -212,12 +231,14 @@ class MyLibraryTest(unittest.TestCase):
         for i in range(self.NUMBER_OF_SUBSPACES):
             amount = 0
             for j in range(len(X0)):
-                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X0[j][0] <= min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
+                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X0[j][0] <= \
+                        min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
                     amount += 1
             lengths0.append(amount)
             amount = 0
             for j in range(len(X1)):
-                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X1[j][0] <= min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
+                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X1[j][0] <= \
+                        min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
                     amount += 1
             lengths1.append(amount)
         # then
@@ -238,7 +259,8 @@ class MyLibraryTest(unittest.TestCase):
         # given
         X = np.array([[0, 0], [0, 0], [0, 0], [0, 0], [3, 0], [10, 0]])
         # when
-        counter, index = MyLibrary.get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X, X[0][0], X[-1][0], 1)
+        counter, index = \
+            MyLibrary.get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X, X[0][0], X[-1][0], 1)
         # then
         self.assertEqual(1, counter)
         self.assertEqual(5, index)
@@ -263,22 +285,30 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_limit_datasets_for_every_subspace_but_last(self):
         # given
-        X0_raw = np.array([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0]])
-        X1_raw = np.array([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0]])
+        X0_raw = np.array([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0],
+                           [12, 0], [13, 0], [14, 0], [15, 0], [16, 0]])
+        X1_raw = np.array([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0],
+                           [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0]])
         counter, remainder, index0, index1, is_first_bigger = 2, 3, int(len(X0_raw) / 2), int(len(X1_raw) / 2), False
         # when
-        X0, X1 = MyLibrary.limit_datasets_for_every_subspace_but_last(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger)
+        X0, X1 = \
+            MyLibrary.limit_datasets_for_every_subspace_but_last(X0_raw, X1_raw, counter, remainder, index0, index1,
+                                                                 is_first_bigger)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
 
     def test_should_limit_datasets_for_last_subspace(self):
         # given
-        X0_raw = np.array([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0]])
-        X1_raw = np.array([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0]])
+        X0_raw = np.array([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0],
+                           [12, 0], [13, 0], [14, 0], [15, 0], [16, 0]])
+        X1_raw = np.array([[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0],
+                           [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0]])
         counter, remainder, index0, index1, is_first_bigger = 2, 3, int(len(X0_raw) / 2), int(len(X1_raw) / 2), False
         # when
-        X0, X1 = MyLibrary.limit_datasets_for_last_subspace(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger)
+        X0, X1 = \
+            MyLibrary.limit_datasets_for_last_subspace(X0_raw, X1_raw, counter, remainder, index0, index1,
+                                                       is_first_bigger)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
@@ -286,10 +316,13 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_limit_datasets_when_last(self):
         # given
         X0_raw = np.array(
-            [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0]])
+            [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0],
+             [13, 0], [14, 0], [15, 0], [16, 0]])
         X1_raw = np.array(
-            [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0]])
-        counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), int(len(X1_raw) / 2), False, True
+            [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0],
+             [13, 0], [14, 0], [15, 0], [16, 0], [17, 0]])
+        counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), \
+                                                                       int(len(X1_raw) / 2), False, True
         # when
         X0, X1 = MyLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
         # then
@@ -299,17 +332,21 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_limit_datasets_when_not_last(self):
         # given
         X0_raw = np.array(
-            [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0]])
+            [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0],
+             [13, 0], [14, 0], [15, 0], [16, 0]])
         X1_raw = np.array(
-            [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0]])
-        counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), int(len(X1_raw) / 2), False, False
+            [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0],
+             [13, 0], [14, 0], [15, 0], [16, 0], [17, 0]])
+        counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), \
+                                                                       int(len(X1_raw) / 2), False, False
         # when
         X0, X1 = MyLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
 
-    def test_should_have_amount_of_data_as_multiple_of_number_of_classifiers_plus_2_in_every_subspace_for_real_dataset(self):
+    def test_should_have_amount_of_data_as_multiple_of_number_of_classifiers_plus_2_in_every_subspace_for_real_dataset(
+            self):
         # given
         X_raw, y_raw = MyLibrary.load_samples_from_file(self.TEST_FILENAME)
         X0_raw, X1_raw = MyLibrary.divide_generated_samples(X_raw, y_raw)
@@ -328,18 +365,19 @@ class MyLibraryTest(unittest.TestCase):
         for i in range(self.NUMBER_OF_SUBSPACES):
             amount = 0
             for j in range(len(X0)):
-                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X0[j][0] <= min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
+                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X0[j][0] <= \
+                        min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
                     amount += 1
             lengths0.append(amount)
             amount = 0
             for j in range(len(X1)):
-                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X1[j][0] <= min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
+                if min_x + i * (max_x - min_x) / self.NUMBER_OF_SUBSPACES <= X1[j][0] <= \
+                        min_x + (i + 1) * (max_x - min_x) / self.NUMBER_OF_SUBSPACES:
                     amount += 1
             lengths1.append(amount)
         # then
         for i in range(self.NUMBER_OF_SUBSPACES):
             self.assertEqual(0, (lengths0[i] + lengths1[i]) % (self.NUMBER_OF_CLASSIFIERS + 2))
-
 
     def test_should_not_loose_data(self):
         # given
@@ -396,7 +434,8 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_sorted_training_samples_for_every_classifier(self):
         # given
         # when
-        X_whole, y_whole, X_final_test, y_final_test = MyLibrary.split_sorted_samples_between_classifiers(self.X, self.y)
+        X_whole, y_whole, X_final_test, y_final_test = \
+            MyLibrary.split_sorted_samples_between_classifiers(self.X, self.y)
         # then
         self.assertEqual(len(X_whole), self.NUMBER_OF_CLASSIFIERS)
 
@@ -410,7 +449,8 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_sorted_training_samples_for_every_classifier_without_quotient(self):
         # given
         # when
-        X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = MyLibrary.split_sorted_samples(self.X, self.y)
+        X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
+            MyLibrary.split_sorted_samples(self.X, self.y)
         # then
         self.assertEqual(len(X_whole_train), self.NUMBER_OF_CLASSIFIERS)
 
@@ -474,7 +514,10 @@ class MyLibraryTest(unittest.TestCase):
         coefficients = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]]
         scores = [[0.25], [0], [0.5], [0.75], [1]]
         # when
-        a, b = MyLibrary.evaluate_average_coefficients_from_n_best(coefficients, scores, 0, number_of_best_classifiers = 3, number_of_classifiers = len(scores))
+        a, b = \
+            MyLibrary.evaluate_average_coefficients_from_n_best(coefficients, scores, 0,
+                                                                number_of_best_classifiers = 3,
+                                                                number_of_classifiers = len(scores))
         # then
         self.assertEqual((coefficients[2][0] + coefficients[3][0] + coefficients[4][0]) / 3, a)
         self.assertEqual((coefficients[2][1] + coefficients[3][1] + coefficients[4][1]) / 3, b)
@@ -484,10 +527,15 @@ class MyLibraryTest(unittest.TestCase):
         coefficients = [[1, 2], [3, 4], [5, 6], [7, 8]]
         scores = [[0], [0.25], [0.5], [0.75]]
         # when
-        a, b = MyLibrary.evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, 0, number_of_best_classifiers = 2, number_of_classifiers = len(scores))
+        a, b = \
+            MyLibrary.evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, 0,
+                                                                         number_of_best_classifiers = 2,
+                                                                         number_of_classifiers = len(scores))
         # then
-        self.assertEqual((coefficients[2][0] * scores[2][0] + coefficients[3][0] * scores[3][0]) / (scores[2][0] + scores[3][0]), a)
-        self.assertEqual((coefficients[2][1] * scores[2][0] + coefficients[3][1] * scores[3][0]) / (scores[2][0] + scores[3][0]), b)
+        self.assertEqual((coefficients[2][0] * scores[2][0] + coefficients[3][0] * scores[3][0]) /
+                         (scores[2][0] + scores[3][0]), a)
+        self.assertEqual((coefficients[2][1] * scores[2][0] + coefficients[3][1] * scores[3][0]) /
+                         (scores[2][0] + scores[3][0]), b)
 
     def test_should_return_subspace_limits(self):
         # given
@@ -495,7 +543,9 @@ class MyLibraryTest(unittest.TestCase):
         number_of_subspace = 2
         # when
         x_subspace_max, x_subspace_min = MyLibrary.get_subspace_limits(X, number_of_subspace)
-        x_expexted_max, x_expexted_min = X[0][0] + (number_of_subspace + 1) * (X[-1][0] - X[0][0]) / self.NUMBER_OF_SUBSPACES, X[0][0] + number_of_subspace * (X[-1][0] - X[0][0]) / self.NUMBER_OF_SUBSPACES
+        x_expexted_max, x_expexted_min = \
+            X[0][0] + (number_of_subspace + 1) * (X[-1][0] - X[0][0]) / self.NUMBER_OF_SUBSPACES, \
+            X[0][0] + number_of_subspace * (X[-1][0] - X[0][0]) / self.NUMBER_OF_SUBSPACES
         # then
         self.assertEqual(x_expexted_min, x_subspace_min)
         self.assertEqual(x_expexted_max, x_subspace_max)
@@ -503,3 +553,4 @@ class MyLibraryTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+    
