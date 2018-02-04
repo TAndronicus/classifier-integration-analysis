@@ -45,7 +45,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         clf = LinearSVC()
         # when
-        clf_type = MyLibrary.determine_clf_type(clf)
+        MyLibrary.determine_clf_type(clf)
         # then
         self.assertRaises(Exception('Classifier not defined'))
 
@@ -90,8 +90,40 @@ class MyLibraryTest(unittest.TestCase):
         # given
         # when
         X, y = MyLibrary.load_samples_from_datasets()
-        #then
+        # then
         self.assertEqual(self.NUMBER_OF_ATTRIBUTES, np.shape(X)[1])
+
+    def test_should_not_change_data(self):
+        # given
+        # when
+        X1, y1 = MyLibrary.load_samples_from_file(self.TEST_FILENAME)
+        X2, y2 = MyLibrary.load_samples_from_datasets()
+        # then
+        self.assertTrue(len(X2) <= len(X1))
+        for i in range(len(X2)):
+            self.assertTrue(X1.__contains__(X2[i]))
+
+    def test_should_not_change_data_whole(self):
+        # given
+        # when
+        X1, y1 = MyLibrary.load_samples_from_file(self.TEST_FILENAME)
+        X2, y2 = MyLibrary.prepare_raw_data(are_samples_generated = False)
+        # then
+        self.assertTrue(len(X2) <= len(X1))
+        for i in range(len(X2)):
+            self.assertTrue(X1.__contains__(X2[i]))
+
+    def test_should_contain_same_data(self):
+        # given
+        # when
+        X1, y1 = MyLibrary.prepare_raw_data(are_samples_generated = False)
+        X2, y2 = MyLibrary.load_samples_from_datasets()
+        # then
+        self.assertTrue(len(X2) == len(X1))
+        for i in range(len(X2)):
+            self.assertTrue(X1.__contains__(X2[i]))
+        for i in range(len(X1)):
+            self.assertTrue(X2.__contains__(X1[i]))
 
     def test_cumulative_length_of_returned_datasets_should_be_multiply_of_number_of_subspaces(self):
         # given
@@ -553,4 +585,3 @@ class MyLibraryTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    
