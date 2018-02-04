@@ -10,7 +10,7 @@ from sklearn.neighbors import NearestCentroid
 import MyLibrary
 
 # clf = NearestCentroid()
-clf = LinearSVC(max_iter = 1e8, tol = 1e-10)
+clf = MyLibrary.ClfType.LINEAR
 are_samples_generated = True
 number_of_samples_if_generated = 90
 number_of_dataset_if_not_generated = 0
