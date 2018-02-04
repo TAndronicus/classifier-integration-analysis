@@ -851,6 +851,7 @@ def test_classifiers(clfs, X_validation, y_validation, X, coefficients, number_o
         if write_computed_scores:
             # Computing scores manually
             print('Compute scores manually')
+            manually_computed_scores, overall_absolute_score = [], 0
             for j in range(number_of_space_parts):
                 X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, X, j, number_of_space_parts)
                 propperly_classified, all_classified = 0, 0
@@ -859,9 +860,19 @@ def test_classifiers(clfs, X_validation, y_validation, X, coefficients, number_o
                         propperly_classified += 1
                     all_classified += 1
                 if not (all_classified == 0):
-                    print(propperly_classified / all_classified)
+                    manually_computed_scores.append(propperly_classified / all_classified)
+                    overall_absolute_score += propperly_classified
                 else:
-                    print('No samples')
+                    manually_computed_scores.append('No samples')
+            if 2 * overall_absolute_score < len(X_validation):
+                for computed_score in manually_computed_scores:
+                    try:
+                        print(1 - computed_score)
+                    except TypeError:
+                        print(computed_score)
+            else:
+                for computed_score in manually_computed_scores:
+                    print(computed_score)
         i += 1
     return scores, cumulated_scores
 
