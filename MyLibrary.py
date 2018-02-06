@@ -1,5 +1,6 @@
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import make_classification
+from sklearn.metrics import confusion_matrix
 from sklearn.svm import LinearSVC
 from sklearn.neighbors import NearestCentroid
 import xlrd
@@ -849,8 +850,7 @@ def test_classifiers(clfs, X_validation, y_validation, X, coefficients, number_o
         a, b = coefficients[i]
 
         if write_computed_scores:
-            # Computing scores manually
-            print('Compute scores manually')
+            print('Computing scores manually')
             manually_computed_scores, overall_absolute_score = [], 0
             for j in range(number_of_space_parts):
                 X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, X, j, number_of_space_parts)
@@ -877,6 +877,15 @@ def test_classifiers(clfs, X_validation, y_validation, X, coefficients, number_o
     return scores, cumulated_scores
 
 
+def compute_confusion_matrix(clfs, X_test, y_test):
+    confusion_matrices = []
+    for clf in clfs:
+        y_predicted = clf.predict(X_test)
+        conf_mat = confusion_matrix(y_test, y_predicted)
+        confusion_matrices.append(conf_mat)
+    return confusion_matrices
+
+
 def prepare_composite_classifier(X_test, y_test, X, number_of_best_classifiers, coefficients, scores,
                                  number_of_subplots, number_of_space_parts = 5,
                                  number_of_classifiers = 3, plot_mesh_step_size = .2):
@@ -898,6 +907,7 @@ def prepare_composite_classifier(X_test, y_test, X, number_of_best_classifiers, 
     score, part_lengths, flip_index = [], [], 0
     ax = plt.subplot(1, number_of_subplots, number_of_subplots)
     ax.scatter(X_test[:, 0], X_test[:, 1], c = y_test)
+    prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1 = 0, 0, 0, 0
     for j in range(number_of_space_parts):
         x_subspace_min, x_subspace_max = get_subspace_limits(X, j, number_of_space_parts)
         x = np.linspace(x_subspace_min, x_subspace_max)
@@ -906,15 +916,23 @@ def prepare_composite_classifier(X_test, y_test, X, number_of_best_classifiers, 
         y = a * x + b
         ax.plot(x, y)
         X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, number_of_space_parts)
-        # Checking if the orientation is correct and determining score
         if len(X_part) > 0:
             propperly_classified = 0
             all_classified = 0
             flip_index = 0
             for k in range(len(X_part)):
+                all_classified += 1
                 if (a * X_part[k][0] + b > X_part[k][1]) ^ (y_part[k] == 1):
                     propperly_classified += 1
-                all_classified += 1
+                    if y_part[k] == 0:
+                        prop_0_pred_0 += 1
+                    else:
+                        prop_1_pred_1 += 1
+                else:
+                    if y_part[k] == 0:
+                        prop_0_pred_1 += 1
+                    else:
+                        prop_1_pred_0 += 1
             if propperly_classified / all_classified < 0.5:
                 score.append(1 - propperly_classified / all_classified)
                 flip_index += 1
@@ -927,15 +945,25 @@ def prepare_composite_classifier(X_test, y_test, X, number_of_best_classifiers, 
     if flip_index > 0:
         for k in range(len(score)):
             score[k] = 1 - score[k]
+        prop_0_pred_0, prop_0_pred_1 = prop_0_pred_1, prop_0_pred_0
+        prop_1_pred_0, prop_1_pred_1 = prop_1_pred_1, prop_1_pred_0
     cumulated_score = 0
     for i in range(len(score)):
         cumulated_score += score[i] * part_lengths[i]
     cumulated_score /= len(X_test)
     scores.append(score)
+    predicted_0, predicted_1 = [], []
+    predicted_0.append(prop_0_pred_0)
+    predicted_0.append(prop_0_pred_1)
+    predicted_1.append(prop_1_pred_0)
+    predicted_1.append(prop_1_pred_1)
+    conf_mat = []
+    conf_mat.append(predicted_0)
+    conf_mat.append(predicted_1)
     xx, yy, x_min_plot, x_max_plot = get_plot_data(X, plot_mesh_step_size)
     ax.set_xlim(xx.min(), xx.max())
     ax.set_ylim(yy.min(), yy.max())
-    return scores, cumulated_score
+    return scores, cumulated_score, conf_mat
 
 
 def get_number_of_samples_in_subspace(X, j, number_of_subspaces = 5):
@@ -978,6 +1006,21 @@ def print_results_with_cumulated_score(scores, cumulated_scores):
         print('Scores for {}. classifier'.format(i + 1))
         print(scores[i])
         print('Overall result: {}'.format(cumulated_scores[i]))
+
+
+def print_results_with_conf_mats(scores, cumulated_scores, conf_mat):
+    """Prints partial and overall results
+
+    :param scores: []
+    :param cumulated_scores: []
+    :return: void
+    """
+    for i in range(len(scores)):
+        print('Scores for {}. classifier'.format(i + 1))
+        print(scores[i])
+        print('Overall result: {}'.format(cumulated_scores[i]))
+        for j in range(len(conf_mat[i])):
+            print(conf_mat[i][j])
 
 
 def generate_permutation(X_whole_train_old, y_whole_train_old, X_validation_old, y_validation_old, X_test_old,

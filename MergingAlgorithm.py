@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import MyLibrary
 
 type_of_classifier = MyLibrary.ClfType.LINEAR
-are_samples_generated = False
-number_of_samples_if_generated = 100
+are_samples_generated = True
+number_of_samples_if_generated = 10000
 number_of_dataset_if_not_generated = 1
 switch_columns_while_loading = False
 plot_mesh_step_size = .2
@@ -37,15 +37,18 @@ while True:
     scores, cumulated_scores = MyLibrary.test_classifiers(clfs, X_validation, y_validation, X, coefficients,
                                                           number_of_space_parts, write_computed_scores)
 
-    scores, cumulated_score = \
+    confusion_matrices = MyLibrary.compute_confusion_matrix(clfs, X_test, y_test)
+
+    scores, cumulated_score, conf_mat = \
         MyLibrary.prepare_composite_classifier(X_test, y_test, X, number_of_best_classifiers, coefficients, scores,
                                                number_of_subplots, number_of_space_parts, number_of_classifiers,
                                                plot_mesh_step_size)
 
+    confusion_matrices.append(conf_mat)
     cumulated_scores.append(cumulated_score)
     score_pro_permutation.append(cumulated_scores)
 
-    MyLibrary.print_results_with_cumulated_score(scores, cumulated_scores)
+    MyLibrary.print_results_with_conf_mats(scores, cumulated_scores, confusion_matrices)
 
     X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
         MyLibrary.generate_permutation(X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test)
