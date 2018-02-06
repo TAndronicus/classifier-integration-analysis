@@ -4,10 +4,10 @@ import numpy as np
 from sklearn.svm import LinearSVC
 from sklearn.neighbors import NearestCentroid
 from sklearn.datasets import make_classification
+from MyLibrary import ClassifierData
 
 
 class MyLibraryTest(unittest.TestCase):
-
     X, y = [], []
     NUMBER_OF_CLASSIFIERS = 3
     NUMBER_OF_SUBSPACES = 5
@@ -18,7 +18,7 @@ class MyLibraryTest(unittest.TestCase):
     def setUp(self):
         self.X, self.y = \
             make_classification(n_features = 2, n_informative = 2, n_redundant = 0, n_repeated = 0, n_samples = 1000,
-                                class_sep=2.7, hypercube=False, random_state=2, n_clusters_per_class = 1)
+                                class_sep = 2.7, hypercube = False, random_state = 2, n_clusters_per_class = 1)
 
     def test_upper(self):
         self.assertEqual('foo'.upper(), 'FOO')
@@ -52,7 +52,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_initialse_right_number_of_classifiers(self):
         # given
         # when
-        clfs = MyLibrary.initialize_classifiers(self.NUMBER_OF_CLASSIFIERS, MyLibrary.ClfType.LINEAR)
+        clfs = MyLibrary.initialize_classifiers()
         # then
         self.assertEqual(len(clfs), self.NUMBER_OF_CLASSIFIERS)
 
@@ -105,9 +105,10 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_not_change_data_whole(self):
         # given
+        data = ClassifierData(are_samples_generated = False)
         # when
         X1, y1 = MyLibrary.load_samples_from_file(self.TEST_FILENAME)
-        X2, y2 = MyLibrary.prepare_raw_data(are_samples_generated = False)
+        X2, y2 = MyLibrary.prepare_raw_data(data)
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
@@ -115,8 +116,9 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_contain_same_data(self):
         # given
+        data = ClassifierData(are_samples_generated = False)
         # when
-        X1, y1 = MyLibrary.prepare_raw_data(are_samples_generated = False)
+        X1, y1 = MyLibrary.prepare_raw_data(data)
         X2, y2 = MyLibrary.load_samples_from_datasets()
         # then
         self.assertTrue(len(X2) == len(X1))
@@ -527,17 +529,16 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_return_right_number_of_subplots_when_external_plots_drawn(self):
         # given
-        draw_color_plot = True
+        data = ClassifierData(draw_color_plot = True)
         # when
-        target = MyLibrary.determine_number_of_subplots(draw_color_plot)
+        target = MyLibrary.determine_number_of_subplots(data)
         # then
         self.assertEqual(self.NUMBER_OF_CLASSIFIERS * 2 + 1, target)
 
     def test_should_return_right_number_of_subplots_when_external_plots_not_drawn(self):
         # given
-        draw_color_plot = False
         # when
-        target = MyLibrary.determine_number_of_subplots(draw_color_plot)
+        target = MyLibrary.determine_number_of_subplots()
         # then
         self.assertEqual(self.NUMBER_OF_CLASSIFIERS + 1, target)
 
@@ -548,8 +549,8 @@ class MyLibraryTest(unittest.TestCase):
         # when
         a, b = \
             MyLibrary.evaluate_average_coefficients_from_n_best(coefficients, scores, 0,
-                                                                number_of_best_classifiers = 3,
-                                                                number_of_classifiers = len(scores))
+                                                                ClassifierData(number_of_best_classifiers = 3,
+                                                                               number_of_classifiers = len(scores)))
         # then
         self.assertEqual((coefficients[2][0] + coefficients[3][0] + coefficients[4][0]) / 3, a)
         self.assertEqual((coefficients[2][1] + coefficients[3][1] + coefficients[4][1]) / 3, b)
@@ -561,8 +562,9 @@ class MyLibraryTest(unittest.TestCase):
         # when
         a, b = \
             MyLibrary.evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, 0,
-                                                                         number_of_best_classifiers = 2,
-                                                                         number_of_classifiers = len(scores))
+                                                                         ClassifierData(number_of_best_classifiers = 2,
+                                                                                        number_of_classifiers = len(
+                                                                                            scores)))
         # then
         self.assertEqual((coefficients[2][0] * scores[2][0] + coefficients[3][0] * scores[3][0]) /
                          (scores[2][0] + scores[3][0]), a)

@@ -14,35 +14,42 @@ draw_color_plot = False
 write_computed_scores = True
 show_plots = True
 
-clfs = MyLibrary.initialize_classifiers(number_of_classifiers, type_of_classifier)
+classifier_data = \
+    MyLibrary.ClassifierData(type_of_classifier = type_of_classifier, are_samples_generated = are_samples_generated,
+                             number_of_samples_if_generated = number_of_samples_if_generated,
+                             number_of_dataset_if_not_generated = number_of_dataset_if_not_generated,
+                             switch_columns_while_loading = switch_columns_while_loading,
+                             plot_mesh_step_size = plot_mesh_step_size, number_of_space_parts = number_of_space_parts,
+                             number_of_classifiers = number_of_classifiers,
+                             number_of_best_classifiers = number_of_best_classifiers,
+                             draw_color_plot = draw_color_plot, write_computed_scores = write_computed_scores,
+                             show_plots = show_plots)
 
-X, y = MyLibrary.prepare_raw_data(are_samples_generated, number_of_samples_if_generated,
-                                  number_of_dataset_if_not_generated, number_of_classifiers,
-                                  number_of_space_parts, switch_columns_while_loading)
+clfs = MyLibrary.initialize_classifiers(classifier_data)
 
+X, y = MyLibrary.prepare_raw_data(classifier_data)
 
 X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
-    MyLibrary.split_sorted_samples(X, y, number_of_classifiers, number_of_space_parts)
+    MyLibrary.split_sorted_samples(X, y, classifier_data)
 
-xx, yy, x_min_plot, x_max_plot = MyLibrary.get_plot_data(X, plot_mesh_step_size)
-number_of_subplots = MyLibrary.determine_number_of_subplots(draw_color_plot, number_of_classifiers)
+xx, yy, x_min_plot, x_max_plot = MyLibrary.get_plot_data(X, classifier_data)
+number_of_subplots = MyLibrary.determine_number_of_subplots(classifier_data)
 
 number_of_permutations = 0
 
 score_pro_permutation = []
 while True:
-    clfs, coefficients = MyLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, type_of_classifier,
-                                                     number_of_subplots, X, plot_mesh_step_size, draw_color_plot)
+    clfs, coefficients = \
+        MyLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots, classifier_data)
 
     scores, cumulated_scores = MyLibrary.test_classifiers(clfs, X_validation, y_validation, X, coefficients,
-                                                          number_of_space_parts, write_computed_scores)
+                                                          classifier_data)
 
     confusion_matrices = MyLibrary.compute_confusion_matrix(clfs, X_test, y_test)
 
     scores, cumulated_score, conf_mat = \
-        MyLibrary.prepare_composite_classifier(X_test, y_test, X, number_of_best_classifiers, coefficients, scores,
-                                               number_of_subplots, number_of_space_parts, number_of_classifiers,
-                                               plot_mesh_step_size)
+        MyLibrary.prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
+                                               classifier_data)
 
     confusion_matrices.append(conf_mat)
     cumulated_scores.append(cumulated_score)
