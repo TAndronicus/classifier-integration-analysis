@@ -732,9 +732,13 @@ def train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots,
     """
     type_of_classifier = classifier_data.type_of_classifier
     draw_color_plot = classifier_data.draw_color_plot
+    show_plots = classifier_data.show_plots
+
+    if show_plots:
+        xx, yy, x_min_plot, x_max_plot = get_plot_data(X, classifier_data)
+
     print('Training classifiers')
     trained_clfs, coefficients, current_subplot = [], [], 1
-    xx, yy, x_min_plot, x_max_plot = get_plot_data(X, classifier_data)
     for clf, X_train, y_train in zip(clfs, X_whole_train, y_whole_train):
         clf.fit(X_train, y_train)
         trained_clfs.append(clf)
@@ -747,16 +751,17 @@ def train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots,
         coefficients.append([a, b])
 
         # Prepare plot
-        ax = plt.subplot(1, number_of_subplots, current_subplot)
-        ax.scatter(X_train[:, 0], X_train[:, 1], c = y_train)
-        x = np.linspace(x_min_plot, x_max_plot)
-        y = a * x + b
-        ax.plot(x, y)
-        ax.set_xlim(xx.min(), xx.max())
-        ax.set_ylim(yy.min(), yy.max())
-        current_subplot += 1
+        if show_plots:
+            ax = plt.subplot(1, number_of_subplots, current_subplot)
+            ax.scatter(X_train[:, 0], X_train[:, 1], c = y_train)
+            x = np.linspace(x_min_plot, x_max_plot)
+            y = a * x + b
+            ax.plot(x, y)
+            ax.set_xlim(xx.min(), xx.max())
+            ax.set_ylim(yy.min(), yy.max())
+            current_subplot += 1
 
-        if draw_color_plot:
+        if show_plots and draw_color_plot:
             # Draw color plot
             print('Drawing color plot')
             ax = plt.subplot(1, number_of_subplots, current_subplot)
@@ -940,17 +945,23 @@ def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number
     :return: scores: []
     """
     number_of_space_parts = classifier_data.number_of_space_parts
+    show_plots = classifier_data.show_plots
     print('Preparing composite classifier')
+
+    if show_plots:
+        ax = plt.subplot(1, number_of_subplots, number_of_subplots)
+        ax.scatter(X_test[:, 0], X_test[:, 1], c = y_test)
     score, part_lengths, flip_index = [], [], 0
-    ax = plt.subplot(1, number_of_subplots, number_of_subplots)
-    ax.scatter(X_test[:, 0], X_test[:, 1], c = y_test)
     prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1 = 0, 0, 0, 0
     for j in range(number_of_space_parts):
-        x_subspace_min, x_subspace_max = get_subspace_limits(X, j, classifier_data)
-        x = np.linspace(x_subspace_min, x_subspace_max)
         a, b = evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, j, classifier_data)
-        y = a * x + b
-        ax.plot(x, y)
+
+        if show_plots:
+            x_subspace_min, x_subspace_max = get_subspace_limits(X, j, classifier_data)
+            x = np.linspace(x_subspace_min, x_subspace_max)
+            y = a * x + b
+            ax.plot(x, y)
+
         X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data)
         if len(X_part) > 0:
             propperly_classified = 0
@@ -994,9 +1005,10 @@ def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number
     predicted_1.append(prop_1_pred_0)
     predicted_1.append(prop_1_pred_1)
     conf_mat = [predicted_0, predicted_1]
-    xx, yy, x_min_plot, x_max_plot = get_plot_data(X, classifier_data)
-    ax.set_xlim(xx.min(), xx.max())
-    ax.set_ylim(yy.min(), yy.max())
+    if show_plots:
+        xx, yy, x_min_plot, x_max_plot = get_plot_data(X, classifier_data)
+        ax.set_xlim(xx.min(), xx.max())
+        ax.set_ylim(yy.min(), yy.max())
     return scores, cumulated_score, conf_mat
 
 

@@ -32,8 +32,11 @@ X, y = MyLibrary.prepare_raw_data(classifier_data)
 X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
     MyLibrary.split_sorted_samples(X, y, classifier_data)
 
-xx, yy, x_min_plot, x_max_plot = MyLibrary.get_plot_data(X, classifier_data)
-number_of_subplots = MyLibrary.determine_number_of_subplots(classifier_data)
+if show_plots:
+    xx, yy, x_min_plot, x_max_plot = MyLibrary.get_plot_data(X, classifier_data)
+    number_of_subplots = MyLibrary.determine_number_of_subplots(classifier_data)
+else:
+    number_of_subplots = 0
 
 number_of_permutations = 0
 
