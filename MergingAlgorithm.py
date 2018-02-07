@@ -12,7 +12,7 @@ number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
 draw_color_plot = False
 write_computed_scores = True
-show_plots = True
+show_plots = False
 
 classifier_data = \
     MyLibrary.ClassifierData(type_of_classifier = type_of_classifier, are_samples_generated = are_samples_generated,
@@ -42,6 +42,7 @@ number_of_permutations = 0
 
 score_pro_permutation = []
 while True:
+    print("\n{}. iteration\n".format(number_of_permutations))
     clfs, coefficients = \
         MyLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots, classifier_data)
 
@@ -70,4 +71,5 @@ while True:
     if number_of_permutations == number_of_classifiers + 2:
         break
 
+print("\n\nOverall results:")
 MyLibrary.print_permutation_results(score_pro_permutation)
