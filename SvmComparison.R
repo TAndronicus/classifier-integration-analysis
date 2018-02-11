@@ -1,10 +1,13 @@
+# install.packages('readxl')
+# install.packages('e1071')
+
 library("readxl")
 library("e1071")
 
 # setwd("D:\\Workspace\\R")
 
 print("Reading data")
-data <- read_excel("datasets.xlsx", sheet = 13, col_names = FALSE)
+data <- read_excel("datasets.xlsx", sheet = 7, col_names = FALSE)
 
 print("Preparing data")
 X = cbind(data[1], data[2])
@@ -27,8 +30,8 @@ print(names(train.data))
 # plot(my.svm, train.data, X__2 ~ X__1)
 
 print("Plotting model")
-# plot(model, train.data, X__2 ~ X__1, xlim = c(-5, 0), ylim = c(0, 5), fill = TRUE)
-plot(model, train.data, X__2 ~ X__1)
+plot(model, train.data, X__2 ~ X__1, xlim = c(-0.5, 1.5), ylim = c(-0.5, 1.5), fill = TRUE)
+# plot(model, train.data, X__2 ~ X__1)
 print(summary(model))
 
 print("Checking accuracy")

@@ -6,40 +6,8 @@ from sklearn.neighbors import NearestCentroid
 import xlrd
 import numpy as np
 import matplotlib.pyplot as plt
-from enum import Enum
-
-
-class ClfType(Enum):
-    """Defines the type of classifier
-
-
-    """
-    LINEAR = 0
-    MEAN = 1
-
-
-class ClassifierData:
-    """Clas to produce parameter object for classification
-
-    """
-    def __init__(self, type_of_classifier = ClfType.LINEAR, are_samples_generated = True,
-                 number_of_samples_if_generated = 1000, number_of_dataset_if_not_generated = 12,
-                 switch_columns_while_loading = False, plot_mesh_step_size = .2, number_of_space_parts = 5,
-                 number_of_classifiers = 3, number_of_best_classifiers = 2, draw_color_plot = False,
-                 write_computed_scores = False, show_plots = False):
-        self.type_of_classifier = type_of_classifier
-        self.are_samples_generated = are_samples_generated
-        self.number_of_samples_if_generated = number_of_samples_if_generated
-        self.number_of_dataset_if_not_generated = number_of_dataset_if_not_generated
-        self.switch_columns_while_loading = switch_columns_while_loading
-        self.plot_mesh_step_size = plot_mesh_step_size
-        self.number_of_space_parts = number_of_space_parts
-        self.number_of_classifiers = number_of_classifiers
-        self.number_of_best_classifiers = number_of_best_classifiers
-        self.draw_color_plot = draw_color_plot
-        self.write_computed_scores = write_computed_scores
-        self.show_plots = show_plots
-
+from ClfType import ClfType
+from ClassifierData import ClassifierData
 
 def determine_clf_type(clf):
     """Determines type of classifier
@@ -73,7 +41,7 @@ def initialize_classifiers(classifier_data = ClassifierData()):
     clfs = []
     if type_of_classifier == ClfType.LINEAR:
         for i in range(number_of_classifiers):
-            clfs.append(LinearSVC(max_iter = 1e8, tol = 1e-10))
+            clfs.append(LinearSVC(max_iter = 1e6, tol = 1e-10, C = 100))
     elif type_of_classifier == ClfType.MEAN:
         for i in range(number_of_classifiers):
             clfs.append(NearestCentroid())
@@ -99,7 +67,7 @@ def prepare_raw_data(classifier_data = ClassifierData()):
         X0, X1 = assert_distribution_simplified(X0, X1, classifier_data)
         return compose_sorted_parts(X0, X1)
     else:
-        return load_samples_from_datasets(classifier_data)
+        return load_columns_from_datasets(classifier_data)
 
 
 def load_samples_from_file(filename):
@@ -182,6 +150,37 @@ def load_samples_from_datasets(classifier_data = ClassifierData()):
             X1.append(row)
         line_number += 1
     # X = SelectKBest(k = 2).fit_transform(X, y)
+    print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
+    X0, X1 = sort_attributes(X0), sort_attributes(X1)
+    assert_distribution_simplified(X0, X1, classifier_data)
+    X, y = compose_sorted_parts(X0, X1)
+    return X, y
+
+
+def load_columns_from_datasets(classifier_data = ClassifierData()):
+    """Loads data from dataset (xlsx file with data)
+
+    :param classifier_data: ClassifierData
+    :return: X, y: np.array, np.array - samples for classification
+    """
+    number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
+    columns = classifier_data.columns
+    file = xlrd.open_workbook('datasets.xlsx')
+    sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
+    line_number = 0
+    line = sheet.row(line_number)
+    number_of_columns = len(line)
+    X0, X1 = [], []
+    while line_number < sheet.nrows:
+        line = sheet.row(line_number)
+        row = []
+        for i in columns:
+            row.append(float(line[i].value))
+        if int(line[number_of_columns - 1].value) == 0:
+            X0.append(row)
+        else:
+            X1.append(row)
+        line_number += 1
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
     assert_distribution_simplified(X0, X1, classifier_data)

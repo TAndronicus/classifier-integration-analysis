@@ -127,6 +127,44 @@ class MyLibraryTest(unittest.TestCase):
         for i in range(len(X1)):
             self.assertTrue(X2.__contains__(X1[i]))
 
+    def test_should_return_sorted_data_from_dataset_given_columns(self):
+        # given
+        # when
+        X, y = MyLibrary.load_columns_from_datasets()
+        # then
+        for i in range(len(X) - 1):
+            self.assertFalse((X[i + 1][0] >= X[i][0]) ^ (y[i + 1] == y[i]))
+
+    def test_should_return_dataset_with_two_attributes_given_columns(self):
+        # given
+        # when
+        X, y = MyLibrary.load_columns_from_datasets()
+        # then
+        self.assertEqual(self.NUMBER_OF_ATTRIBUTES, np.shape(X)[1])
+
+    def test_should_not_change_data_given_columns(self):
+        # given
+        # when
+        X1, y1 = MyLibrary.load_samples_from_file(self.TEST_FILENAME)
+        X2, y2 = MyLibrary.load_columns_from_datasets()
+        # then
+        self.assertTrue(len(X2) <= len(X1))
+        for i in range(len(X2)):
+            self.assertTrue(X1.__contains__(X2[i]))
+
+    def test_should_contain_same_data_given_columns(self):
+        # given
+        data = ClassifierData(are_samples_generated = False)
+        # when
+        X1, y1 = MyLibrary.prepare_raw_data(data)
+        X2, y2 = MyLibrary.load_columns_from_datasets()
+        # then
+        self.assertTrue(len(X2) == len(X1))
+        for i in range(len(X2)):
+            self.assertTrue(X1.__contains__(X2[i]))
+        for i in range(len(X1)):
+            self.assertTrue(X2.__contains__(X1[i]))
+
     def test_cumulative_length_of_returned_datasets_should_be_multiply_of_number_of_subspaces(self):
         # given
         X0_full = np.array(
