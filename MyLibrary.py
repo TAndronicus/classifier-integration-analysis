@@ -58,16 +58,20 @@ def prepare_raw_data(classifier_data = ClassifierData()):
     """
     are_samples_generated = classifier_data.are_samples_generated
     number_of_samples_if_generated = classifier_data.number_of_samples_if_generated
+    is_validation_hard = classifier_data.is_validation_hard
     if are_samples_generated:
         X, y = make_classification(n_features = 2, n_redundant = 0, n_informative = 1, n_clusters_per_class = 1,
                                    n_samples = number_of_samples_if_generated,
                                    class_sep = 2.7, hypercube = False, random_state = 2)
         X0, X1 = divide_generated_samples(X, y)
         X0, X1 = sort_attributes(X0), sort_attributes(X1)
-        X0, X1 = assert_distribution_simplified(X0, X1, classifier_data)
+        if is_validation_hard:
+            assert_distribution(X0, X1, classifier_data)
+        else:
+            assert_distribution_simplified(X0, X1, classifier_data)
         return compose_sorted_parts(X0, X1)
     else:
-        return load_columns_from_datasets(classifier_data)
+        return load_columns_from_new_datasets(classifier_data)
 
 
 def load_samples_from_file(filename):
@@ -188,6 +192,42 @@ def load_columns_from_datasets(classifier_data = ClassifierData()):
     return X, y
 
 
+def load_columns_from_new_datasets(classifier_data = ClassifierData()):
+    """Loads data from dataset (xlsx file with data)
+
+    :param classifier_data: ClassifierData
+    :return: X, y: np.array, np.array - samples for classification
+    """
+    number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
+    columns = classifier_data.columns
+    is_validation_hard = classifier_data.is_validation_hard
+    filename = classifier_data.filename
+    file = xlrd.open_workbook(filename)
+    sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
+    line_number = 0
+    line = sheet.row(line_number)
+    number_of_columns = len(line)
+    X0, X1 = [], []
+    while line_number < sheet.nrows:
+        line = sheet.row(line_number)
+        row = []
+        for i in columns:
+            row.append(float(line[i].value))
+        if int(line[number_of_columns - 1].value) == 0:
+            X0.append(row)
+        else:
+            X1.append(row)
+        line_number += 1
+    print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
+    X0, X1 = sort_attributes(X0), sort_attributes(X1)
+    if is_validation_hard:
+        assert_distribution(X0, X1, classifier_data)
+    else:
+        assert_distribution_simplified(X0, X1, classifier_data)
+    X, y = compose_sorted_parts(X0, X1)
+    return X, y
+
+
 def assert_distribution(X0, X1, classifier_data = ClassifierData()):
     """Asserts that samples can be divided into subspaces with the same amount of data
 
@@ -228,17 +268,16 @@ def assert_distribution(X0, X1, classifier_data = ClassifierData()):
             index1 += 1
         if counter0 + counter1 < number_of_classifiers + 2:
             print('Only {} samples in {}. subspace'.format(counter0 + counter1, i + 1))
-            # raise Exception('Not enough samples')
+            from_front = False
+            return cut_out_from_larger(X0, X1, from_front, classifier_data)
         remainder = (counter0 + counter1) % (number_of_classifiers + 2)
         if remainder != 0:
             if i == 0:
-                if len(X0) > len(X1):
-                    return assert_distribution(X0[1:], X1, classifier_data)
-                return assert_distribution(X0, X1[1:], classifier_data)
+                from_front = True
+                return cut_out_from_larger(X0, X1, from_front, classifier_data)
             if i == number_of_space_parts - 1:
-                if len(X0) > len(X1):
-                    return assert_distribution(X0[:-1], X1, classifier_data)
-                return assert_distribution(X0, X1[:-1], classifier_data)
+                from_front = False
+                return cut_out_from_larger(X0, X1, from_front, classifier_data)
             if len(X0) > len(X1):
                 if counter0 < remainder:
                     subtraction, rest = counter0, remainder - counter0
@@ -255,6 +294,17 @@ def assert_distribution(X0, X1, classifier_data = ClassifierData()):
                 X1 = np.vstack((X1[:index1 - subtraction], X1[index1:]))
     print('len0: {}, len1: {}'.format(len(X0), len(X1)))
     return X0, X1
+
+
+def cut_out_from_larger(X0, X1, from_front, classifier_data = ClassifierData()):
+    if from_front:
+        if len(X0) > len(X1):
+            return assert_distribution(X0[1:], X1, classifier_data)
+        return assert_distribution(X0, X1[1:], classifier_data)
+    else:
+        if len(X0) > len(X1):
+            return assert_distribution(X0[:-1], X1, classifier_data)
+        return assert_distribution(X0, X1[:-1], classifier_data)
 
 
 def assert_distribution_simplified(X0, X1, classifier_data = ClassifierData()):
@@ -965,7 +1015,6 @@ def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number
         if len(X_part) > 0:
             propperly_classified = 0
             all_classified = 0
-            flip_index = 0
             for k in range(len(X_part)):
                 all_classified += 1
                 if (a * X_part[k][0] + b > X_part[k][1]) ^ (y_part[k] == 1):
@@ -979,24 +1028,20 @@ def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number
                         prop_0_pred_1 += 1
                     else:
                         prop_1_pred_0 += 1
-            if propperly_classified / all_classified < 0.5:
-                score.append(1 - propperly_classified / all_classified)
-                flip_index += 1
-            else:
-                score.append(propperly_classified / all_classified)
-                flip_index -= 1
+            score.append(propperly_classified / all_classified)
         else:
             score.append(0)
         part_lengths.append(len(X_part))
-    if flip_index > 0:
-        for k in range(len(score)):
-            score[k] = 1 - score[k]
         prop_0_pred_0, prop_0_pred_1 = prop_0_pred_1, prop_0_pred_0
         prop_1_pred_0, prop_1_pred_1 = prop_1_pred_1, prop_1_pred_0
     cumulated_score = 0
     for i in range(len(score)):
         cumulated_score += score[i] * part_lengths[i]
     cumulated_score /= len(X_test)
+    if cumulated_score < 0.5:
+        cumulated_score = 1 - cumulated_score
+        for i in range(len(score)):
+            score[i] = 1 - score[1]
     scores.append(score)
     predicted_0, predicted_1 = [], []
     predicted_0.append(prop_0_pred_0)
