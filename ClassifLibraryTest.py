@@ -1,10 +1,10 @@
 import unittest
-import MyLibrary
+import ClassifLibrary
 import numpy as np
 from sklearn.svm import LinearSVC
 from sklearn.neighbors import NearestCentroid
 from sklearn.datasets import make_classification
-from MyLibrary import ClassifierData
+from ClassifLibrary import ClassifierData
 
 
 class MyLibraryTest(unittest.TestCase):
@@ -28,52 +28,52 @@ class MyLibraryTest(unittest.TestCase):
         clf = LinearSVC()
         clf.fit(self.X, self.y)
         # when
-        clf_type = MyLibrary.determine_clf_type(clf)
+        clf_type = ClassifLibrary.determine_clf_type(clf)
         # then
-        self.assertEqual(clf_type, MyLibrary.ClfType.LINEAR)
+        self.assertEqual(clf_type, ClassifLibrary.ClfType.LINEAR)
 
     def test_should_recognise_mean_classifier(self):
         # given
         clf = NearestCentroid()
         clf.fit(self.X, self.y)
         # when
-        clf_type = MyLibrary.determine_clf_type(clf)
+        clf_type = ClassifLibrary.determine_clf_type(clf)
         # then
-        self.assertEqual(clf_type, MyLibrary.ClfType.MEAN)
+        self.assertEqual(clf_type, ClassifLibrary.ClfType.MEAN)
 
     def ignore_test_should_not_recognise_not_trained_classifier(self):
         # given
         clf = LinearSVC()
         # when
-        MyLibrary.determine_clf_type(clf)
+        ClassifLibrary.determine_clf_type(clf)
         # then
         self.assertRaises(Exception('Classifier not defined'))
 
     def test_should_initialse_right_number_of_classifiers(self):
         # given
         # when
-        clfs = MyLibrary.initialize_classifiers()
+        clfs = ClassifLibrary.initialize_classifiers()
         # then
         self.assertEqual(len(clfs), self.NUMBER_OF_CLASSIFIERS)
 
     def test_should_return_non_empty_dataset(self):
         # given
         # when
-        X, y = MyLibrary.prepare_raw_data()
+        X, y = ClassifLibrary.prepare_raw_data()
         # then
         self.assertFalse(len(X) == 0)
 
     def test_should_return_class_for_each_data(self):
         # given
         # when
-        X, y = MyLibrary.prepare_raw_data()
+        X, y = ClassifLibrary.prepare_raw_data()
         # then
         self.assertTrue(len(X) == len(y))
 
     def test_should_return_sorted_data(self):
         # given
         # when
-        X, y = MyLibrary.prepare_raw_data()
+        X, y = ClassifLibrary.prepare_raw_data()
         # then
         for i in range(len(X) - 1):
             self.assertFalse((X[i + 1][0] >= X[i][0]) ^ (y[i + 1] == y[i]))
@@ -81,7 +81,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_sorted_data_from_dataset(self):
         # given
         # when
-        X, y = MyLibrary.load_samples_from_datasets()
+        X, y = ClassifLibrary.load_samples_from_datasets()
         # then
         for i in range(len(X) - 1):
             self.assertFalse((X[i + 1][0] >= X[i][0]) ^ (y[i + 1] == y[i]))
@@ -89,15 +89,15 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_dataset_with_two_attributes(self):
         # given
         # when
-        X, y = MyLibrary.load_samples_from_datasets()
+        X, y = ClassifLibrary.load_samples_from_datasets()
         # then
         self.assertEqual(self.NUMBER_OF_ATTRIBUTES, np.shape(X)[1])
 
     def test_should_not_change_data(self):
         # given
         # when
-        X1, y1 = MyLibrary.load_samples_from_file(self.TEST_FILENAME)
-        X2, y2 = MyLibrary.load_samples_from_datasets()
+        X1, y1 = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
+        X2, y2 = ClassifLibrary.load_samples_from_datasets()
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
@@ -107,8 +107,8 @@ class MyLibraryTest(unittest.TestCase):
         # given
         data = ClassifierData(are_samples_generated = False)
         # when
-        X1, y1 = MyLibrary.load_samples_from_file(self.TEST_FILENAME)
-        X2, y2 = MyLibrary.prepare_raw_data(data)
+        X1, y1 = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
+        X2, y2 = ClassifLibrary.prepare_raw_data(data)
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
@@ -118,8 +118,8 @@ class MyLibraryTest(unittest.TestCase):
         # given
         data = ClassifierData(are_samples_generated = False)
         # when
-        X1, y1 = MyLibrary.prepare_raw_data(data)
-        X2, y2 = MyLibrary.load_samples_from_datasets()
+        X1, y1 = ClassifLibrary.prepare_raw_data(data)
+        X2, y2 = ClassifLibrary.load_samples_from_datasets()
         # then
         self.assertTrue(len(X2) == len(X1))
         for i in range(len(X2)):
@@ -130,7 +130,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_sorted_data_from_dataset_given_columns(self):
         # given
         # when
-        X, y = MyLibrary.load_columns_from_datasets()
+        X, y = ClassifLibrary.load_columns_from_datasets()
         # then
         for i in range(len(X) - 1):
             self.assertFalse((X[i + 1][0] >= X[i][0]) ^ (y[i + 1] == y[i]))
@@ -138,15 +138,15 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_dataset_with_two_attributes_given_columns(self):
         # given
         # when
-        X, y = MyLibrary.load_columns_from_datasets()
+        X, y = ClassifLibrary.load_columns_from_datasets()
         # then
         self.assertEqual(self.NUMBER_OF_ATTRIBUTES, np.shape(X)[1])
 
     def test_should_not_change_data_given_columns(self):
         # given
         # when
-        X1, y1 = MyLibrary.load_samples_from_file(self.TEST_FILENAME)
-        X2, y2 = MyLibrary.load_columns_from_datasets()
+        X1, y1 = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
+        X2, y2 = ClassifLibrary.load_columns_from_datasets()
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
@@ -156,8 +156,8 @@ class MyLibraryTest(unittest.TestCase):
         # given
         data = ClassifierData(are_samples_generated = False)
         # when
-        X1, y1 = MyLibrary.prepare_raw_data(data)
-        X2, y2 = MyLibrary.load_columns_from_datasets()
+        X1, y1 = ClassifLibrary.prepare_raw_data(data)
+        X2, y2 = ClassifLibrary.load_columns_from_datasets()
         # then
         self.assertTrue(len(X2) == len(X1))
         for i in range(len(X2)):
@@ -174,7 +174,7 @@ class MyLibraryTest(unittest.TestCase):
             [[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0],
              [100, 0], [100, 0], [100, 0]])
         # when
-        X0, X1 = MyLibrary.assert_distribution(X0_full, X1_full)
+        X0, X1 = ClassifLibrary.assert_distribution(X0_full, X1_full)
         # then
         self.assertTrue((len(X0) + len(X1)) % (self.NUMBER_OF_CLASSIFIERS + 2) == 0)
 
@@ -185,7 +185,7 @@ class MyLibraryTest(unittest.TestCase):
         X1_full = np.array([[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0], [63, 0],
                             [84, 0], [84, 0], [100, 0], [100, 0], [100, 0]])
         # when
-        X0, X1 = MyLibrary.assert_distribution(X0_full, X1_full)
+        X0, X1 = ClassifLibrary.assert_distribution(X0_full, X1_full)
         # then
         self.assertEqual(len(X0_full), len(X0))
         self.assertEqual(len(X1_full), len(X1))
@@ -197,7 +197,7 @@ class MyLibraryTest(unittest.TestCase):
         X1_full = np.array([[0, 0], [0, 0], [2, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0],
                             [63, 0], [84, 0], [84, 0], [100, 0], [100, 0], [100, 0]])
         # when
-        X0, X1 = MyLibrary.assert_distribution(X0_full, X1_full)
+        X0, X1 = ClassifLibrary.assert_distribution(X0_full, X1_full)
         # then
         self.assertEqual(len(X0_full) - 1, len(X0))
         self.assertEqual(len(X1_full) - 1, len(X1))
@@ -209,7 +209,7 @@ class MyLibraryTest(unittest.TestCase):
         X1_full = np.array([[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [63, 0], [63, 0], [63, 0],
                             [84, 0], [84, 0], [90, 0], [100, 0], [100, 0], [100, 0]])
         # when
-        X0, X1 = MyLibrary.assert_distribution(X0_full, X1_full)
+        X0, X1 = ClassifLibrary.assert_distribution(X0_full, X1_full)
         # then
         self.assertEqual(len(X0_full) - 2, len(X0))
         self.assertEqual(len(X1_full) - 1, len(X1))
@@ -221,7 +221,7 @@ class MyLibraryTest(unittest.TestCase):
         X1_full = np.array([[0, 0], [0, 0], [21, 0], [21, 0], [21, 0], [42, 0], [42, 0], [45, 0], [63, 0], [63, 0],
                             [63, 0], [84, 0], [84, 0], [85, 0], [100, 0], [100, 0], [100, 0]])
         # when
-        X0, X1 = MyLibrary.assert_distribution(X0_full, X1_full)
+        X0, X1 = ClassifLibrary.assert_distribution(X0_full, X1_full)
         # then
         self.assertEqual(len(X0_full) - 1, len(X0))
         self.assertEqual(len(X1_full) - 2, len(X1))
@@ -237,7 +237,7 @@ class MyLibraryTest(unittest.TestCase):
              [100, 0]])
         lengths0, lengths1 = [], []
         # when
-        X0, X1 = MyLibrary.assert_distribution(X0_full, X1_full)
+        X0, X1 = ClassifLibrary.assert_distribution(X0_full, X1_full)
         min_x0, max_x0, min_x1, max_x1 = X0[0][0], X0[0][-1], X1[0][0], X1[0][-1]
         for i in range(self.NUMBER_OF_SUBSPACES):
             amount = 0
@@ -259,15 +259,15 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_have_amount_of_data_multiple_of_number_of_classifiers_plus_2_in_every_subspace_generated_dataset(
             self):
         # given
-        X0_raw, X1_raw = MyLibrary.divide_generated_samples(self.X, self.y)
-        X0_sorted, X1_sorted = MyLibrary.sort_attributes(X0_raw), MyLibrary.sort_attributes(X1_raw)
+        X0_raw, X1_raw = ClassifLibrary.divide_generated_samples(self.X, self.y)
+        X0_sorted, X1_sorted = ClassifLibrary.sort_attributes(X0_raw), ClassifLibrary.sort_attributes(X1_raw)
         lengths0, lengths1 = [], []
         # when
-        X0, X1 = MyLibrary.assert_distribution(X0_sorted, X1_sorted)
+        X0, X1 = ClassifLibrary.assert_distribution(X0_sorted, X1_sorted)
         length0, length1 = len(X0), len(X1)
         print(len(X0))
         while True:
-            X0, X1 = MyLibrary.assert_distribution(X0, X1)
+            X0, X1 = ClassifLibrary.assert_distribution(X0, X1)
             if len(X0) == length0 and len(X1) == length1:
                 break
             length0, length1 = len(X0), len(X1)
@@ -292,12 +292,12 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_have_correct_amount_of_data_in_every_subspace_generated_dataset_simplified(self):
         # given
-        X0_raw, X1_raw = MyLibrary.divide_generated_samples(self.X, self.y)
-        X0_sorted, X1_sorted = MyLibrary.sort_attributes(X0_raw), MyLibrary.sort_attributes(X1_raw)
+        X0_raw, X1_raw = ClassifLibrary.divide_generated_samples(self.X, self.y)
+        X0_sorted, X1_sorted = ClassifLibrary.sort_attributes(X0_raw), ClassifLibrary.sort_attributes(X1_raw)
         lengths0, lengths1 = [], []
         # when
-        X0, X1 = MyLibrary.assert_distribution_simplified(X0_sorted, X1_sorted)
-        X0, X1 = MyLibrary.assert_distribution_simplified(X0, X1)
+        X0, X1 = ClassifLibrary.assert_distribution_simplified(X0_sorted, X1_sorted)
+        X0, X1 = ClassifLibrary.assert_distribution_simplified(X0, X1)
         min_x0, max_x0, min_x1, max_x1 = X0[0][0], X0[-1][0], X1[0][0], X1[-1][0]
         min_x, max_x = min(min_x0, min_x1), max(max_x0, max_x1)
         for i in range(self.NUMBER_OF_SUBSPACES):
@@ -322,7 +322,7 @@ class MyLibraryTest(unittest.TestCase):
         X0 = np.array([[-20, 0], [0, 0], [10, 0]])
         X1 = np.array([[-10, 0], [0, 0], [20, 0]])
         # when
-        x_min, x_max = MyLibrary.get_extrema_for_subspaces(X0, X1)
+        x_min, x_max = ClassifLibrary.get_extrema_for_subspaces(X0, X1)
         # then
         self.assertEqual(X0[0][0], x_min)
         self.assertEqual(X1[-1][0], x_max)
@@ -332,7 +332,7 @@ class MyLibraryTest(unittest.TestCase):
         X = np.array([[0, 0], [0, 0], [0, 0], [0, 0], [3, 0], [10, 0]])
         # when
         counter, index = \
-            MyLibrary.get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X, X[0][0], X[-1][0], 1)
+            ClassifLibrary.get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X, X[0][0], X[-1][0], 1)
         # then
         self.assertEqual(1, counter)
         self.assertEqual(5, index)
@@ -341,7 +341,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         counter, remainder = 5, 3
         # when
-        subtraction, rest = MyLibrary.set_subtraction_and_rest(counter, remainder)
+        subtraction, rest = ClassifLibrary.set_subtraction_and_rest(counter, remainder)
         # then
         self.assertEqual(remainder, subtraction)
         self.assertEqual(0, rest)
@@ -350,7 +350,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         counter, remainder = 3, 5
         # when
-        subtraction, rest = MyLibrary.set_subtraction_and_rest(counter, remainder)
+        subtraction, rest = ClassifLibrary.set_subtraction_and_rest(counter, remainder)
         # then
         self.assertEqual(counter, subtraction)
         self.assertEqual(remainder - subtraction, rest)
@@ -364,8 +364,8 @@ class MyLibraryTest(unittest.TestCase):
         counter, remainder, index0, index1, is_first_bigger = 2, 3, int(len(X0_raw) / 2), int(len(X1_raw) / 2), False
         # when
         X0, X1 = \
-            MyLibrary.limit_datasets_for_every_subspace_but_last(X0_raw, X1_raw, counter, remainder, index0, index1,
-                                                                 is_first_bigger)
+            ClassifLibrary.limit_datasets_for_every_subspace_but_last(X0_raw, X1_raw, counter, remainder, index0, index1,
+                                                                      is_first_bigger)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
@@ -379,8 +379,8 @@ class MyLibraryTest(unittest.TestCase):
         counter, remainder, index0, index1, is_first_bigger = 2, 3, int(len(X0_raw) / 2), int(len(X1_raw) / 2), False
         # when
         X0, X1 = \
-            MyLibrary.limit_datasets_for_last_subspace(X0_raw, X1_raw, counter, remainder, index0, index1,
-                                                       is_first_bigger)
+            ClassifLibrary.limit_datasets_for_last_subspace(X0_raw, X1_raw, counter, remainder, index0, index1,
+                                                            is_first_bigger)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
@@ -396,7 +396,7 @@ class MyLibraryTest(unittest.TestCase):
         counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), \
                                                                        int(len(X1_raw) / 2), False, True
         # when
-        X0, X1 = MyLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
+        X0, X1 = ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
@@ -412,7 +412,7 @@ class MyLibraryTest(unittest.TestCase):
         counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), \
                                                                        int(len(X1_raw) / 2), False, False
         # when
-        X0, X1 = MyLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
+        X0, X1 = ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
@@ -420,15 +420,15 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_have_amount_of_data_as_multiple_of_number_of_classifiers_plus_2_in_every_subspace_for_real_dataset(
             self):
         # given
-        X_raw, y_raw = MyLibrary.load_samples_from_file(self.TEST_FILENAME)
-        X0_raw, X1_raw = MyLibrary.divide_generated_samples(X_raw, y_raw)
-        X0_sorted, X1_sorted = MyLibrary.sort_attributes(X0_raw), MyLibrary.sort_attributes(X1_raw)
+        X_raw, y_raw = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
+        X0_raw, X1_raw = ClassifLibrary.divide_generated_samples(X_raw, y_raw)
+        X0_sorted, X1_sorted = ClassifLibrary.sort_attributes(X0_raw), ClassifLibrary.sort_attributes(X1_raw)
         lengths0, lengths1 = [], []
         # when
-        X0, X1 = MyLibrary.assert_distribution(X0_sorted, X1_sorted)
+        X0, X1 = ClassifLibrary.assert_distribution(X0_sorted, X1_sorted)
         length0, length1 = len(X0), len(X1)
         while True:
-            X0, X1 = MyLibrary.assert_distribution(X0, X1)
+            X0, X1 = ClassifLibrary.assert_distribution(X0, X1)
             if len(X0) == length0 and len(X1) == length1:
                 break
             length0, length1 = len(X0), len(X1)
@@ -456,7 +456,7 @@ class MyLibraryTest(unittest.TestCase):
         X0 = np.array([[0, 0], [1, 1], [2, 2]])
         X1 = np.array([[3, 3], [4, 4], [5, 5]])
         # when
-        X, y = MyLibrary.compose_sorted_parts(X0, X1)
+        X, y = ClassifLibrary.compose_sorted_parts(X0, X1)
         # then
         self.assertEqual(len(X0) + len(X1), len(X))
 
@@ -465,7 +465,7 @@ class MyLibraryTest(unittest.TestCase):
         X0 = np.array([[0, 0], [1, 1], [2, 2]])
         X1 = np.array([[3, 3], [4, 4], [5, 5], [6, 6], [7, 7]])
         # when
-        X, y = MyLibrary.compose_sorted_parts(X0, X1)
+        X, y = ClassifLibrary.compose_sorted_parts(X0, X1)
         # then
         self.assertEqual(len(X0), len(y) - np.sum(y))
         self.assertEqual(len(X1), np.sum(y))
@@ -474,7 +474,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         X = np.array([[3, 3], [2, 2], [5, 5], [4, 4], [1, 1]])
         # when
-        result = MyLibrary.sort_attributes(X)
+        result = ClassifLibrary.sort_attributes(X)
         # then
         for i in range(len(result) - 1):
             self.assertTrue(result[i + 1][0] > result[i][0])
@@ -482,7 +482,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_sort_only_by_X(self):
         # given
         # when
-        X, y = MyLibrary.sort_results(self.X, self.y)
+        X, y = ClassifLibrary.sort_results(self.X, self.y)
         # then
         for i in range(len(y) - 1):
             self.assertTrue(X[i][0] <= X[i + 1][0])
@@ -490,7 +490,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_divide_by_y(self):
         # given
         # when
-        X0, X1 = MyLibrary.divide_generated_samples(self.X, self.y)
+        X0, X1 = ClassifLibrary.divide_generated_samples(self.X, self.y)
         # then
         self.assertEqual(len(self.y), len(X0) + len(X1))
         self.assertEqual(len(self.y) - np.sum(self.y), len(X0))
@@ -499,7 +499,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_training_samples_for_every_classifier(self):
         # given
         # when
-        X_whole, y_whole, X_final_test, y_final_test = MyLibrary.divide_samples_between_classifiers(self.X, self.y)
+        X_whole, y_whole, X_final_test, y_final_test = ClassifLibrary.divide_samples_between_classifiers(self.X, self.y)
         # then
         self.assertEqual(len(X_whole), self.NUMBER_OF_CLASSIFIERS)
 
@@ -507,14 +507,14 @@ class MyLibraryTest(unittest.TestCase):
         # given
         # when
         X_whole, y_whole, X_final_test, y_final_test = \
-            MyLibrary.split_sorted_samples_between_classifiers(self.X, self.y)
+            ClassifLibrary.split_sorted_samples_between_classifiers(self.X, self.y)
         # then
         self.assertEqual(len(X_whole), self.NUMBER_OF_CLASSIFIERS)
 
     def ignore_deprecated_test_should_return_sets_with_given_ratio(self):
         # given
         # when
-        X_train, X_test, y_train, y_test = MyLibrary.divide_samples_between_training_and_testing(self.X, self.y)
+        X_train, X_test, y_train, y_test = ClassifLibrary.divide_samples_between_training_and_testing(self.X, self.y)
         # then
         self.assertAlmostEqual(len(X_train) / (len(X_train) + len(X_test)), self.QUOTIENT)
 
@@ -522,14 +522,14 @@ class MyLibraryTest(unittest.TestCase):
         # given
         # when
         X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
-            MyLibrary.split_sorted_samples(self.X, self.y)
+            ClassifLibrary.split_sorted_samples(self.X, self.y)
         # then
         self.assertEqual(len(X_whole_train), self.NUMBER_OF_CLASSIFIERS)
 
     def ignore_deprecated_test_train_test_sorted_split(self):
         # given
         # when
-        X_train, X_test, y_train, y_test = MyLibrary.train_test_sorted_split(self.X, self.y)
+        X_train, X_test, y_train, y_test = ClassifLibrary.train_test_sorted_split(self.X, self.y)
         # then
         self.assertAlmostEqual(len(X_train) / (len(X_train) + len(X_test)), self.QUOTIENT)
 
@@ -538,8 +538,8 @@ class MyLibraryTest(unittest.TestCase):
         X = np.array([[3, 3], [1, 1], [5, 5], [4, 4], [1, 1]])
         y = np.array([0, 1, 0, 1, 0])
         # when
-        X_sub, y_sub = MyLibrary.prepare_samples_for_subspace(X, y, X, 0)
-        X_sort = MyLibrary.sort_attributes(X)
+        X_sub, y_sub = ClassifLibrary.prepare_samples_for_subspace(X, y, X, 0)
+        X_sort = ClassifLibrary.sort_attributes(X)
         treshold = X_sort[0][0] + (X_sort[-1][0] - X_sort[0][0]) / self.NUMBER_OF_SUBSPACES
         # then
         for i in range(len(X_sub)):
@@ -549,7 +549,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         X = np.array([[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]])
         # when
-        X_0_min, X_0_max, X_1_min, X_1_max = MyLibrary.get_samples_limits(X)
+        X_0_min, X_0_max, X_1_min, X_1_max = ClassifLibrary.get_samples_limits(X)
         # then
         self.assertEqual(X[0][0], X_0_min)
         self.assertEqual(X[-1][0], X_0_max)
@@ -560,7 +560,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         X = np.array([[1, 1], [2, 2], [3, 3], [4, 4], [5, 5]])
         # when
-        X_min, X_max = MyLibrary.get_subdata_limits(X)
+        X_min, X_max = ClassifLibrary.get_subdata_limits(X)
         # then
         self.assertEqual(X[0][0], X_min)
         self.assertEqual(X[-1][0], X_max)
@@ -569,14 +569,14 @@ class MyLibraryTest(unittest.TestCase):
         # given
         data = ClassifierData(draw_color_plot = True)
         # when
-        target = MyLibrary.determine_number_of_subplots(data)
+        target = ClassifLibrary.determine_number_of_subplots(data)
         # then
         self.assertEqual(self.NUMBER_OF_CLASSIFIERS * 2 + 1, target)
 
     def test_should_return_right_number_of_subplots_when_external_plots_not_drawn(self):
         # given
         # when
-        target = MyLibrary.determine_number_of_subplots()
+        target = ClassifLibrary.determine_number_of_subplots()
         # then
         self.assertEqual(self.NUMBER_OF_CLASSIFIERS + 1, target)
 
@@ -586,8 +586,8 @@ class MyLibraryTest(unittest.TestCase):
         scores = [[0.25], [0], [0.5], [0.75], [1]]
         # when
         a, b = \
-            MyLibrary.evaluate_average_coefficients_from_n_best(coefficients, scores, 0,
-                                                                ClassifierData(number_of_best_classifiers = 3,
+            ClassifLibrary.evaluate_average_coefficients_from_n_best(coefficients, scores, 0,
+                                                                     ClassifierData(number_of_best_classifiers = 3,
                                                                                number_of_classifiers = len(scores)))
         # then
         self.assertEqual((coefficients[2][0] + coefficients[3][0] + coefficients[4][0]) / 3, a)
@@ -599,8 +599,8 @@ class MyLibraryTest(unittest.TestCase):
         scores = [[0], [0.25], [0.5], [0.75]]
         # when
         a, b = \
-            MyLibrary.evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, 0,
-                                                                         ClassifierData(number_of_best_classifiers = 2,
+            ClassifLibrary.evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, 0,
+                                                                              ClassifierData(number_of_best_classifiers = 2,
                                                                                         number_of_classifiers = len(
                                                                                             scores)))
         # then
@@ -614,7 +614,7 @@ class MyLibraryTest(unittest.TestCase):
         X = np.array([[0.1, 0], [1.3, 1], [2.5, 2], [3.7, 3], [7.9, 7], [8.7, 8], [9.5, 9], [10.3, 10]])
         number_of_subspace = 2
         # when
-        x_subspace_max, x_subspace_min = MyLibrary.get_subspace_limits(X, number_of_subspace)
+        x_subspace_max, x_subspace_min = ClassifLibrary.get_subspace_limits(X, number_of_subspace)
         x_expexted_max, x_expexted_min = \
             X[0][0] + (number_of_subspace + 1) * (X[-1][0] - X[0][0]) / self.NUMBER_OF_SUBSPACES, \
             X[0][0] + number_of_subspace * (X[-1][0] - X[0][0]) / self.NUMBER_OF_SUBSPACES
