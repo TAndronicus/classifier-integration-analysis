@@ -12,7 +12,7 @@ number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
 draw_color_plot = False
 write_computed_scores = True
-show_plots = True
+show_plots = False
 is_validation_hard = False
 filename = 'new-datasets.xlsx'
 
@@ -53,6 +53,11 @@ while True:
 
     confusion_matrices = ClassifLibrary.compute_confusion_matrix(clfs, X_test, y_test)
 
+    mv_conf_mat, mv_score = ClassifLibrary.prepare_majority_voting(clfs, X_test, y_test)
+
+    confusion_matrices.append(mv_conf_mat)
+    cumulated_scores.append(mv_score)
+
     scores, cumulated_score, conf_mat = \
         ClassifLibrary.prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
                                                     classifier_data)
@@ -72,7 +77,6 @@ while True:
 
     if number_of_permutations == number_of_classifiers + 2:
         break
-    classifier_data.show_plots = False
 
 print("\n\nOverall results:")
 ClassifLibrary.print_permutation_results(score_pro_permutation)

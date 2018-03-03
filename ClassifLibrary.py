@@ -980,6 +980,40 @@ def compute_confusion_matrix(clfs, X_test, y_test):
     return confusion_matrices
 
 
+def prepare_majority_voting(clfs, X_test, y_test):
+    """Returns confusion matrix and score of majority voting of give classifiers
+
+    :param clfs: []
+    :param X_test: np.array
+    :param y_test: np.array
+    :return: conf_mat, score: [], float
+    """
+    y_predicted = np.empty(len(X_test), dtype = float)
+    for clf in clfs:
+        y_predicted += clf.predict(X_test)
+    y_predicted /= len(clfs)
+    prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1, score = 0, 0, 0, 0, 0
+    for i in range(len(y_predicted)):
+        if y_test[i] == 0:
+            if y_predicted[i] == 0:
+                prop_0_pred_0 += 1
+            else:
+                prop_0_pred_1 += 1
+        else:
+            if y_predicted[i] == 0:
+                prop_1_pred_0 += 1
+            else:
+                prop_1_pred_1 += 1
+    prop_0, prop_1 = [], []
+    prop_0.append(prop_0_pred_0)
+    prop_0.append(prop_0_pred_1)
+    prop_1.append(prop_1_pred_0)
+    prop_1.append(prop_1_pred_1)
+    conf_mat = [prop_0, prop_1]
+    score = (prop_0_pred_0 + prop_1_pred_1) / len(y_test)
+    return conf_mat, score
+
+
 def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
                                  classifier_data = ClassifierData()):
     """Prepares composite classifiers
@@ -1043,12 +1077,12 @@ def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number
         for i in range(len(score)):
             score[i] = 1 - score[1]
     scores.append(score)
-    predicted_0, predicted_1 = [], []
-    predicted_0.append(prop_0_pred_0)
-    predicted_0.append(prop_0_pred_1)
-    predicted_1.append(prop_1_pred_0)
-    predicted_1.append(prop_1_pred_1)
-    conf_mat = [predicted_0, predicted_1]
+    prop_0, prop_1 = [], []
+    prop_0.append(prop_0_pred_0)
+    prop_0.append(prop_0_pred_1)
+    prop_1.append(prop_1_pred_0)
+    prop_1.append(prop_1_pred_1)
+    conf_mat = [prop_0, prop_1]
     if show_plots:
         xx, yy, x_min_plot, x_max_plot = get_plot_data(X, classifier_data)
         ax.set_xlim(xx.min(), xx.max())
@@ -1153,5 +1187,8 @@ def print_permutation_results(score_pro_permutation):
     for i in range(len(classifier_scores)):
         if i == len(classifier_scores) - 1:
             print('Score for composite classifier: {}'.format(classifier_scores[i] / number_of_permutations))
-        else:
-            print('Score for {}. classifier: {}'.format(i, classifier_scores[i] / number_of_permutations))
+            continue
+        if i == len(classifier_scores) - 2:
+            print('Score for majority voting classifier: {}'.format(classifier_scores[i] / number_of_permutations))
+            continue
+        print('Score for {}. classifier: {}'.format(i, classifier_scores[i] / number_of_permutations))
