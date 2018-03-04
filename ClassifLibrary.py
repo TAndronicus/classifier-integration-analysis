@@ -6,6 +6,7 @@ from sklearn.neighbors import NearestCentroid
 import xlrd
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 from ClfType import ClfType
 from ClassifierData import ClassifierData
 
@@ -84,19 +85,34 @@ def load_samples_from_file(filename):
     """
     file = xlrd.open_workbook(filename)
     sheet = file.sheet_by_index(0)
+    X, y = read_rows_from_file(sheet)
+    return X, y
+
+
+def read_rows_from_file(sheet, classifier_data = ClassifierData()):
+    """Reads rows of data from file
+
+    :param sheet: xlrd.sheet.Sheet
+    :return: X, y: [], []
+    """
+    columns = classifier_data.columns
     line_number = 0
     line = sheet.row(line_number)
     number_of_columns = len(line)
-    X, y = np.zeros((sheet.nrows, 2)), np.zeros(sheet.nrows, dtype = np.int)
-    while line_number < sheet.nrows - 1:
-        line_number += 1
+    if len(columns) != 2:
+        columns = range(number_of_columns)
+    X0, X1 = [], []
+    while line_number < sheet.nrows:
         line = sheet.row(line_number)
         row = []
-        for i in range(2):  # range(number_of_columns - 1):
+        for i in columns:
             row.append(float(line[i].value))
-        X[line_number - 1, :] = row
-        y[line_number - 1] = int(line[number_of_columns - 1].value)
-    return X, y
+        if int(line[number_of_columns - 1].value) == 0:
+            X0.append(row)
+        else:
+            X1.append(row)
+        line_number += 1
+    return X0, X1
 
 
 def load_samples_from_file_sheet(filename, classifier_data = ClassifierData()):
@@ -199,25 +215,11 @@ def load_columns_from_new_datasets(classifier_data = ClassifierData()):
     :return: X, y: np.array, np.array - samples for classification
     """
     number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
-    columns = classifier_data.columns
     is_validation_hard = classifier_data.is_validation_hard
     filename = classifier_data.filename
     file = xlrd.open_workbook(filename)
     sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
-    line_number = 0
-    line = sheet.row(line_number)
-    number_of_columns = len(line)
-    X0, X1 = [], []
-    while line_number < sheet.nrows:
-        line = sheet.row(line_number)
-        row = []
-        for i in columns:
-            row.append(float(line[i].value))
-        if int(line[number_of_columns - 1].value) == 0:
-            X0.append(row)
-        else:
-            X1.append(row)
-        line_number += 1
+    X0, X1 = read_rows_from_file(sheet, classifier_data)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
     if is_validation_hard:
@@ -1012,6 +1014,23 @@ def prepare_majority_voting(clfs, X_test, y_test):
     conf_mat = [prop_0, prop_1]
     score = (prop_0_pred_0 + prop_1_pred_1) / len(y_test)
     return np.array(conf_mat), score
+
+
+def compute_mcc(conf_matrices):
+    """Computes matthews correlation coefficient
+
+    :param conf_matrices: []
+    :return: mcc: []
+    """
+    mcc = []
+    for conf_matrix in conf_matrices:
+        prop_0_pred_0, prop_0_pred_1 = conf_matrix[0]
+        prop_1_pred_0, prop_1_pred_1 = conf_matrix[1]
+        mcc_score = (prop_0_pred_0 * prop_1_pred_1 - prop_0_pred_1 * prop_1_pred_0) / \
+                    math.sqrt((prop_1_pred_1 + prop_0_pred_1) * (prop_1_pred_1 + prop_1_pred_0) *
+                              (prop_0_pred_0 + prop_0_pred_1) * (prop_0_pred_0 + prop_1_pred_0))
+        mcc.append(mcc_score)
+    return mcc
 
 
 def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,

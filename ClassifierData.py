@@ -1,5 +1,6 @@
 from ClfType import ClfType
 
+
 class ClassifierData():
     """Clas to produce parameter object for classification
 
@@ -107,6 +108,8 @@ class ClassifierData():
             raise Exception('show_plots must be of type boolean')
 
     def validate_columns(self):
+        if len(self.columns) == 0:
+            return
         if len(self.columns) != 2:
             raise Exception('Columns must be vector of size 1 x 2')
         for el in self.columns:

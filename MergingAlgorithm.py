@@ -11,7 +11,7 @@ number_of_space_parts = 5
 number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
 draw_color_plot = False
-write_computed_scores = True
+write_computed_scores = False
 show_plots = False
 is_validation_hard = False
 filename = 'new-datasets.xlsx'
@@ -54,7 +54,6 @@ while True:
     confusion_matrices = ClassifLibrary.compute_confusion_matrix(clfs, X_test, y_test)
 
     mv_conf_mat, mv_score = ClassifLibrary.prepare_majority_voting(clfs, X_test, y_test)
-
     confusion_matrices.append(mv_conf_mat)
     cumulated_scores.append(mv_score)
 
@@ -65,6 +64,8 @@ while True:
     confusion_matrices.append(conf_mat)
     cumulated_scores.append(cumulated_score)
     score_pro_permutation.append(cumulated_scores)
+
+    mcc = ClassifLibrary
 
     ClassifLibrary.print_results_with_conf_mats(scores, cumulated_scores, confusion_matrices)
 

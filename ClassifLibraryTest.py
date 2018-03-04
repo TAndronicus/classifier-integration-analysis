@@ -1,6 +1,7 @@
 import unittest
 import ClassifLibrary
 import numpy as np
+import math
 from sklearn.svm import LinearSVC
 from sklearn.neighbors import NearestCentroid
 from sklearn.datasets import make_classification
@@ -14,6 +15,7 @@ class MyLibraryTest(unittest.TestCase):
     NUMBER_OF_ATTRIBUTES = 2
     TEST_FILENAME = 'Dane_9_12_2017.xlsx'
     QUOTIENT = 2 / 3
+    conf_matrix = [[400, 100], [200, 300]]
 
     def setUp(self):
         self.X, self.y = \
@@ -105,7 +107,7 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_not_change_data_whole(self):
         # given
-        data = ClassifierData(are_samples_generated = False)
+        data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
         # when
         X1, y1 = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
         X2, y2 = ClassifLibrary.prepare_raw_data(data)
@@ -116,7 +118,7 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_contain_same_data(self):
         # given
-        data = ClassifierData(are_samples_generated = False)
+        data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
         # when
         X1, y1 = ClassifLibrary.prepare_raw_data(data)
         X2, y2 = ClassifLibrary.load_samples_from_datasets()
@@ -154,7 +156,7 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_contain_same_data_given_columns(self):
         # given
-        data = ClassifierData(are_samples_generated = False)
+        data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
         # when
         X1, y1 = ClassifLibrary.prepare_raw_data(data)
         X2, y2 = ClassifLibrary.load_columns_from_datasets()
@@ -332,7 +334,8 @@ class MyLibraryTest(unittest.TestCase):
         X = np.array([[0, 0], [0, 0], [0, 0], [0, 0], [3, 0], [10, 0]])
         # when
         counter, index = \
-            ClassifLibrary.get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X, X[0][0], X[-1][0], 1)
+            ClassifLibrary.get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X, X[0][0],
+                                                                                                 X[-1][0], 1)
         # then
         self.assertEqual(1, counter)
         self.assertEqual(5, index)
@@ -364,8 +367,8 @@ class MyLibraryTest(unittest.TestCase):
         counter, remainder, index0, index1, is_first_bigger = 2, 3, int(len(X0_raw) / 2), int(len(X1_raw) / 2), False
         # when
         X0, X1 = \
-            ClassifLibrary.limit_datasets_for_every_subspace_but_last(X0_raw, X1_raw, counter, remainder, index0, index1,
-                                                                      is_first_bigger)
+            ClassifLibrary.limit_datasets_for_every_subspace_but_last(X0_raw, X1_raw, counter, remainder,
+                                                                      index0, index1, is_first_bigger)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
@@ -396,7 +399,8 @@ class MyLibraryTest(unittest.TestCase):
         counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), \
                                                                        int(len(X1_raw) / 2), False, True
         # when
-        X0, X1 = ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
+        X0, X1 = \
+            ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
@@ -412,7 +416,8 @@ class MyLibraryTest(unittest.TestCase):
         counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), \
                                                                        int(len(X1_raw) / 2), False, False
         # when
-        X0, X1 = ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
+        X0, X1 = \
+            ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
@@ -586,9 +591,9 @@ class MyLibraryTest(unittest.TestCase):
         scores = [[0.25], [0], [0.5], [0.75], [1]]
         # when
         a, b = \
-            ClassifLibrary.evaluate_average_coefficients_from_n_best(coefficients, scores, 0,
-                                                                     ClassifierData(number_of_best_classifiers = 3,
-                                                                               number_of_classifiers = len(scores)))
+            ClassifLibrary.evaluate_average_coefficients_from_n_best(
+                coefficients, scores, 0,
+                ClassifierData(number_of_best_classifiers = 3, number_of_classifiers = len(scores)))
         # then
         self.assertEqual((coefficients[2][0] + coefficients[3][0] + coefficients[4][0]) / 3, a)
         self.assertEqual((coefficients[2][1] + coefficients[3][1] + coefficients[4][1]) / 3, b)
@@ -599,10 +604,9 @@ class MyLibraryTest(unittest.TestCase):
         scores = [[0], [0.25], [0.5], [0.75]]
         # when
         a, b = \
-            ClassifLibrary.evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, 0,
-                                                                              ClassifierData(number_of_best_classifiers = 2,
-                                                                                        number_of_classifiers = len(
-                                                                                            scores)))
+            ClassifLibrary.evaluate_weighted_average_coefficients_from_n_best(
+                coefficients, scores, 0,
+                ClassifierData(number_of_best_classifiers = 2, number_of_classifiers = len(scores)))
         # then
         self.assertEqual((coefficients[2][0] * scores[2][0] + coefficients[3][0] * scores[3][0]) /
                          (scores[2][0] + scores[3][0]), a)
@@ -621,6 +625,15 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertEqual(x_expexted_min, x_subspace_min)
         self.assertEqual(x_expexted_max, x_subspace_max)
+
+    def test_should_return_right_mccs(self):
+        # given
+        tp, tn, fp, fn = self.conf_matrix[0][0], self.conf_matrix[1][1], self.conf_matrix[1][0], self.conf_matrix[0][1]
+        # when
+        mcc = ClassifLibrary.compute_mcc([self.conf_matrix])
+        # then
+        self.assertEqual(len([self.conf_matrix]), len(mcc))
+        self.assertEqual((tp * tn - fp * fn) / math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)), mcc[0])
 
 
 if __name__ == '__main__':
