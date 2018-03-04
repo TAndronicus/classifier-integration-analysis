@@ -1011,7 +1011,7 @@ def prepare_majority_voting(clfs, X_test, y_test):
     prop_1.append(prop_1_pred_1)
     conf_mat = [prop_0, prop_1]
     score = (prop_0_pred_0 + prop_1_pred_1) / len(y_test)
-    return conf_mat, score
+    return np.array(conf_mat), score
 
 
 def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
@@ -1087,7 +1087,7 @@ def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number
         xx, yy, x_min_plot, x_max_plot = get_plot_data(X, classifier_data)
         ax.set_xlim(xx.min(), xx.max())
         ax.set_ylim(yy.min(), yy.max())
-    return scores, cumulated_score, conf_mat
+    return scores, cumulated_score, np.array(conf_mat)
 
 
 def get_number_of_samples_in_subspace(X, j, classifier_data = ClassifierData()):
@@ -1140,7 +1140,20 @@ def print_results_with_conf_mats(scores, cumulated_scores, conf_mat):
     :param conf_mat: []
     :return: void
     """
-    for i in range(len(scores)):
+    print('\n\nIteration results\n\n')
+    for i in range(len(cumulated_scores)):
+        if i == len(cumulated_scores) - 1:
+            print('Scores for composite classifier')
+            print(scores[i - 1])
+            print('Overall result: {}'.format(cumulated_scores[i]))
+            for j in range(len(conf_mat[i])):
+                print(conf_mat[i][j])
+            continue
+        if i == len(cumulated_scores) - 2:
+            print('Overall result for majority voting: {}'.format(cumulated_scores[i]))
+            for j in range(len(conf_mat[i])):
+                print(conf_mat[i][j])
+            continue
         print('Scores for {}. classifier'.format(i + 1))
         print(scores[i])
         print('Overall result: {}'.format(cumulated_scores[i]))
