@@ -3,6 +3,7 @@ from sklearn.datasets import make_classification
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import LinearSVC
 from sklearn.neighbors import NearestCentroid
+from sklearn.feature_selection import SelectKBest, f_classif
 import xlrd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -58,9 +59,9 @@ def prepare_raw_data(classifier_data = ClassifierData()):
     :return: X, y: np.array, np.array
     """
     are_samples_generated = classifier_data.are_samples_generated
-    number_of_samples_if_generated = classifier_data.number_of_samples_if_generated
     is_validation_hard = classifier_data.is_validation_hard
     if are_samples_generated:
+        number_of_samples_if_generated = classifier_data.number_of_samples_if_generated
         X, y = make_classification(n_features = 2, n_redundant = 0, n_informative = 1, n_clusters_per_class = 1,
                                    n_samples = number_of_samples_if_generated,
                                    class_sep = 2.7, hypercube = False, random_state = 2)
@@ -72,61 +73,15 @@ def prepare_raw_data(classifier_data = ClassifierData()):
             assert_distribution_simplified(X0, X1, classifier_data)
         return compose_sorted_parts(X0, X1)
     else:
-        return load_columns_from_new_datasets(classifier_data)
+        return load_samples_from_datasets(classifier_data)
 
 
-def load_samples_from_file(filename):
-    """Loads data from file
-
-    Warning: method does not sort data
-    Missing sorting and composing
-    :param filename: Name of file
-    :return: X, y: np.array, np.array - samples for classification
-    """
-    file = xlrd.open_workbook(filename)
-    sheet = file.sheet_by_index(0)
-    X, y = read_rows_from_file(sheet)
-    return X, y
-
-
-def read_rows_from_file(sheet, classifier_data = ClassifierData()):
-    """Reads rows of data from file
+def load_two_first_columns_preincrement(sheet):
+    """Reads dataset with X from two first columns, skips first row
 
     :param sheet: xlrd.sheet.Sheet
     :return: X, y: [], []
     """
-    columns = classifier_data.columns
-    line_number = 0
-    line = sheet.row(line_number)
-    number_of_columns = len(line)
-    if len(columns) != 2:
-        columns = range(number_of_columns)
-    X0, X1 = [], []
-    while line_number < sheet.nrows:
-        line = sheet.row(line_number)
-        row = []
-        for i in columns:
-            row.append(float(line[i].value))
-        if int(line[number_of_columns - 1].value) == 0:
-            X0.append(row)
-        else:
-            X1.append(row)
-        line_number += 1
-    return X0, X1
-
-
-def load_samples_from_file_sheet(filename, classifier_data = ClassifierData()):
-    """Loads data from file
-
-    Warning: method does not sort data
-    Missing sorting and composing
-    :param filename: Name of file
-    :param classifier_data: ClassifierData
-    :return: X, y: np.array, np.array - samples for classification
-    """
-    number_of_sheet = classifier_data.number_of_dataset_if_not_generated
-    file = xlrd.open_workbook(filename)
-    sheet = file.sheet_by_index(number_of_sheet)
     line_number = 0
     line = sheet.row(line_number)
     number_of_columns = len(line)
@@ -142,51 +97,14 @@ def load_samples_from_file_sheet(filename, classifier_data = ClassifierData()):
     return X, y
 
 
-def load_samples_from_datasets(classifier_data = ClassifierData()):
-    """Loads data from dataset (xlsx file with data)
+def read_features(sheet, classifier_data = ClassifierData()):
+    """Reads rows of data from file
 
+    :param sheet: xlrd.sheet.Sheet
     :param classifier_data: ClassifierData
-    :return: X, y: np.array, np.array - samples for classification
+    :return: X, y: [], []
     """
-    number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
-    switch_columns_while_loading = classifier_data.switch_columns_while_loading
-    file = xlrd.open_workbook('datasets.xlsx')
-    sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
-    line_number = 0
-    line = sheet.row(line_number)
-    number_of_columns = len(line)
-    X0, X1 = [], []
-    while line_number < sheet.nrows:
-        line = sheet.row(line_number)
-        row = []
-        for i in range(2):  # range(number_of_columns - 1):
-            if switch_columns_while_loading:
-                row.append(float(line[1 - i].value))
-            else:
-                row.append(float(line[i].value))
-        if int(line[number_of_columns - 1].value) == 0:
-            X0.append(row)
-        else:
-            X1.append(row)
-        line_number += 1
-    # X = SelectKBest(k = 2).fit_transform(X, y)
-    print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
-    X0, X1 = sort_attributes(X0), sort_attributes(X1)
-    assert_distribution_simplified(X0, X1, classifier_data)
-    X, y = compose_sorted_parts(X0, X1)
-    return X, y
-
-
-def load_columns_from_datasets(classifier_data = ClassifierData()):
-    """Loads data from dataset (xlsx file with data)
-
-    :param classifier_data: ClassifierData
-    :return: X, y: np.array, np.array - samples for classification
-    """
-    number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
     columns = classifier_data.columns
-    file = xlrd.open_workbook('datasets.xlsx')
-    sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
     line_number = 0
     line = sheet.row(line_number)
     number_of_columns = len(line)
@@ -201,6 +119,86 @@ def load_columns_from_datasets(classifier_data = ClassifierData()):
         else:
             X1.append(row)
         line_number += 1
+    return X0, X1
+
+
+def read_selected_features(sheet, classifier_data = ClassifierData()):
+    line_number = 0
+    line = sheet.row(line_number)
+    number_of_columns = len(line)
+    X, y = np.zeros((sheet.nrows, number_of_columns - 1)), np.zeros(sheet.nrows, dtype = np.int)
+    while line_number < sheet.nrows:
+        line = sheet.row(line_number)
+        row = []
+        for i in range(number_of_columns - 1):
+            row.append(float(line[i].value))
+        X[line_number - 1, :] = row
+        y[line_number - 1] = int(line[number_of_columns - 1].value)
+        line_number += 1
+    selection = SelectKBest(k = 2, score_func = f_classif)
+    selection.fit(X, y)
+    feature_scores = selection.scores_
+    columns = get_columns_from_scores(feature_scores)
+    X0, X1 = get_separate_columns(X, y, columns)
+    return X0, X1
+
+
+def get_columns_from_scores(feature_scores):
+    first_maximum, second_maximum, first_column, second_column = 0, 0, 0, 0
+    for i in range(len(feature_scores)):
+        if feature_scores[i] > first_maximum:
+            second_column = first_column
+            first_column = i
+            second_maximum = first_maximum
+            first_maximum = feature_scores[i]
+        elif feature_scores[i] > second_maximum:
+            second_column = i
+            second_maximum = feature_scores[i]
+    print('Columns selected: {} and {}'.format(first_column, second_column))
+    return [first_column, second_column]
+
+
+def get_separate_columns(X, y, columns):
+    X0, X1 = [], []
+    for i in range(len(X)):
+        row = []
+        for column in columns:
+            row.append(X[i][column])
+        if y[i] == 0:
+            X0.append(row)
+        else:
+            X1.append(row)
+    return X0, X1
+
+
+def load_samples_from_file_non_parametrized(filename):
+    """Loads data from file, takes two first columns, skips first row
+
+    Warning: method does not sort data
+    Missing sorting and composing
+    :param filename: Name of file
+    :return: X, y: np.array, np.array - samples for classification
+    """
+    file = xlrd.open_workbook(filename)
+    sheet = file.sheet_by_index(0)
+    X, y = load_two_first_columns_preincrement(sheet)
+    return X, y
+
+
+def load_samples_from_datasets_first_two_rows(classifier_data = ClassifierData()):
+    """Loads data from dataset (xlsx file with data)
+
+    :param classifier_data: ClassifierData
+    :return: X, y: np.array, np.array - samples for classification
+    """
+    number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
+    file = xlrd.open_workbook('datasets.xlsx')
+    sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
+    columns = classifier_data.columns
+    classifier_data.columns = [0, 1]
+    X0, X1 = read_features(sheet, classifier_data)
+    classifier_data.columns = columns
+    # X = SelectKBest(k = 2).fit_transform(X, y)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
     assert_distribution_simplified(X0, X1, classifier_data)
@@ -208,7 +206,24 @@ def load_columns_from_datasets(classifier_data = ClassifierData()):
     return X, y
 
 
-def load_columns_from_new_datasets(classifier_data = ClassifierData()):
+def load_samples_from_datasets_non_parametrised(classifier_data = ClassifierData()):
+    """Loads data from dataset (xlsx file with data)
+
+    :param classifier_data: ClassifierData
+    :return: X, y: np.array, np.array - samples for classification
+    """
+    number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
+    file = xlrd.open_workbook('datasets.xlsx')
+    sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
+    X0, X1 = read_features(sheet, classifier_data)
+    print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
+    X0, X1 = sort_attributes(X0), sort_attributes(X1)
+    assert_distribution_simplified(X0, X1, classifier_data)
+    X, y = compose_sorted_parts(X0, X1)
+    return X, y
+
+
+def load_samples_from_datasets(classifier_data = ClassifierData()):
     """Loads data from dataset (xlsx file with data)
 
     :param classifier_data: ClassifierData
@@ -219,7 +234,7 @@ def load_columns_from_new_datasets(classifier_data = ClassifierData()):
     filename = classifier_data.filename
     file = xlrd.open_workbook(filename)
     sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
-    X0, X1 = read_rows_from_file(sheet, classifier_data)
+    X0, X1 = read_selected_features(sheet, classifier_data)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
     if is_validation_hard:

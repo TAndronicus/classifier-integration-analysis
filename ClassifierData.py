@@ -31,6 +31,7 @@ class ClassifierData():
         self.filename = filename
 
     def validate(self):
+        print('Validating parameters')
         self.validate_type_of_classifier()
         self.validate_are_samples_generated()
         self.validate_number_of_samples_if_generated()
@@ -46,6 +47,7 @@ class ClassifierData():
         self.validate_columns()
         self.validate_is_validation_hard()
         self.validate_filename()
+        print('Parameters valid\n')
 
     def validate_type_of_classifier(self):
         if not type(self.type_of_classifier) is ClfType:

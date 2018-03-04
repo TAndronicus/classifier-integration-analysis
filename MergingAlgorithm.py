@@ -26,6 +26,7 @@ classifier_data = \
                                   draw_color_plot = draw_color_plot, write_computed_scores = write_computed_scores,
                                   show_plots = show_plots, columns = columns, is_validation_hard = is_validation_hard,
                                   filename = filename)
+classifier_data.validate()
 
 clfs = ClassifLibrary.initialize_classifiers(classifier_data)
 

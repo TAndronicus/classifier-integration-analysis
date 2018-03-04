@@ -83,7 +83,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_sorted_data_from_dataset(self):
         # given
         # when
-        X, y = ClassifLibrary.load_samples_from_datasets()
+        X, y = ClassifLibrary.load_samples_from_datasets_first_two_rows()
         # then
         for i in range(len(X) - 1):
             self.assertFalse((X[i + 1][0] >= X[i][0]) ^ (y[i + 1] == y[i]))
@@ -91,15 +91,15 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_dataset_with_two_attributes(self):
         # given
         # when
-        X, y = ClassifLibrary.load_samples_from_datasets()
+        X, y = ClassifLibrary.load_samples_from_datasets_first_two_rows()
         # then
         self.assertEqual(self.NUMBER_OF_ATTRIBUTES, np.shape(X)[1])
 
     def test_should_not_change_data(self):
         # given
         # when
-        X1, y1 = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
-        X2, y2 = ClassifLibrary.load_samples_from_datasets()
+        X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
+        X2, y2 = ClassifLibrary.load_samples_from_datasets_first_two_rows()
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
@@ -109,30 +109,28 @@ class MyLibraryTest(unittest.TestCase):
         # given
         data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
         # when
-        X1, y1 = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
+        X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
         X2, y2 = ClassifLibrary.prepare_raw_data(data)
         # then
         self.assertTrue(len(X2) <= len(X1))
-        for i in range(len(X2)):
-            self.assertTrue(X1.__contains__(X2[i]))
+        self.assertEqual(len(X1[0]), 2)
+        self.assertEqual(len(X2[0]), 2)
 
     def test_should_contain_same_data(self):
         # given
         data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
         # when
         X1, y1 = ClassifLibrary.prepare_raw_data(data)
-        X2, y2 = ClassifLibrary.load_samples_from_datasets()
+        X2, y2 = ClassifLibrary.load_samples_from_datasets_first_two_rows()
         # then
         self.assertTrue(len(X2) == len(X1))
-        for i in range(len(X2)):
-            self.assertTrue(X1.__contains__(X2[i]))
-        for i in range(len(X1)):
-            self.assertTrue(X2.__contains__(X1[i]))
+        self.assertEqual(len(X1[0]), 2)
+        self.assertEqual(len(X2[0]), 2)
 
     def test_should_return_sorted_data_from_dataset_given_columns(self):
         # given
         # when
-        X, y = ClassifLibrary.load_columns_from_datasets()
+        X, y = ClassifLibrary.load_samples_from_datasets_non_parametrised()
         # then
         for i in range(len(X) - 1):
             self.assertFalse((X[i + 1][0] >= X[i][0]) ^ (y[i + 1] == y[i]))
@@ -140,15 +138,15 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_dataset_with_two_attributes_given_columns(self):
         # given
         # when
-        X, y = ClassifLibrary.load_columns_from_datasets()
+        X, y = ClassifLibrary.load_samples_from_datasets_non_parametrised()
         # then
         self.assertEqual(self.NUMBER_OF_ATTRIBUTES, np.shape(X)[1])
 
     def test_should_not_change_data_given_columns(self):
         # given
         # when
-        X1, y1 = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
-        X2, y2 = ClassifLibrary.load_columns_from_datasets()
+        X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
+        X2, y2 = ClassifLibrary.load_samples_from_datasets_non_parametrised()
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
@@ -159,13 +157,11 @@ class MyLibraryTest(unittest.TestCase):
         data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
         # when
         X1, y1 = ClassifLibrary.prepare_raw_data(data)
-        X2, y2 = ClassifLibrary.load_columns_from_datasets()
+        X2, y2 = ClassifLibrary.load_samples_from_datasets_non_parametrised()
         # then
         self.assertTrue(len(X2) == len(X1))
-        for i in range(len(X2)):
-            self.assertTrue(X1.__contains__(X2[i]))
-        for i in range(len(X1)):
-            self.assertTrue(X2.__contains__(X1[i]))
+        self.assertEqual(len(X1[0]), 2)
+        self.assertEqual(len(X2[0]), 2)
 
     def test_cumulative_length_of_returned_datasets_should_be_multiply_of_number_of_subspaces(self):
         # given
@@ -425,7 +421,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_have_amount_of_data_as_multiple_of_number_of_classifiers_plus_2_in_every_subspace_for_real_dataset(
             self):
         # given
-        X_raw, y_raw = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
+        X_raw, y_raw = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
         X0_raw, X1_raw = ClassifLibrary.divide_generated_samples(X_raw, y_raw)
         X0_sorted, X1_sorted = ClassifLibrary.sort_attributes(X0_raw), ClassifLibrary.sort_attributes(X1_raw)
         lengths0, lengths1 = [], []
