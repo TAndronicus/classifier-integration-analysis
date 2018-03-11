@@ -6,6 +6,7 @@ from sklearn.svm import LinearSVC
 from sklearn.neighbors import NearestCentroid
 from sklearn.datasets import make_classification
 from ClassifLibrary import ClassifierData
+from MergingAlgorithm import apply
 
 
 class MyLibraryTest(unittest.TestCase):
@@ -630,6 +631,13 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertEqual(len([self.conf_matrix]), len(mcc))
         self.assertEqual((tp * tn - fp * fn) / math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)), mcc[0])
+
+    def test_should_return_no_error_on_default_merging_algorithm(self):
+        # given
+        # when
+        result = apply(ClassifierData())
+        # then
+        self.assertTrue(result)
 
 
 if __name__ == '__main__':
