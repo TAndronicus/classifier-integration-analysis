@@ -76,6 +76,17 @@ def prepare_raw_data(classifier_data = ClassifierData()):
         return load_samples_from_datasets(classifier_data)
 
 
+def load_samples_from_csv_file(classifier_data):
+    filename = classifier_data.filename
+    file = open(filename, "r")
+    lines = file.readlines()
+    file.close()
+    for line in lines:
+        if line.startswith("@"):
+            continue
+
+
+
 def load_two_first_columns_preincrement(sheet):
     """Reads dataset with X from two first columns, skips first row
 
@@ -102,7 +113,7 @@ def read_features(sheet, classifier_data = ClassifierData()):
 
     :param sheet: xlrd.sheet.Sheet
     :param classifier_data: ClassifierData
-    :return: X, y: [], []
+    :return: X0, X1: [], []
     """
     columns = classifier_data.columns
     line_number = 0
@@ -122,7 +133,16 @@ def read_features(sheet, classifier_data = ClassifierData()):
     return X0, X1
 
 
-def read_selected_features(sheet, classifier_data = ClassifierData()):
+def read_excel_file(classifier_data = ClassifierData()):
+    """Read rows of data and make a selection
+
+    :param classifier_data: ClassifierData
+    :return: X, y: [], []
+    """
+    filename = classifier_data.filename
+    number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
+    file = xlrd.open_workbook(filename)
+    sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
     line_number = 0
     line = sheet.row(line_number)
     number_of_columns = len(line)
@@ -135,15 +155,15 @@ def read_selected_features(sheet, classifier_data = ClassifierData()):
         X[line_number - 1, :] = row
         y[line_number - 1] = int(line[number_of_columns - 1].value)
         line_number += 1
-    selection = SelectKBest(k = 2, score_func = f_classif)
-    selection.fit(X, y)
-    feature_scores = selection.scores_
-    columns = get_columns_from_scores(feature_scores)
-    X0, X1 = get_separate_columns(X, y, columns)
-    return X0, X1
+    return X, y
 
 
 def get_columns_from_scores(feature_scores):
+    """Extracts vector with columns of best features
+
+    :param feature_scores: []
+    :return: columns: []
+    """
     first_maximum, second_maximum, first_column, second_column = 0, 0, 0, 0
     for i in range(len(feature_scores)):
         if feature_scores[i] > first_maximum:
@@ -159,6 +179,13 @@ def get_columns_from_scores(feature_scores):
 
 
 def get_separate_columns(X, y, columns):
+    """Extract given columns from data
+
+    :param X: []
+    :param y: []
+    :param columns: []
+    :return: X0, X1: [], []
+    """
     X0, X1 = [], []
     for i in range(len(X)):
         row = []
@@ -232,9 +259,11 @@ def load_samples_from_datasets(classifier_data = ClassifierData()):
     number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
     is_validation_hard = classifier_data.is_validation_hard
     filename = classifier_data.filename
-    file = xlrd.open_workbook(filename)
-    sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
-    X0, X1 = read_selected_features(sheet, classifier_data)
+    if filename.endswith(".dat"):
+        X, y = read_csv_file(classifier_data)
+    else:
+        X, y = read_excel_file(classifier_data)
+    X0, X1 = make_selection(X, y)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
     if is_validation_hard:
@@ -243,6 +272,43 @@ def load_samples_from_datasets(classifier_data = ClassifierData()):
         assert_distribution_simplified(X0, X1, classifier_data)
     X, y = compose_sorted_parts(X0, X1)
     return X, y
+
+
+def read_csv_file(classifier_data = ClassifierData()):
+    """
+
+    :param classifier_data: ClassifierData
+    :return: X, y: [], []
+    """
+    filename = classifier_data.filename
+    file = open(filename, "r")
+    lines = file.readlines()
+    file.close()
+    X, y = [], []
+    for line in lines:
+        if line.startswith("@"):
+            continue
+        line_as_array = line.replace("\n", "", 1).split(",")
+        row = []
+        for i in range(len(line_as_array) - 1):
+            row.append(float(line_as_array[i]))
+        X.append(row)
+        y.append(int(line_as_array[-1]))
+    return X, y
+
+
+def make_selection(X, y):
+    """Returns 2 best columns in 2 datasets for each class
+
+    :param X: []
+    :param y: []
+    :return: X0, X1: [], []
+    """
+    selection = SelectKBest(k = 2, score_func = f_classif)
+    selection.fit(X, y)
+    feature_scores = selection.scores_
+    columns = get_columns_from_scores(feature_scores)
+    return get_separate_columns(X, y, columns)
 
 
 def assert_distribution(X0, X1, classifier_data = ClassifierData()):

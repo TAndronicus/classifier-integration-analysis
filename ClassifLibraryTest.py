@@ -639,6 +639,14 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertTrue(result)
 
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file(self):
+        # given
+        classifier_data = ClassifierData(filename = 'appendicitis.dat')
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
 
 if __name__ == '__main__':
     unittest.main()
