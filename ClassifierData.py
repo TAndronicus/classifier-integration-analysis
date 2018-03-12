@@ -11,7 +11,7 @@ class ClassifierData():
     def __init__(self, type_of_classifier = ClfType.LINEAR, are_samples_generated = True,
                  number_of_samples_if_generated = 1000, number_of_dataset_if_not_generated = 12,
                  switch_columns_while_loading = False, plot_mesh_step_size = .2, number_of_space_parts = 5,
-                 number_of_classifiers = 3, number_of_best_classifiers = 2, draw_color_plot = False,
+                 number_of_classifiers = 3, number_of_best_classifiers = 2, show_color_plot = False,
                  write_computed_scores = False, show_plots = False, columns = [0, 1], is_validation_hard = False,
                  filename = 'new-datasets.xlsx'):
         self.type_of_classifier = type_of_classifier
@@ -23,7 +23,7 @@ class ClassifierData():
         self.number_of_space_parts = number_of_space_parts
         self.number_of_classifiers = number_of_classifiers
         self.number_of_best_classifiers = number_of_best_classifiers
-        self.draw_color_plot = draw_color_plot
+        self.draw_color_plot = show_color_plot
         self.write_computed_scores = write_computed_scores
         self.show_plots = show_plots
         self.columns = columns

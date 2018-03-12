@@ -12,9 +12,9 @@ number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
 draw_color_plot = False
 write_computed_scores = False
-show_plots = False
+show_plots = True
 is_validation_hard = False
-filename = 'new-datasets.xlsx'
+filename = 'appendicitis.dat'#'new-datasets.xlsx'
 
 def apply(classif_data):
     classif_data.validate()
@@ -66,6 +66,7 @@ def apply(classif_data):
 
         if number_of_permutations == number_of_classifiers + 2:
             break
+        classif_data.show_plots = False
 
     print("\n\nOverall results:")
     ClassifLibrary.print_permutation_results(score_pro_permutation)
@@ -78,8 +79,8 @@ classifier_data = \
                                   plot_mesh_step_size = plot_mesh_step_size, number_of_space_parts = number_of_space_parts,
                                   number_of_classifiers = number_of_classifiers,
                                   number_of_best_classifiers = number_of_best_classifiers,
-                                  draw_color_plot = draw_color_plot, write_computed_scores = write_computed_scores,
+                                  show_color_plot = draw_color_plot, write_computed_scores = write_computed_scores,
                                   show_plots = show_plots, columns = columns, is_validation_hard = is_validation_hard,
                                   filename = filename)
 
-apply(classifier_data)
+#apply(classifier_data)

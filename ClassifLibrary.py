@@ -153,7 +153,7 @@ def read_excel_file(classifier_data = ClassifierData()):
         for i in range(number_of_columns - 1):
             row.append(float(line[i].value))
         X[line_number - 1, :] = row
-        y[line_number - 1] = int(line[number_of_columns - 1].value)
+        y[line_number - 1] = int(float(line[number_of_columns - 1].value))
         line_number += 1
     return X, y
 
@@ -293,7 +293,7 @@ def read_csv_file(classifier_data = ClassifierData()):
         for i in range(len(line_as_array) - 1):
             row.append(float(line_as_array[i]))
         X.append(row)
-        y.append(int(line_as_array[-1]))
+        y.append(int(float(line_as_array[-1])))
     return X, y
 
 

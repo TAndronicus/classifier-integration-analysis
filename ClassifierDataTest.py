@@ -143,7 +143,7 @@ class ClassifierDataTest(unittest.TestCase):
         # given
         draw_color_plot = 'test'
         # when
-        classifier_data = ClassifierData(draw_color_plot = draw_color_plot)
+        classifier_data = ClassifierData(show_color_plot = draw_color_plot)
         # then
         with self.assertRaisesRegex(Exception, 'draw_color_plot must be of type boolean'):
             classifier_data.validate_draw_color_plot()

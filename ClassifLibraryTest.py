@@ -569,7 +569,7 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_return_right_number_of_subplots_when_external_plots_drawn(self):
         # given
-        data = ClassifierData(draw_color_plot = True)
+        data = ClassifierData(show_color_plot = True)
         # when
         target = ClassifLibrary.determine_number_of_subplots(data)
         # then
@@ -642,6 +642,51 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file(self):
         # given
         classifier_data = ClassifierData(filename = 'appendicitis.dat')
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_show_plot(self):
+        # given
+        # when
+        result = apply(ClassifierData(show_plots = True))
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_show_plots(self):
+        # given
+        classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_show_plot_show_color_plot(self):
+        # given
+        # when
+        result = apply(ClassifierData(show_plots = True, show_color_plot = True))
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_show_plots_show_color_plot(self):
+        # given
+        classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_show_plot_show_color_plot_compute_scores(self):
+        # given
+        # when
+        result = apply(ClassifierData(show_plots = True, show_color_plot = True, write_computed_scores = True))
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_show_plots_show_color_plot_compute_scores(self):
+        # given
+        classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True, write_computed_scores = True)
         # when
         result = apply(classifier_data)
         # then
