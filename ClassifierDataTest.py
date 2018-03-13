@@ -67,24 +67,6 @@ class ClassifierDataTest(unittest.TestCase):
         with self.assertRaisesRegex(Exception, 'switch_columns_while_loading must be of type boolean'):
             classifier_data.validate_switch_columns_while_loading()
 
-    def test_validate_plot_mesh_step_size_non_float(self):
-        # given
-        plot_mesh_step_size = 'test'
-        # when
-        classifier_data = ClassifierData(plot_mesh_step_size = plot_mesh_step_size)
-        # then
-        with self.assertRaisesRegex(Exception, 'plot_mesh_step_size must be of type float'):
-            classifier_data.validate_plot_mesh_step_size()
-
-    def test_validate_plot_mesh_step_size_too_low(self):
-        # given
-        plot_mesh_step_size = float(0)
-        # when
-        classifier_data = ClassifierData(plot_mesh_step_size = plot_mesh_step_size)
-        # then
-        with self.assertRaisesRegex(Exception, 'plot_mesh_step_size must be positive'):
-            classifier_data.validate_plot_mesh_step_size()
-
     def test_validate_number_of_space_parts_non_int(self):
         # given
         number_of_space_parts = 'test'
@@ -143,7 +125,7 @@ class ClassifierDataTest(unittest.TestCase):
         # given
         draw_color_plot = 'test'
         # when
-        classifier_data = ClassifierData(draw_color_plot = draw_color_plot)
+        classifier_data = ClassifierData(show_color_plot = draw_color_plot)
         # then
         with self.assertRaisesRegex(Exception, 'draw_color_plot must be of type boolean'):
             classifier_data.validate_draw_color_plot()

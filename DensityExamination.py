@@ -34,8 +34,8 @@ if are_samples_generated:
     X0, X1 = ClassifLibrary.sort_attributes(X0), ClassifLibrary.sort_attributes(X1)
     X, y = ClassifLibrary.compose_sorted_parts(X0, X1)
 else:
-    X, y = ClassifLibrary.load_samples_from_datasets(number_of_dataset_if_not_generated)
-    # X, y = my_library.load_samples_from_file('Dane_9_12_2017.xlsx')
+    X, y = ClassifLibrary.load_samples_from_datasets_first_two_rows(number_of_dataset_if_not_generated)
+    # X, y = my_library.load_samples_from_file_non_parametrized('Dane_9_12_2017.xlsx')
 
 # Splitting between classifiers
 print('Split between classifiers')

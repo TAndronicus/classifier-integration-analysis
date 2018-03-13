@@ -1,10 +1,12 @@
 import unittest
 import ClassifLibrary
 import numpy as np
+import math
 from sklearn.svm import LinearSVC
 from sklearn.neighbors import NearestCentroid
 from sklearn.datasets import make_classification
 from ClassifLibrary import ClassifierData
+from MergingAlgorithm import apply
 
 
 class MyLibraryTest(unittest.TestCase):
@@ -14,6 +16,7 @@ class MyLibraryTest(unittest.TestCase):
     NUMBER_OF_ATTRIBUTES = 2
     TEST_FILENAME = 'Dane_9_12_2017.xlsx'
     QUOTIENT = 2 / 3
+    conf_matrix = [[400, 100], [200, 300]]
 
     def setUp(self):
         self.X, self.y = \
@@ -81,7 +84,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_sorted_data_from_dataset(self):
         # given
         # when
-        X, y = ClassifLibrary.load_samples_from_datasets()
+        X, y = ClassifLibrary.load_samples_from_datasets_first_two_rows()
         # then
         for i in range(len(X) - 1):
             self.assertFalse((X[i + 1][0] >= X[i][0]) ^ (y[i + 1] == y[i]))
@@ -89,15 +92,15 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_dataset_with_two_attributes(self):
         # given
         # when
-        X, y = ClassifLibrary.load_samples_from_datasets()
+        X, y = ClassifLibrary.load_samples_from_datasets_first_two_rows()
         # then
         self.assertEqual(self.NUMBER_OF_ATTRIBUTES, np.shape(X)[1])
 
     def test_should_not_change_data(self):
         # given
         # when
-        X1, y1 = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
-        X2, y2 = ClassifLibrary.load_samples_from_datasets()
+        X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
+        X2, y2 = ClassifLibrary.load_samples_from_datasets_first_two_rows()
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
@@ -105,32 +108,30 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_not_change_data_whole(self):
         # given
-        data = ClassifierData(are_samples_generated = False)
+        data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
         # when
-        X1, y1 = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
+        X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
         X2, y2 = ClassifLibrary.prepare_raw_data(data)
         # then
         self.assertTrue(len(X2) <= len(X1))
-        for i in range(len(X2)):
-            self.assertTrue(X1.__contains__(X2[i]))
+        self.assertEqual(len(X1[0]), 2)
+        self.assertEqual(len(X2[0]), 2)
 
     def test_should_contain_same_data(self):
         # given
-        data = ClassifierData(are_samples_generated = False)
+        data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
         # when
         X1, y1 = ClassifLibrary.prepare_raw_data(data)
-        X2, y2 = ClassifLibrary.load_samples_from_datasets()
+        X2, y2 = ClassifLibrary.load_samples_from_datasets_first_two_rows()
         # then
         self.assertTrue(len(X2) == len(X1))
-        for i in range(len(X2)):
-            self.assertTrue(X1.__contains__(X2[i]))
-        for i in range(len(X1)):
-            self.assertTrue(X2.__contains__(X1[i]))
+        self.assertEqual(len(X1[0]), 2)
+        self.assertEqual(len(X2[0]), 2)
 
     def test_should_return_sorted_data_from_dataset_given_columns(self):
         # given
         # when
-        X, y = ClassifLibrary.load_columns_from_datasets()
+        X, y = ClassifLibrary.load_samples_from_datasets_non_parametrised()
         # then
         for i in range(len(X) - 1):
             self.assertFalse((X[i + 1][0] >= X[i][0]) ^ (y[i + 1] == y[i]))
@@ -138,15 +139,15 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_dataset_with_two_attributes_given_columns(self):
         # given
         # when
-        X, y = ClassifLibrary.load_columns_from_datasets()
+        X, y = ClassifLibrary.load_samples_from_datasets_non_parametrised()
         # then
         self.assertEqual(self.NUMBER_OF_ATTRIBUTES, np.shape(X)[1])
 
     def test_should_not_change_data_given_columns(self):
         # given
         # when
-        X1, y1 = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
-        X2, y2 = ClassifLibrary.load_columns_from_datasets()
+        X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
+        X2, y2 = ClassifLibrary.load_samples_from_datasets_non_parametrised()
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
@@ -154,16 +155,14 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_contain_same_data_given_columns(self):
         # given
-        data = ClassifierData(are_samples_generated = False)
+        data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
         # when
         X1, y1 = ClassifLibrary.prepare_raw_data(data)
-        X2, y2 = ClassifLibrary.load_columns_from_datasets()
+        X2, y2 = ClassifLibrary.load_samples_from_datasets_non_parametrised()
         # then
         self.assertTrue(len(X2) == len(X1))
-        for i in range(len(X2)):
-            self.assertTrue(X1.__contains__(X2[i]))
-        for i in range(len(X1)):
-            self.assertTrue(X2.__contains__(X1[i]))
+        self.assertEqual(len(X1[0]), 2)
+        self.assertEqual(len(X2[0]), 2)
 
     def test_cumulative_length_of_returned_datasets_should_be_multiply_of_number_of_subspaces(self):
         # given
@@ -332,7 +331,8 @@ class MyLibraryTest(unittest.TestCase):
         X = np.array([[0, 0], [0, 0], [0, 0], [0, 0], [3, 0], [10, 0]])
         # when
         counter, index = \
-            ClassifLibrary.get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X, X[0][0], X[-1][0], 1)
+            ClassifLibrary.get_count_of_samples_in_subspace_and_beg_ind_of_next_subspace(X, X[0][0],
+                                                                                         X[-1][0], 1)
         # then
         self.assertEqual(1, counter)
         self.assertEqual(5, index)
@@ -364,8 +364,8 @@ class MyLibraryTest(unittest.TestCase):
         counter, remainder, index0, index1, is_first_bigger = 2, 3, int(len(X0_raw) / 2), int(len(X1_raw) / 2), False
         # when
         X0, X1 = \
-            ClassifLibrary.limit_datasets_for_every_subspace_but_last(X0_raw, X1_raw, counter, remainder, index0, index1,
-                                                                      is_first_bigger)
+            ClassifLibrary.limit_datasets_for_every_subspace_but_last(X0_raw, X1_raw, counter, remainder,
+                                                                      index0, index1, is_first_bigger)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
@@ -396,7 +396,8 @@ class MyLibraryTest(unittest.TestCase):
         counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), \
                                                                        int(len(X1_raw) / 2), False, True
         # when
-        X0, X1 = ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
+        X0, X1 = \
+            ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
@@ -412,7 +413,8 @@ class MyLibraryTest(unittest.TestCase):
         counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), \
                                                                        int(len(X1_raw) / 2), False, False
         # when
-        X0, X1 = ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
+        X0, X1 = \
+            ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
         # then
         self.assertEqual(remainder - counter, len(X0_raw) - len(X0))
         self.assertEqual(counter, len(X1_raw) - len(X1))
@@ -420,7 +422,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_have_amount_of_data_as_multiple_of_number_of_classifiers_plus_2_in_every_subspace_for_real_dataset(
             self):
         # given
-        X_raw, y_raw = ClassifLibrary.load_samples_from_file(self.TEST_FILENAME)
+        X_raw, y_raw = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
         X0_raw, X1_raw = ClassifLibrary.divide_generated_samples(X_raw, y_raw)
         X0_sorted, X1_sorted = ClassifLibrary.sort_attributes(X0_raw), ClassifLibrary.sort_attributes(X1_raw)
         lengths0, lengths1 = [], []
@@ -567,7 +569,7 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_return_right_number_of_subplots_when_external_plots_drawn(self):
         # given
-        data = ClassifierData(draw_color_plot = True)
+        data = ClassifierData(show_color_plot = True)
         # when
         target = ClassifLibrary.determine_number_of_subplots(data)
         # then
@@ -586,9 +588,9 @@ class MyLibraryTest(unittest.TestCase):
         scores = [[0.25], [0], [0.5], [0.75], [1]]
         # when
         a, b = \
-            ClassifLibrary.evaluate_average_coefficients_from_n_best(coefficients, scores, 0,
-                                                                     ClassifierData(number_of_best_classifiers = 3,
-                                                                               number_of_classifiers = len(scores)))
+            ClassifLibrary.evaluate_average_coefficients_from_n_best(
+                coefficients, scores, 0,
+                ClassifierData(number_of_best_classifiers = 3, number_of_classifiers = len(scores)))
         # then
         self.assertEqual((coefficients[2][0] + coefficients[3][0] + coefficients[4][0]) / 3, a)
         self.assertEqual((coefficients[2][1] + coefficients[3][1] + coefficients[4][1]) / 3, b)
@@ -599,10 +601,9 @@ class MyLibraryTest(unittest.TestCase):
         scores = [[0], [0.25], [0.5], [0.75]]
         # when
         a, b = \
-            ClassifLibrary.evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, 0,
-                                                                              ClassifierData(number_of_best_classifiers = 2,
-                                                                                        number_of_classifiers = len(
-                                                                                            scores)))
+            ClassifLibrary.evaluate_weighted_average_coefficients_from_n_best(
+                coefficients, scores, 0,
+                ClassifierData(number_of_best_classifiers = 2, number_of_classifiers = len(scores)))
         # then
         self.assertEqual((coefficients[2][0] * scores[2][0] + coefficients[3][0] * scores[3][0]) /
                          (scores[2][0] + scores[3][0]), a)
@@ -621,6 +622,176 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertEqual(x_expexted_min, x_subspace_min)
         self.assertEqual(x_expexted_max, x_subspace_max)
+
+    def test_should_return_right_mccs(self):
+        # given
+        tp, tn, fp, fn = self.conf_matrix[0][0], self.conf_matrix[1][1], self.conf_matrix[1][0], self.conf_matrix[0][1]
+        # when
+        mcc = ClassifLibrary.compute_mcc([self.conf_matrix])
+        # then
+        self.assertEqual(len([self.conf_matrix]), len(mcc))
+        self.assertEqual((tp * tn - fp * fn) / math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)), mcc[0])
+
+    def test_should_return_no_error_on_default_merging_algorithm(self):
+        # given
+        # when
+        result = apply(ClassifierData())
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file(self):
+        # given
+        classifier_data = ClassifierData(filename = 'appendicitis.dat')
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file(self):
+        # given
+        classifier_data = ClassifierData(filename = 'biodeg.scsv')
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file(self):
+        # given
+        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv')
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file(self):
+        # given
+        classifier_data = ClassifierData(filename = 'pop_failures.tsv')
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_show_plot(self):
+        # given
+        # when
+        result = apply(ClassifierData(show_plots = True))
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots(self):
+        # given
+        classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots(self):
+        # given
+        classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots(self):
+        # given
+        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots(self):
+        # given
+        classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_plots_builtin(self):
+        # given
+        # when
+        result = apply(ClassifierData(show_plots = True, show_color_plot = True))
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots_builtin(self):
+        # given
+        classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots_builtin(self):
+        # given
+        classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True, show_color_plot = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots_builtin(self):
+        # given
+        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True,
+                                         show_color_plot = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots_builtin(self):
+        # given
+        classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True, show_color_plot = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_plots_builtin_computed(self):
+        # given
+        # when
+        result = apply(ClassifierData(show_plots = True, show_color_plot = True, write_computed_scores = True))
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots_builtin_computed(self):
+        # given
+        classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True,
+                                         write_computed_scores = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots_builtin_computed(self):
+        # given
+        classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True, show_color_plot = True,
+                                         write_computed_scores = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots_builtin_computed(self):
+        # given
+        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True,
+                                         show_color_plot = True, write_computed_scores = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots_builtin_computed(self):
+        # given
+        classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True, show_color_plot = True,
+                                         write_computed_scores = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
 
 
 if __name__ == '__main__':

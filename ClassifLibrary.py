@@ -3,9 +3,11 @@ from sklearn.datasets import make_classification
 from sklearn.metrics import confusion_matrix
 from sklearn.svm import LinearSVC
 from sklearn.neighbors import NearestCentroid
+from sklearn.feature_selection import SelectKBest, f_classif
 import xlrd
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 from ClfType import ClfType
 from ClassifierData import ClassifierData
 
@@ -30,7 +32,7 @@ def determine_clf_type(clf):
     raise Exception('Classifier not defined')
 
 
-def initialize_classifiers(classifier_data = ClassifierData()):
+def initialize_classifiers(classifier_data: ClassifierData = ClassifierData()):
     """Generates list of classifiers for analysis
 
     :param classifier_data: ClassifierData
@@ -50,16 +52,16 @@ def initialize_classifiers(classifier_data = ClassifierData()):
     return clfs
 
 
-def prepare_raw_data(classifier_data = ClassifierData()):
+def prepare_raw_data(classifier_data: ClassifierData = ClassifierData()):
     """Prepares raw data for classification
 
     :param classifier_data: ClassifierData
     :return: X, y: np.array, np.array
     """
     are_samples_generated = classifier_data.are_samples_generated
-    number_of_samples_if_generated = classifier_data.number_of_samples_if_generated
     is_validation_hard = classifier_data.is_validation_hard
     if are_samples_generated:
+        number_of_samples_if_generated = classifier_data.number_of_samples_if_generated
         X, y = make_classification(n_features = 2, n_redundant = 0, n_informative = 1, n_clusters_per_class = 1,
                                    n_samples = number_of_samples_if_generated,
                                    class_sep = 2.7, hypercube = False, random_state = 2)
@@ -71,11 +73,122 @@ def prepare_raw_data(classifier_data = ClassifierData()):
             assert_distribution_simplified(X0, X1, classifier_data)
         return compose_sorted_parts(X0, X1)
     else:
-        return load_columns_from_new_datasets(classifier_data)
+        return load_samples_from_datasets(classifier_data)
 
 
-def load_samples_from_file(filename):
-    """Loads data from file
+def load_two_first_columns_preincrement(sheet: xlrd.sheet.Sheet):
+    """Reads dataset with X from two first columns, skips first row
+
+    :param sheet: xlrd.sheet.Sheet
+    :return: X, y: [], []
+    """
+    line_number = 0
+    line = sheet.row(line_number)
+    number_of_columns = len(line)
+    X, y = np.zeros((sheet.nrows, 2)), np.zeros(sheet.nrows, dtype = np.int)
+    while line_number < sheet.nrows - 1:
+        line_number += 1
+        line = sheet.row(line_number)
+        row = []
+        for i in range(2):  # range(number_of_columns - 1):
+            row.append(float(line[i].value))
+        X[line_number - 1, :] = row
+        y[line_number - 1] = int(line[number_of_columns - 1].value)
+    return X, y
+
+
+def read_features(sheet: xlrd.sheet.Sheet, classifier_data: ClassifierData = ClassifierData()):
+    """Reads rows of data from file
+
+    :param sheet: xlrd.sheet.Sheet
+    :param classifier_data: ClassifierData
+    :return: X0, X1: [], []
+    """
+    columns = classifier_data.columns
+    line_number = 0
+    line = sheet.row(line_number)
+    number_of_columns = len(line)
+    X0, X1 = [], []
+    while line_number < sheet.nrows:
+        line = sheet.row(line_number)
+        row = []
+        for i in columns:
+            row.append(float(line[i].value))
+        if int(line[number_of_columns - 1].value) == 0:
+            X0.append(row)
+        else:
+            X1.append(row)
+        line_number += 1
+    return X0, X1
+
+
+def read_excel_file(classifier_data: ClassifierData = ClassifierData()):
+    """Read rows of data and make a selection
+
+    :param classifier_data: ClassifierData
+    :return: X, y: [], []
+    """
+    filename = classifier_data.filename
+    number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
+    file = xlrd.open_workbook(filename)
+    sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
+    line_number = 0
+    line = sheet.row(line_number)
+    number_of_columns = len(line)
+    X, y = np.zeros((sheet.nrows, number_of_columns - 1)), np.zeros(sheet.nrows, dtype = np.int)
+    while line_number < sheet.nrows:
+        line = sheet.row(line_number)
+        row = []
+        for i in range(number_of_columns - 1):
+            row.append(float(line[i].value))
+        X[line_number - 1, :] = row
+        y[line_number - 1] = int(float(line[number_of_columns - 1].value))
+        line_number += 1
+    return X, y
+
+
+def get_columns_from_scores(feature_scores: []):
+    """Extracts vector with columns of best features
+
+    :param feature_scores: []
+    :return: columns: []
+    """
+    first_maximum, second_maximum, first_column, second_column = 0, 0, 0, 0
+    for i in range(len(feature_scores)):
+        if feature_scores[i] > first_maximum:
+            second_column = first_column
+            first_column = i
+            second_maximum = first_maximum
+            first_maximum = feature_scores[i]
+        elif feature_scores[i] > second_maximum:
+            second_column = i
+            second_maximum = feature_scores[i]
+    print('Columns selected: {} and {}'.format(first_column, second_column))
+    return [first_column, second_column]
+
+
+def get_separate_columns(X: [], y: [], columns: []):
+    """Extract given columns from data
+
+    :param X: []
+    :param y: []
+    :param columns: []
+    :return: X0, X1: [], []
+    """
+    X0, X1 = [], []
+    for i in range(len(X)):
+        row = []
+        for column in columns:
+            row.append(X[i][column])
+        if y[i] == 0:
+            X0.append(row)
+        else:
+            X1.append(row)
+    return X0, X1
+
+
+def load_samples_from_file_non_parametrized(filename: str):
+    """Loads data from file, takes two first columns, skips first row
 
     Warning: method does not sort data
     Missing sorting and composing
@@ -84,75 +197,23 @@ def load_samples_from_file(filename):
     """
     file = xlrd.open_workbook(filename)
     sheet = file.sheet_by_index(0)
-    line_number = 0
-    line = sheet.row(line_number)
-    number_of_columns = len(line)
-    X, y = np.zeros((sheet.nrows, 2)), np.zeros(sheet.nrows, dtype = np.int)
-    while line_number < sheet.nrows - 1:
-        line_number += 1
-        line = sheet.row(line_number)
-        row = []
-        for i in range(2):  # range(number_of_columns - 1):
-            row.append(float(line[i].value))
-        X[line_number - 1, :] = row
-        y[line_number - 1] = int(line[number_of_columns - 1].value)
+    X, y = load_two_first_columns_preincrement(sheet)
     return X, y
 
 
-def load_samples_from_file_sheet(filename, classifier_data = ClassifierData()):
-    """Loads data from file
-
-    Warning: method does not sort data
-    Missing sorting and composing
-    :param filename: Name of file
-    :param classifier_data: ClassifierData
-    :return: X, y: np.array, np.array - samples for classification
-    """
-    number_of_sheet = classifier_data.number_of_dataset_if_not_generated
-    file = xlrd.open_workbook(filename)
-    sheet = file.sheet_by_index(number_of_sheet)
-    line_number = 0
-    line = sheet.row(line_number)
-    number_of_columns = len(line)
-    X, y = np.zeros((sheet.nrows, 2)), np.zeros(sheet.nrows, dtype = np.int)
-    while line_number < sheet.nrows - 1:
-        line_number += 1
-        line = sheet.row(line_number)
-        row = []
-        for i in range(2):  # range(number_of_columns - 1):
-            row.append(float(line[i].value))
-        X[line_number - 1, :] = row
-        y[line_number - 1] = int(line[number_of_columns - 1].value)
-    return X, y
-
-
-def load_samples_from_datasets(classifier_data = ClassifierData()):
+def load_samples_from_datasets_first_two_rows(classifier_data: ClassifierData = ClassifierData()):
     """Loads data from dataset (xlsx file with data)
 
     :param classifier_data: ClassifierData
     :return: X, y: np.array, np.array - samples for classification
     """
     number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
-    switch_columns_while_loading = classifier_data.switch_columns_while_loading
     file = xlrd.open_workbook('datasets.xlsx')
     sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
-    line_number = 0
-    line = sheet.row(line_number)
-    number_of_columns = len(line)
-    X0, X1 = [], []
-    while line_number < sheet.nrows:
-        line = sheet.row(line_number)
-        row = []
-        for i in range(2):  # range(number_of_columns - 1):
-            if switch_columns_while_loading:
-                row.append(float(line[1 - i].value))
-            else:
-                row.append(float(line[i].value))
-        if int(line[number_of_columns - 1].value) == 0:
-            X0.append(row)
-        else:
-            X1.append(row)
-        line_number += 1
+    columns = classifier_data.columns
+    classifier_data.columns = [0, 1]
+    X0, X1 = read_features(sheet, classifier_data)
+    classifier_data.columns = columns
     # X = SelectKBest(k = 2).fit_transform(X, y)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
@@ -161,30 +222,16 @@ def load_samples_from_datasets(classifier_data = ClassifierData()):
     return X, y
 
 
-def load_columns_from_datasets(classifier_data = ClassifierData()):
+def load_samples_from_datasets_non_parametrised(classifier_data: ClassifierData = ClassifierData()):
     """Loads data from dataset (xlsx file with data)
 
     :param classifier_data: ClassifierData
     :return: X, y: np.array, np.array - samples for classification
     """
     number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
-    columns = classifier_data.columns
     file = xlrd.open_workbook('datasets.xlsx')
     sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
-    line_number = 0
-    line = sheet.row(line_number)
-    number_of_columns = len(line)
-    X0, X1 = [], []
-    while line_number < sheet.nrows:
-        line = sheet.row(line_number)
-        row = []
-        for i in columns:
-            row.append(float(line[i].value))
-        if int(line[number_of_columns - 1].value) == 0:
-            X0.append(row)
-        else:
-            X1.append(row)
-        line_number += 1
+    X0, X1 = read_features(sheet, classifier_data)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
     assert_distribution_simplified(X0, X1, classifier_data)
@@ -192,32 +239,23 @@ def load_columns_from_datasets(classifier_data = ClassifierData()):
     return X, y
 
 
-def load_columns_from_new_datasets(classifier_data = ClassifierData()):
+def load_samples_from_datasets(classifier_data: ClassifierData = ClassifierData()):
     """Loads data from dataset (xlsx file with data)
 
     :param classifier_data: ClassifierData
     :return: X, y: np.array, np.array - samples for classification
     """
-    number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
-    columns = classifier_data.columns
     is_validation_hard = classifier_data.is_validation_hard
     filename = classifier_data.filename
-    file = xlrd.open_workbook(filename)
-    sheet = file.sheet_by_index(number_of_dataset_if_not_generated)
-    line_number = 0
-    line = sheet.row(line_number)
-    number_of_columns = len(line)
-    X0, X1 = [], []
-    while line_number < sheet.nrows:
-        line = sheet.row(line_number)
-        row = []
-        for i in columns:
-            row.append(float(line[i].value))
-        if int(line[number_of_columns - 1].value) == 0:
-            X0.append(row)
-        else:
-            X1.append(row)
-        line_number += 1
+    if filename.endswith(".dat") or filename.endswith(".csv"):
+        X, y = read_csv_file(classifier_data)
+    elif filename.endswith(".tsv"):
+        X, y = read_sv_file(classifier_data, '\t')
+    elif filename.endswith(".scsv"):
+        X, y = read_sv_file(classifier_data, ';')
+    else:
+        X, y = read_excel_file(classifier_data)
+    X0, X1 = make_selection(X, y)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
     if is_validation_hard:
@@ -228,7 +266,66 @@ def load_columns_from_new_datasets(classifier_data = ClassifierData()):
     return X, y
 
 
-def assert_distribution(X0, X1, classifier_data = ClassifierData()):
+def read_csv_file(classifier_data: ClassifierData = ClassifierData()):
+    """Reads data from comma separated value files
+
+    :param classifier_data: ClassifierData
+    :return: X, y: [], []
+    """
+    filename = classifier_data.filename
+    file = open(filename, "r")
+    lines = file.readlines()
+    file.close()
+    X, y = [], []
+    for line in lines:
+        if line.startswith("@"):
+            continue
+        line_as_array = line.replace("\n", "", 1).split(",")
+        row = []
+        for i in range(len(line_as_array) - 1):
+            row.append(float(line_as_array[i]))
+        X.append(row)
+        y.append(int(float(line_as_array[-1])))
+    return X, y
+
+
+def read_sv_file(classifier_data: ClassifierData = ClassifierData(), separator: str = ','):
+    """Reads data from tab separated value files
+
+    :param classifier_data: ClassifierData
+    :param separator: str
+    :return: X, y: [], []
+    """
+    filename = classifier_data.filename
+    file = open(filename, "r")
+    lines = file.readlines()
+    file.close()
+    X, y = [], []
+    for line in lines:
+        line_as_array = line.replace("\n", "", 1).split(separator)
+        row = []
+        for i in range(len(line_as_array) - 1):
+            row.append(float(line_as_array[i]))
+        X.append(row)
+        y.append(int(float(line_as_array[-1])))
+    return X, y
+
+
+def make_selection(X: [], y: []):
+    """Returns 2 best columns in 2 datasets for each class
+
+    :param X: []
+    :param y: []
+    :return: X0, X1: [], []
+    """
+    selection = SelectKBest(k = 2, score_func = f_classif)
+    selection.fit(X, y)
+    feature_scores = selection.scores_
+    columns = get_columns_from_scores(feature_scores)
+    return get_separate_columns(X, y, columns)
+
+
+def assert_distribution(X0: [], X1: [], classifier_data: ClassifierData = ClassifierData()):
     """Asserts that samples can be divided into subspaces with the same amount of data
 
     :param X0: np.array, data with class 0
@@ -296,7 +393,7 @@ def assert_distribution(X0, X1, classifier_data = ClassifierData()):
     return X0, X1
 
 
-def cut_out_from_larger(X0, X1, from_front, classifier_data = ClassifierData()):
+def cut_out_from_larger(X0: [], X1: [], from_front: bool, classifier_data: ClassifierData = ClassifierData()):
     if from_front:
         if len(X0) > len(X1):
             return assert_distribution(X0[1:], X1, classifier_data)
@@ -307,7 +404,7 @@ def cut_out_from_larger(X0, X1, from_front, classifier_data = ClassifierData()):
         return assert_distribution(X0, X1[:-1], classifier_data)
 
 
-def assert_distribution_simplified(X0, X1, classifier_data = ClassifierData()):
+def assert_distribution_simplified(X0: [], X1: [], classifier_data: ClassifierData = ClassifierData()):
     """Asserts that samples can be divided into subspaces with the same amount of data
 
     :param X0: np.array, data with class 0
@@ -322,10 +419,10 @@ def assert_distribution_simplified(X0, X1, classifier_data = ClassifierData()):
     previous_index0, previous_index1 = 0, 0
     print('Before assertion: len0: {}, len1: {}'.format(len(X0), len(X1)))
     for i in range(number_of_space_parts):
-        counter0, index0 = get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X0, x_min, x_max, i,
-                                                                                                 classifier_data)
-        counter1, index1 = get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X1, x_min, x_max, i,
-                                                                                                 classifier_data)
+        counter0, index0 = get_count_of_samples_in_subspace_and_beg_ind_of_next_subspace(X0, x_min, x_max, i,
+                                                                                         classifier_data)
+        counter1, index1 = get_count_of_samples_in_subspace_and_beg_ind_of_next_subspace(X1, x_min, x_max, i,
+                                                                                         classifier_data)
         if counter0 + counter1 < number_of_classifiers + 2:
             print('Only {} samples in {}. subspace'.format(counter0 + counter1, i + 1))
             # raise Exception('Not enough samples')
@@ -346,7 +443,7 @@ def assert_distribution_simplified(X0, X1, classifier_data = ClassifierData()):
     return X0, X1
 
 
-def get_extrema_for_subspaces(X0, X1):
+def get_extrema_for_subspaces(X0: [], X1: []):
     """Returns minimum and maximum bor both datasets
 
     :param X0: np.array
@@ -358,8 +455,8 @@ def get_extrema_for_subspaces(X0, X1):
     return min(x0_min, x1_min), max(x0_max, x1_max)
 
 
-def get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X0, x_min, x_max, i,
-                                                                          classifier_data = ClassifierData()):
+def get_count_of_samples_in_subspace_and_beg_ind_of_next_subspace(X0: [], x_min: float, x_max: float, i: int,
+                                                                  classifier_data: ClassifierData = ClassifierData()):
     """Returns of count of data in subspace as well as index of the first element of next subspace
 
     :param X0: np.array
@@ -385,7 +482,7 @@ def get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X0, x_
     return counter, index
 
 
-def set_subtraction_and_rest(counter, remainder):
+def set_subtraction_and_rest(counter: int, remainder: int):
     """Calculates substracion and rest for limiting datasets
 
     :param counter: int
@@ -398,7 +495,8 @@ def set_subtraction_and_rest(counter, remainder):
         return remainder, 0
 
 
-def limit_datasets_for_every_subspace_but_last(X0, X1, counter, remainder, index0, index1, is_first_bigger):
+def limit_datasets_for_every_subspace_but_last(X0: [], X1: [], counter: int, remainder: int, index0: int,
+                                               index1: int, is_first_bigger: bool):
     """Returns limited datasets for every subspace but last one
 
     :param X0: np.array
@@ -420,7 +518,8 @@ def limit_datasets_for_every_subspace_but_last(X0, X1, counter, remainder, index
     return X0, X1
 
 
-def limit_datasets_for_last_subspace(X0, X1, counter, remainder, previous_index0, previous_index1, is_first_bigger):
+def limit_datasets_for_last_subspace(X0: [], X1: [], counter: int, remainder: int, previous_index0: int,
+                                     previous_index1: int, is_first_bigger: bool):
     """Returns limited datasets for last subspace
 
     :param X0: np.array
@@ -442,7 +541,8 @@ def limit_datasets_for_last_subspace(X0, X1, counter, remainder, previous_index0
     return X0, X1
 
 
-def limit_datasets(X0, X1, counter, remainder, relative_index0, relative_index1, is_first_bigger, is_last):
+def limit_datasets(X0: [], X1: [], counter: int, remainder: int, relative_index0: int, relative_index1: int,
+                   is_first_bigger: bool, is_last: bool):
     """Returns limited datasets
 
     :param X0: np.array
@@ -463,7 +563,7 @@ def limit_datasets(X0, X1, counter, remainder, relative_index0, relative_index1,
                                                           is_first_bigger)
 
 
-def compose_sorted_parts(X0, X1):
+def compose_sorted_parts(X0: [], X1: []):
     """Composes classification data from 1 and 0 parts, datasets must be sorted
 
     :param X0: [], data, where y = 0
@@ -478,7 +578,7 @@ def compose_sorted_parts(X0, X1):
     return X, y
 
 
-def sort_attributes(X):
+def sort_attributes(X: []):
     """Sorts attribute array
 
     :param X: []
@@ -498,7 +598,7 @@ def sort_attributes(X):
     return X_result
 
 
-def sort_results(X, y):
+def sort_results(X: [], y: []):
     """Sorts attribute and class arrays
 
     Warning: does not sort by classes (y is not taken into consideration)
@@ -523,7 +623,7 @@ def sort_results(X, y):
     return X_result, y_result
 
 
-def divide_generated_samples(X, y):
+def divide_generated_samples(X: [], y: []):
     """Divide samples into arrays X0 (with y = 0) and X1 (y = 1)
 
     :param X: np.array
@@ -539,7 +639,7 @@ def divide_generated_samples(X, y):
     return X0, X1
 
 
-def divide_samples_between_classifiers(X, y, classifier_data = ClassifierData()):
+def divide_samples_between_classifiers(X: [], y: [], classifier_data: ClassifierData = ClassifierData()):
     """Divides sample into parts for every classifier
 
     Warning: does not take sorting into consideration
@@ -565,7 +665,7 @@ def divide_samples_between_classifiers(X, y, classifier_data = ClassifierData())
     return X_whole, y_whole, X_final_test, y_final_test
 
 
-def split_sorted_samples_between_classifiers(X, y, classifier_data = ClassifierData()):
+def split_sorted_samples_between_classifiers(X: [], y: [], classifier_data: ClassifierData = ClassifierData()):
     """Splits sorted samples between classifiers
 
     :param X: np.array
@@ -591,7 +691,7 @@ def split_sorted_samples_between_classifiers(X, y, classifier_data = ClassifierD
     return X_whole, y_whole, X_final_test, y_final_test
 
 
-def divide_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quotient = 2 / 3):
+def divide_samples_between_training_and_testing(X_unsplitted: [], y_unsplitted: [], quotient: float = 2 / 3):
     """Divides sample into parts for ttaining and testing
 
     Warning: does not take sorting into consideration
@@ -613,7 +713,7 @@ def divide_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quot
     return X_train, X_test, y_train, y_test
 
 
-def split_sorted_samples_between_training_and_testing(X_unsplitted, y_unsplitted, quotient = 2 / 3):
+def split_sorted_samples_between_training_and_testing(X_unsplitted: [], y_unsplitted: [], quotient: float = 2 / 3):
     """Splits sorted samples for testing and training
 
     :param X_unsplitted: [np.array(1), np.array(2), ..., np.array(n - 1)]
@@ -633,7 +733,7 @@ def split_sorted_samples_between_training_and_testing(X_unsplitted, y_unsplitted
     return X_train, X_test, y_train, y_test
 
 
-def split_sorted_samples(X, y, classifier_data = ClassifierData()):
+def split_sorted_samples(X: [], y: [], classifier_data: ClassifierData = ClassifierData()):
     """Splits raw data into number_of_classifiers + 2 parts of same length
 
     :param X: np.array, array with sorted data
@@ -669,7 +769,7 @@ def split_sorted_samples(X, y, classifier_data = ClassifierData()):
     return X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test
 
 
-def train_test_sorted_split(X_one, y_one, quotient = 2 / 3):
+def train_test_sorted_split(X_one: [], y_one: [], quotient: float = 2 / 3):
     """Splits dataset into training and testing
 
     :param X_one: np.array
@@ -697,7 +797,8 @@ def train_test_sorted_split(X_one, y_one, quotient = 2 / 3):
     return X_train, X_test, y_train, y_test
 
 
-def prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data = ClassifierData()):
+def prepare_samples_for_subspace(X_test: [], y_test: [], X: [], j: int,
+                                 classifier_data: ClassifierData = ClassifierData()):
     """Preparing sample for testing in j-th subspace
 
     :param X_test: np.array
@@ -713,7 +814,7 @@ def prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data = Classif
     return X_part, y_part
 
 
-def get_samples_limits(X):
+def get_samples_limits(X: []):
     """Gets limits of j-th subspace
 
     :param X: np.array
@@ -722,7 +823,7 @@ def get_samples_limits(X):
     return X[:, 0].min(), X[:, 0].max(), X[:, 1].min(), X[:, 1].max()
 
 
-def get_subdata_limits(X):
+def get_subdata_limits(X: []):
     """Gets limits of one dimensional dataset
 
     :param X: np.array
@@ -737,25 +838,24 @@ def get_subdata_limits(X):
     return minimum, maximum
 
 
-def get_plot_data(X, classifier_data = ClassifierData()):
+def get_plot_data(X: []):
     """Prepares data for plot generation
 
     :param X: np.array
-    :param classifier_data: ClassifierData
     :return: xx, yy, x_min_plot, x_max_plot: dnarray, dnarray, float, float
     """
-    plot_mesh_step_size = classifier_data.plot_mesh_step_size
     print('Getting data for plot')
     x_min, x_max, y_min, y_max = get_samples_limits(X)
     x_shift = 0.1 * (x_max - x_min)
     y_shift = 0.1 * (y_max - y_min)
     x_min_plot, x_max_plot, y_min_plot, y_max_plot = x_min - x_shift, x_max + x_shift, y_min - y_shift, y_max + y_shift
+    plot_mesh_step_size = min(x_max_plot - x_min_plot, y_max_plot - y_min_plot) / 2
     xx, yy = np.meshgrid(np.arange(x_min_plot, x_max_plot, plot_mesh_step_size),
                          np.arange(y_min_plot, y_max_plot, plot_mesh_step_size))
-    return xx, yy, x_min_plot, x_max_plot
+    return xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot
 
 
-def determine_number_of_subplots(classifier_data = ClassifierData()):
+def determine_number_of_subplots(classifier_data: ClassifierData = ClassifierData()):
     """Checks number of subplots to draw
     
     :param classifier_data: ClassifierData
@@ -768,7 +868,8 @@ def determine_number_of_subplots(classifier_data = ClassifierData()):
     return number_of_classifiers + 1
 
 
-def train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots, classifier_data = ClassifierData()):
+def train_classifiers(clfs: [], X_whole_train: [], y_whole_train: [], X: [], number_of_subplots: int,
+                      classifier_data: ClassifierData = ClassifierData()):
     """Trains classifiers
 
     :param clfs: [], scikit classifiers
@@ -784,7 +885,7 @@ def train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots,
     show_plots = classifier_data.show_plots
 
     if show_plots:
-        xx, yy, x_min_plot, x_max_plot = get_plot_data(X, classifier_data)
+        xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X)
 
     print('Training classifiers')
     trained_clfs, coefficients, current_subplot = [], [], 1
@@ -806,8 +907,8 @@ def train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots,
             x = np.linspace(x_min_plot, x_max_plot)
             y = a * x + b
             ax.plot(x, y)
-            ax.set_xlim(xx.min(), xx.max())
-            ax.set_ylim(yy.min(), yy.max())
+            ax.set_xlim(x_min_plot, x_max_plot)
+            ax.set_ylim(y_min_plot, y_max_plot)
             current_subplot += 1
 
         if show_plots and draw_color_plot:
@@ -850,7 +951,8 @@ def extract_coefficients_for_mean(clf):
     return a, b
 
 
-def evaluate_average_coefficients_from_n_best(coefficients, scores, j, classifier_data = ClassifierData()):
+def evaluate_average_coefficients_from_n_best(coefficients: [], scores: [], j: int,
+                                              classifier_data: ClassifierData = ClassifierData()):
     """Evaluates coefficients from n best classifiers in j-th subspace
 
     :param coefficients: []
@@ -871,7 +973,8 @@ def evaluate_average_coefficients_from_n_best(coefficients, scores, j, classifie
     return a / number_of_best_classifiers, b / number_of_best_classifiers
 
 
-def evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, j, classifier_data = ClassifierData()):
+def evaluate_weighted_average_coefficients_from_n_best(coefficients: [], scores: [], j: int,
+                                                       classifier_data: ClassifierData = ClassifierData()):
     """Evaluates coefficients from n best classifiers in j-th subspace
 
     :param coefficients: []
@@ -893,7 +996,7 @@ def evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, j, 
     return a / scoreSum, b / scoreSum
 
 
-def get_subspace_limits(X, j, classifier_data = ClassifierData()):
+def get_subspace_limits(X: [], j: int, classifier_data: ClassifierData = ClassifierData()):
     """Gets limits of j-th subspace
 
     :param X: np.array
@@ -908,7 +1011,8 @@ def get_subspace_limits(X, j, classifier_data = ClassifierData()):
     return x_subspace_max, x_subspace_min
 
 
-def test_classifiers(clfs, X_validation, y_validation, X, coefficients, classifier_data = ClassifierData()):
+def test_classifiers(clfs: [], X_validation: [], y_validation: [], X: [], coefficients: [],
+                     classifier_data: ClassifierData = ClassifierData()):
     """Tests classifiers
 
     :param clfs: clfs: [], scikit classifiers
@@ -964,7 +1068,7 @@ def test_classifiers(clfs, X_validation, y_validation, X, coefficients, classifi
     return scores, cumulated_scores
 
 
-def compute_confusion_matrix(clfs, X_test, y_test):
+def compute_confusion_matrix(clfs: [], X_test: [], y_test: []):
     """Calculates confusion matrices for defined classifiers
 
     :param clfs: []
@@ -980,8 +1084,59 @@ def compute_confusion_matrix(clfs, X_test, y_test):
     return confusion_matrices
 
 
-def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
-                                 classifier_data = ClassifierData()):
+def prepare_majority_voting(clfs: [], X_test: [], y_test: []):
+    """Returns confusion matrix and score of majority voting of give classifiers
+
+    :param clfs: []
+    :param X_test: np.array
+    :param y_test: np.array
+    :return: conf_mat, score: [], float
+    """
+    y_predicted = np.empty(len(X_test), dtype = float)
+    for clf in clfs:
+        y_predicted += clf.predict(X_test)
+    y_predicted /= len(clfs)
+    prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1, score = 0, 0, 0, 0, 0
+    for i in range(len(y_predicted)):
+        if y_test[i] == 0:
+            if y_predicted[i] == 0:
+                prop_0_pred_0 += 1
+            else:
+                prop_0_pred_1 += 1
+        else:
+            if y_predicted[i] == 0:
+                prop_1_pred_0 += 1
+            else:
+                prop_1_pred_1 += 1
+    prop_0, prop_1 = [], []
+    prop_0.append(prop_0_pred_0)
+    prop_0.append(prop_0_pred_1)
+    prop_1.append(prop_1_pred_0)
+    prop_1.append(prop_1_pred_1)
+    conf_mat = [prop_0, prop_1]
+    score = (prop_0_pred_0 + prop_1_pred_1) / len(y_test)
+    return np.array(conf_mat), score
+
+
+def compute_mcc(conf_matrices: []):
+    """Computes matthews correlation coefficient
+
+    :param conf_matrices: []
+    :return: mcc: []
+    """
+    mcc = []
+    for conf_matrix in conf_matrices:
+        prop_0_pred_0, prop_0_pred_1 = conf_matrix[0]
+        prop_1_pred_0, prop_1_pred_1 = conf_matrix[1]
+        mcc_score = (prop_0_pred_0 * prop_1_pred_1 - prop_0_pred_1 * prop_1_pred_0) / \
+                    math.sqrt((prop_1_pred_1 + prop_0_pred_1) * (prop_1_pred_1 + prop_1_pred_0) *
+                              (prop_0_pred_0 + prop_0_pred_1) * (prop_0_pred_0 + prop_1_pred_0))
+        mcc.append(mcc_score)
+    return mcc
+
+
+def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: [], scores: [], number_of_subplots: int,
+                                 classifier_data: ClassifierData = ClassifierData()):
     """Prepares composite classifiers
 
     :param X_test: np.array
@@ -1043,20 +1198,20 @@ def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number
         for i in range(len(score)):
             score[i] = 1 - score[1]
     scores.append(score)
-    predicted_0, predicted_1 = [], []
-    predicted_0.append(prop_0_pred_0)
-    predicted_0.append(prop_0_pred_1)
-    predicted_1.append(prop_1_pred_0)
-    predicted_1.append(prop_1_pred_1)
-    conf_mat = [predicted_0, predicted_1]
+    prop_0, prop_1 = [], []
+    prop_0.append(prop_0_pred_0)
+    prop_0.append(prop_0_pred_1)
+    prop_1.append(prop_1_pred_0)
+    prop_1.append(prop_1_pred_1)
+    conf_mat = [prop_0, prop_1]
     if show_plots:
-        xx, yy, x_min_plot, x_max_plot = get_plot_data(X, classifier_data)
-        ax.set_xlim(xx.min(), xx.max())
-        ax.set_ylim(yy.min(), yy.max())
-    return scores, cumulated_score, conf_mat
+        xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X)
+        ax.set_xlim(x_min_plot, x_max_plot)
+        ax.set_ylim(y_min_plot, y_max_plot)
+    return scores, cumulated_score, np.array(conf_mat)
 
 
-def get_number_of_samples_in_subspace(X, j, classifier_data = ClassifierData()):
+def get_number_of_samples_in_subspace(X: [], j: int, classifier_data: ClassifierData = ClassifierData()):
     """Returns number of samples in j-th subspace
 
     :param X: np.array
@@ -1072,7 +1227,7 @@ def get_number_of_samples_in_subspace(X, j, classifier_data = ClassifierData()):
     return count
 
 
-def print_results(scores):
+def print_results(scores: []):
     """Prints final scores
 
     :param scores: []
@@ -1085,7 +1240,7 @@ def print_results(scores):
         i += 1
 
 
-def print_results_with_cumulated_score(scores, cumulated_scores):
+def print_results_with_cumulated_score(scores: [], cumulated_scores: []):
     """Prints partial and overall results
 
     :param scores: []
@@ -1098,7 +1253,7 @@ def print_results_with_cumulated_score(scores, cumulated_scores):
         print('Overall result: {}'.format(cumulated_scores[i]))
 
 
-def print_results_with_conf_mats(scores, cumulated_scores, conf_mat):
+def print_results_with_conf_mats(scores: [], cumulated_scores: [], conf_mat: []):
     """Prints partial and overall results
 
     :param scores: []
@@ -1106,7 +1261,20 @@ def print_results_with_conf_mats(scores, cumulated_scores, conf_mat):
     :param conf_mat: []
     :return: void
     """
-    for i in range(len(scores)):
+    print('\n\nIteration results\n\n')
+    for i in range(len(cumulated_scores)):
+        if i == len(cumulated_scores) - 1:
+            print('Scores for composite classifier')
+            print(scores[i - 1])
+            print('Overall result: {}'.format(cumulated_scores[i]))
+            for j in range(len(conf_mat[i])):
+                print(conf_mat[i][j])
+            continue
+        if i == len(cumulated_scores) - 2:
+            print('Overall result for majority voting: {}'.format(cumulated_scores[i]))
+            for j in range(len(conf_mat[i])):
+                print(conf_mat[i][j])
+            continue
         print('Scores for {}. classifier'.format(i + 1))
         print(scores[i])
         print('Overall result: {}'.format(cumulated_scores[i]))
@@ -1114,8 +1282,8 @@ def print_results_with_conf_mats(scores, cumulated_scores, conf_mat):
             print(conf_mat[i][j])
 
 
-def generate_permutation(X_whole_train_old, y_whole_train_old, X_validation_old, y_validation_old, X_test_old,
-                         y_test_old):
+def generate_permutation(X_whole_train_old: [], y_whole_train_old: [], X_validation_old: [], y_validation_old: [],
+                         X_test_old: [], y_test_old: []):
     """Returns permutation of datasets, which are moved right
 
     :param X_whole_train_old: []
@@ -1138,7 +1306,7 @@ def generate_permutation(X_whole_train_old, y_whole_train_old, X_validation_old,
     return X_whole_train_new, y_whole_train_new, X_validation_new, y_validation_new, X_test_new, y_test_new
 
 
-def print_permutation_results(score_pro_permutation):
+def print_permutation_results(score_pro_permutation: []):
     """Prints scores after permutation
 
     :param score_pro_permutation: []
@@ -1153,5 +1321,8 @@ def print_permutation_results(score_pro_permutation):
     for i in range(len(classifier_scores)):
         if i == len(classifier_scores) - 1:
             print('Score for composite classifier: {}'.format(classifier_scores[i] / number_of_permutations))
-        else:
-            print('Score for {}. classifier: {}'.format(i, classifier_scores[i] / number_of_permutations))
+            continue
+        if i == len(classifier_scores) - 2:
+            print('Score for majority voting classifier: {}'.format(classifier_scores[i] / number_of_permutations))
+            continue
+        print('Score for {}. classifier: {}'.format(i, classifier_scores[i] / number_of_permutations))
