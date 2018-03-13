@@ -8,12 +8,12 @@ class ClassifierData():
 
     MINIMAL_NUMBER_OF_SAMPLES = 10
 
-    def __init__(self, type_of_classifier = ClfType.LINEAR, are_samples_generated = True,
-                 number_of_samples_if_generated = 1000, number_of_dataset_if_not_generated = 12,
-                 switch_columns_while_loading = False, number_of_space_parts = 5,
-                 number_of_classifiers = 3, number_of_best_classifiers = 2, show_color_plot = False,
-                 write_computed_scores = False, show_plots = False, columns = [0, 1], is_validation_hard = False,
-                 filename = 'new-datasets.xlsx'):
+    def __init__(self, type_of_classifier: ClfType = ClfType.LINEAR, are_samples_generated: bool = True,
+                 number_of_samples_if_generated: int = 1000, number_of_dataset_if_not_generated: int = 12,
+                 switch_columns_while_loading: bool = False, number_of_space_parts: int = 5,
+                 number_of_classifiers: int = 3, number_of_best_classifiers: int = 2, show_color_plot: bool = False,
+                 write_computed_scores: bool = False, show_plots: bool = False, columns: [] = [0, 1],
+                 is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx'):
         self.type_of_classifier = type_of_classifier
         self.are_samples_generated = are_samples_generated
         self.number_of_samples_if_generated = number_of_samples_if_generated

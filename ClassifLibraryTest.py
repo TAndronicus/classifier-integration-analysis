@@ -331,8 +331,8 @@ class MyLibraryTest(unittest.TestCase):
         X = np.array([[0, 0], [0, 0], [0, 0], [0, 0], [3, 0], [10, 0]])
         # when
         counter, index = \
-            ClassifLibrary.get_count_of_samples_in_subspace_and_beginning_index_of_next_subspace(X, X[0][0],
-                                                                                                 X[-1][0], 1)
+            ClassifLibrary.get_count_of_samples_in_subspace_and_beg_ind_of_next_subspace(X, X[0][0],
+                                                                                         X[-1][0], 1)
         # then
         self.assertEqual(1, counter)
         self.assertEqual(5, index)
@@ -735,7 +735,8 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots_builtin(self):
         # given
-        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True, show_color_plot = True)
+        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True,
+                                         show_color_plot = True)
         # when
         result = apply(classifier_data)
         # then
@@ -758,7 +759,8 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots_builtin_computed(self):
         # given
-        classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True, write_computed_scores = True)
+        classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True,
+                                         write_computed_scores = True)
         # when
         result = apply(classifier_data)
         # then
@@ -766,7 +768,8 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots_builtin_computed(self):
         # given
-        classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True, show_color_plot = True, write_computed_scores = True)
+        classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True, show_color_plot = True,
+                                         write_computed_scores = True)
         # when
         result = apply(classifier_data)
         # then
@@ -774,7 +777,8 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots_builtin_computed(self):
         # given
-        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True, show_color_plot = True, write_computed_scores = True)
+        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True,
+                                         show_color_plot = True, write_computed_scores = True)
         # when
         result = apply(classifier_data)
         # then
@@ -782,7 +786,8 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots_builtin_computed(self):
         # given
-        classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True, show_color_plot = True, write_computed_scores = True)
+        classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True, show_color_plot = True,
+                                         write_computed_scores = True)
         # when
         result = apply(classifier_data)
         # then
