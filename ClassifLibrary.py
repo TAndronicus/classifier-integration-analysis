@@ -76,17 +76,6 @@ def prepare_raw_data(classifier_data = ClassifierData()):
         return load_samples_from_datasets(classifier_data)
 
 
-def load_samples_from_csv_file(classifier_data):
-    filename = classifier_data.filename
-    file = open(filename, "r")
-    lines = file.readlines()
-    file.close()
-    for line in lines:
-        if line.startswith("@"):
-            continue
-
-
-
 def load_two_first_columns_preincrement(sheet):
     """Reads dataset with X from two first columns, skips first row
 
@@ -256,11 +245,12 @@ def load_samples_from_datasets(classifier_data = ClassifierData()):
     :param classifier_data: ClassifierData
     :return: X, y: np.array, np.array - samples for classification
     """
-    number_of_dataset_if_not_generated = classifier_data.number_of_dataset_if_not_generated
     is_validation_hard = classifier_data.is_validation_hard
     filename = classifier_data.filename
     if filename.endswith(".dat"):
         X, y = read_csv_file(classifier_data)
+    elif filename.endswith(".tsv"):
+        X, y = read_tsv_file(classifier_data, '\t')
     else:
         X, y = read_excel_file(classifier_data)
     X0, X1 = make_selection(X, y)
@@ -275,7 +265,7 @@ def load_samples_from_datasets(classifier_data = ClassifierData()):
 
 
 def read_csv_file(classifier_data = ClassifierData()):
-    """
+    """Reads data from comma separated value files
 
     :param classifier_data: ClassifierData
     :return: X, y: [], []
@@ -289,6 +279,28 @@ def read_csv_file(classifier_data = ClassifierData()):
         if line.startswith("@"):
             continue
         line_as_array = line.replace("\n", "", 1).split(",")
+        row = []
+        for i in range(len(line_as_array) - 1):
+            row.append(float(line_as_array[i]))
+        X.append(row)
+        y.append(int(float(line_as_array[-1])))
+    return X, y
+
+
+def read_tsv_file(classifier_data = ClassifierData(), separator = ','):
+    """Reads data from tab separated value files
+
+    :param classifier_data: ClassifierData
+    :param separator: str
+    :return: X, y: [], []
+    """
+    filename = classifier_data.filename
+    file = open(filename, "r")
+    lines = file.readlines()
+    file.close()
+    X, y = [], []
+    for line in lines:
+        line_as_array = line.replace("\n", "", 1).split(separator)
         row = []
         for i in range(len(line_as_array) - 1):
             row.append(float(line_as_array[i]))
@@ -833,6 +845,8 @@ def get_plot_data(X, classifier_data = ClassifierData()):
     x_shift = 0.1 * (x_max - x_min)
     y_shift = 0.1 * (y_max - y_min)
     x_min_plot, x_max_plot, y_min_plot, y_max_plot = x_min - x_shift, x_max + x_shift, y_min - y_shift, y_max + y_shift
+    if plot_mesh_step_size > x_max_plot - x_min_plot or plot_mesh_step_size > y_max_plot - y_min_plot:
+        plot_mesh_step_size = min(x_max_plot - x_min_plot, y_max_plot - y_min_plot) / 2
     xx, yy = np.meshgrid(np.arange(x_min_plot, x_max_plot, plot_mesh_step_size),
                          np.arange(y_min_plot, y_max_plot, plot_mesh_step_size))
     return xx, yy, x_min_plot, x_max_plot
@@ -889,8 +903,8 @@ def train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots,
             x = np.linspace(x_min_plot, x_max_plot)
             y = a * x + b
             ax.plot(x, y)
-            ax.set_xlim(xx.min(), xx.max())
-            ax.set_ylim(yy.min(), yy.max())
+            #ax.set_xlim(xx.min(), xx.max())
+            #ax.set_ylim(yy.min(), yy.max())
             current_subplot += 1
 
         if show_plots and draw_color_plot:
@@ -1185,8 +1199,8 @@ def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number
     conf_mat = [prop_0, prop_1]
     if show_plots:
         xx, yy, x_min_plot, x_max_plot = get_plot_data(X, classifier_data)
-        ax.set_xlim(xx.min(), xx.max())
-        ax.set_ylim(yy.min(), yy.max())
+        #ax.set_xlim(xx.min(), xx.max())
+        #ax.set_ylim(yy.min(), yy.max())
     return scores, cumulated_score, np.array(conf_mat)
 
 
