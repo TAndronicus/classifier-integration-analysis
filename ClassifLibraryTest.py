@@ -639,9 +639,33 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertTrue(result)
 
-    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file(self):
+    def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file(self):
         # given
         classifier_data = ClassifierData(filename = 'appendicitis.dat')
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file(self):
+        # given
+        classifier_data = ClassifierData(filename = 'biodeg.scsv')
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file(self):
+        # given
+        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv')
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file(self):
+        # given
+        classifier_data = ClassifierData(filename = 'pop_failures.tsv')
         # when
         result = apply(classifier_data)
         # then
@@ -654,7 +678,7 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertTrue(result)
 
-    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_show_plots(self):
+    def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots(self):
         # given
         classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True)
         # when
@@ -662,14 +686,38 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertTrue(result)
 
-    def test_should_return_no_error_on_default_merging_algorithm_show_plot_show_color_plot(self):
+    def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots(self):
+        # given
+        classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots(self):
+        # given
+        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots(self):
+        # given
+        classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_plots_builtin(self):
         # given
         # when
         result = apply(ClassifierData(show_plots = True, show_color_plot = True))
         # then
         self.assertTrue(result)
 
-    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_show_plots_show_color_plot(self):
+    def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots_builtin(self):
         # given
         classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True)
         # when
@@ -677,16 +725,64 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertTrue(result)
 
-    def test_should_return_no_error_on_default_merging_algorithm_show_plot_show_color_plot_compute_scores(self):
+    def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots_builtin(self):
+        # given
+        classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True, show_color_plot = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots_builtin(self):
+        # given
+        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True, show_color_plot = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots_builtin(self):
+        # given
+        classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True, show_color_plot = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_plots_builtin_computed(self):
         # given
         # when
         result = apply(ClassifierData(show_plots = True, show_color_plot = True, write_computed_scores = True))
         # then
         self.assertTrue(result)
 
-    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_show_plots_show_color_plot_compute_scores(self):
+    def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots_builtin_computed(self):
         # given
         classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True, write_computed_scores = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots_builtin_computed(self):
+        # given
+        classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True, show_color_plot = True, write_computed_scores = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots_builtin_computed(self):
+        # given
+        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True, show_color_plot = True, write_computed_scores = True)
+        # when
+        result = apply(classifier_data)
+        # then
+        self.assertTrue(result)
+
+    def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots_builtin_computed(self):
+        # given
+        classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True, show_color_plot = True, write_computed_scores = True)
         # when
         result = apply(classifier_data)
         # then

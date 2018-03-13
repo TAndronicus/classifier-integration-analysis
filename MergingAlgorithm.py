@@ -13,16 +13,23 @@ draw_color_plot = False
 write_computed_scores = False
 show_plots = True
 is_validation_hard = False
-filename = 'appendicitis.dat'#'new-datasets.xlsx'
+filename = 'new-datasets.xlsx'
 
-def apply(classif_data):
+
+def apply(classif_data = ClassifLibrary.ClassifierData()):
+    """Invokes merging algorithm for classification data
+
+    :param classif_data: ClassifLibrary.ClassifierData
+    :return: true on success
+    """
     classif_data.validate()
 
     clfs = ClassifLibrary.initialize_classifiers(classif_data)
 
     X, y = ClassifLibrary.prepare_raw_data(classif_data)
 
-    X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = ClassifLibrary.split_sorted_samples(X, y, classif_data)
+    X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
+        ClassifLibrary.split_sorted_samples(X, y, classif_data)
 
     if show_plots:
         number_of_subplots = ClassifLibrary.determine_number_of_subplots(classif_data)
@@ -57,7 +64,8 @@ def apply(classif_data):
         ClassifLibrary.print_results_with_conf_mats(scores, cumulated_scores, confusion_matrices)
 
         X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
-            ClassifLibrary.generate_permutation(X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test)
+            ClassifLibrary.generate_permutation(
+                X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test)
         number_of_permutations += 1
 
         if show_plots:
@@ -71,8 +79,10 @@ def apply(classif_data):
     ClassifLibrary.print_permutation_results(score_pro_permutation)
     return True
 
+
 classifier_data = \
-    ClassifLibrary.ClassifierData(type_of_classifier = type_of_classifier, are_samples_generated = are_samples_generated,
+    ClassifLibrary.ClassifierData(type_of_classifier = type_of_classifier,
+                                  are_samples_generated = are_samples_generated,
                                   number_of_samples_if_generated = number_of_samples_if_generated,
                                   number_of_dataset_if_not_generated = number_of_dataset_if_not_generated,
                                   number_of_space_parts = number_of_space_parts,
@@ -82,4 +92,4 @@ classifier_data = \
                                   show_plots = show_plots, columns = columns, is_validation_hard = is_validation_hard,
                                   filename = filename)
 
-#apply(classifier_data)
+apply(classifier_data)
