@@ -247,7 +247,7 @@ def load_samples_from_datasets(classifier_data = ClassifierData()):
     """
     is_validation_hard = classifier_data.is_validation_hard
     filename = classifier_data.filename
-    if filename.endswith(".dat"):
+    if filename.endswith(".dat") or filename.endswith(".csv"):
         X, y = read_csv_file(classifier_data)
     elif filename.endswith(".tsv"):
         X, y = read_tsv_file(classifier_data, '\t')
