@@ -10,7 +10,7 @@ class ClassifierData():
 
     def __init__(self, type_of_classifier = ClfType.LINEAR, are_samples_generated = True,
                  number_of_samples_if_generated = 1000, number_of_dataset_if_not_generated = 12,
-                 switch_columns_while_loading = False, plot_mesh_step_size = .2, number_of_space_parts = 5,
+                 switch_columns_while_loading = False, number_of_space_parts = 5,
                  number_of_classifiers = 3, number_of_best_classifiers = 2, show_color_plot = False,
                  write_computed_scores = False, show_plots = False, columns = [0, 1], is_validation_hard = False,
                  filename = 'new-datasets.xlsx'):
@@ -19,7 +19,6 @@ class ClassifierData():
         self.number_of_samples_if_generated = number_of_samples_if_generated
         self.number_of_dataset_if_not_generated = number_of_dataset_if_not_generated
         self.switch_columns_while_loading = switch_columns_while_loading
-        self.plot_mesh_step_size = plot_mesh_step_size
         self.number_of_space_parts = number_of_space_parts
         self.number_of_classifiers = number_of_classifiers
         self.number_of_best_classifiers = number_of_best_classifiers
@@ -37,7 +36,6 @@ class ClassifierData():
         self.validate_number_of_samples_if_generated()
         self.validate_number_of_dataset_if_not_generated()
         self.validate_switch_columns_while_loading()
-        self.validate_plot_mesh_step_size()
         self.validate_number_of_space_parts()
         self.validate_number_of_classifiers()
         self.validate_number_of_best_classifiers()
@@ -72,12 +70,6 @@ class ClassifierData():
     def validate_switch_columns_while_loading(self):
         if not type(self.switch_columns_while_loading) is bool:
             raise Exception('switch_columns_while_loading must be of type boolean')
-
-    def validate_plot_mesh_step_size(self):
-        if not type(self.plot_mesh_step_size) is float:
-            raise Exception('plot_mesh_step_size must be of type float')
-        if self.plot_mesh_step_size <= 0:
-            raise Exception('plot_mesh_step_size must be positive')
 
     def validate_number_of_space_parts(self):
         if not type(self.number_of_space_parts) is int:

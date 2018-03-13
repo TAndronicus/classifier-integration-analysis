@@ -6,7 +6,6 @@ are_samples_generated = False
 number_of_samples_if_generated = 10000
 number_of_dataset_if_not_generated = 14
 columns = [0, 1]
-plot_mesh_step_size = .2
 number_of_space_parts = 5
 number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
@@ -76,7 +75,7 @@ classifier_data = \
     ClassifLibrary.ClassifierData(type_of_classifier = type_of_classifier, are_samples_generated = are_samples_generated,
                                   number_of_samples_if_generated = number_of_samples_if_generated,
                                   number_of_dataset_if_not_generated = number_of_dataset_if_not_generated,
-                                  plot_mesh_step_size = plot_mesh_step_size, number_of_space_parts = number_of_space_parts,
+                                  number_of_space_parts = number_of_space_parts,
                                   number_of_classifiers = number_of_classifiers,
                                   number_of_best_classifiers = number_of_best_classifiers,
                                   show_color_plot = draw_color_plot, write_computed_scores = write_computed_scores,

@@ -839,17 +839,15 @@ def get_plot_data(X, classifier_data = ClassifierData()):
     :param classifier_data: ClassifierData
     :return: xx, yy, x_min_plot, x_max_plot: dnarray, dnarray, float, float
     """
-    plot_mesh_step_size = classifier_data.plot_mesh_step_size
     print('Getting data for plot')
     x_min, x_max, y_min, y_max = get_samples_limits(X)
     x_shift = 0.1 * (x_max - x_min)
     y_shift = 0.1 * (y_max - y_min)
     x_min_plot, x_max_plot, y_min_plot, y_max_plot = x_min - x_shift, x_max + x_shift, y_min - y_shift, y_max + y_shift
-    if plot_mesh_step_size > x_max_plot - x_min_plot or plot_mesh_step_size > y_max_plot - y_min_plot:
-        plot_mesh_step_size = min(x_max_plot - x_min_plot, y_max_plot - y_min_plot) / 2
+    plot_mesh_step_size = min(x_max_plot - x_min_plot, y_max_plot - y_min_plot) / 2
     xx, yy = np.meshgrid(np.arange(x_min_plot, x_max_plot, plot_mesh_step_size),
                          np.arange(y_min_plot, y_max_plot, plot_mesh_step_size))
-    return xx, yy, x_min_plot, x_max_plot
+    return xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot
 
 
 def determine_number_of_subplots(classifier_data = ClassifierData()):
@@ -881,7 +879,7 @@ def train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots,
     show_plots = classifier_data.show_plots
 
     if show_plots:
-        xx, yy, x_min_plot, x_max_plot = get_plot_data(X, classifier_data)
+        xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X, classifier_data)
 
     print('Training classifiers')
     trained_clfs, coefficients, current_subplot = [], [], 1
@@ -903,8 +901,8 @@ def train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots,
             x = np.linspace(x_min_plot, x_max_plot)
             y = a * x + b
             ax.plot(x, y)
-            #ax.set_xlim(xx.min(), xx.max())
-            #ax.set_ylim(yy.min(), yy.max())
+            ax.set_xlim(x_min_plot, x_max_plot)
+            ax.set_ylim(y_min_plot, y_max_plot)
             current_subplot += 1
 
         if show_plots and draw_color_plot:
@@ -1198,9 +1196,9 @@ def prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number
     prop_1.append(prop_1_pred_1)
     conf_mat = [prop_0, prop_1]
     if show_plots:
-        xx, yy, x_min_plot, x_max_plot = get_plot_data(X, classifier_data)
-        #ax.set_xlim(xx.min(), xx.max())
-        #ax.set_ylim(yy.min(), yy.max())
+        xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X, classifier_data)
+        ax.set_xlim(x_min_plot, x_max_plot)
+        ax.set_ylim(y_min_plot, y_max_plot)
     return scores, cumulated_score, np.array(conf_mat)
 
 
