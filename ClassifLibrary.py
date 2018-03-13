@@ -250,7 +250,9 @@ def load_samples_from_datasets(classifier_data = ClassifierData()):
     if filename.endswith(".dat") or filename.endswith(".csv"):
         X, y = read_csv_file(classifier_data)
     elif filename.endswith(".tsv"):
-        X, y = read_tsv_file(classifier_data, '\t')
+        X, y = read_sv_file(classifier_data, '\t')
+    elif filename.endswith(".scsv"):
+        X, y = read_sv_file(classifier_data, ';')
     else:
         X, y = read_excel_file(classifier_data)
     X0, X1 = make_selection(X, y)
@@ -287,7 +289,7 @@ def read_csv_file(classifier_data = ClassifierData()):
     return X, y
 
 
-def read_tsv_file(classifier_data = ClassifierData(), separator = ','):
+def read_sv_file(classifier_data = ClassifierData(), separator = ','):
     """Reads data from tab separated value files
 
     :param classifier_data: ClassifierData
