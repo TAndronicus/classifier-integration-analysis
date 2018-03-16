@@ -9,7 +9,7 @@ class ClassifierData():
     MINIMAL_NUMBER_OF_SAMPLES = 10
 
     def __init__(self, type_of_classifier: ClfType = ClfType.LINEAR, are_samples_generated: bool = True,
-                 number_of_samples_if_generated: int = 1000, number_of_dataset_if_not_generated: int = 12,
+                 number_of_samples_if_generated: int = 1000, number_of_dataset_if_not_generated: int = 0,
                  switch_columns_while_loading: bool = False, number_of_space_parts: int = 5,
                  number_of_classifiers: int = 3, number_of_best_classifiers: int = 2, show_color_plot: bool = False,
                  write_computed_scores: bool = False, show_plots: bool = False, columns: [] = [0, 1],
