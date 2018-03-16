@@ -1318,11 +1318,12 @@ def print_permutation_results(score_pro_permutation: []):
     for i in range(number_of_permutations):
         for j in range(len(score_pro_permutation[i])):
             classifier_scores[j] += score_pro_permutation[i][j]
+    classifier_scores /= number_of_permutations
     for i in range(len(classifier_scores)):
         if i == len(classifier_scores) - 1:
-            print('Score for composite classifier: {}'.format(classifier_scores[i] / number_of_permutations))
+            print('Score for composite classifier: {}'.format(classifier_scores[i]))
             continue
         if i == len(classifier_scores) - 2:
-            print('Score for majority voting classifier: {}'.format(classifier_scores[i] / number_of_permutations))
+            print('Score for majority voting classifier: {}'.format(classifier_scores[i]))
             continue
-        print('Score for {}. classifier: {}'.format(i, classifier_scores[i] / number_of_permutations))
+        print('Score for {}. classifier: {}'.format(i, classifier_scores[i]))

@@ -6,7 +6,7 @@ from sklearn.svm import LinearSVC
 from sklearn.neighbors import NearestCentroid
 from sklearn.datasets import make_classification
 from ClassifLibrary import ClassifierData
-from MergingAlgorithm import apply
+from MergingAlgorithm import run
 
 
 class MyLibraryTest(unittest.TestCase):
@@ -100,7 +100,8 @@ class MyLibraryTest(unittest.TestCase):
         # given
         # when
         X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
-        X2, y2 = ClassifLibrary.load_samples_from_datasets_first_two_rows()
+        X2, y2 = ClassifLibrary.load_samples_from_datasets_first_two_rows(
+            ClassifierData(number_of_dataset_if_not_generated = 12))
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
@@ -108,7 +109,8 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_not_change_data_whole(self):
         # given
-        data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
+        data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx',
+                              number_of_dataset_if_not_generated = 12)
         # when
         X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
         X2, y2 = ClassifLibrary.prepare_raw_data(data)
@@ -119,10 +121,12 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_contain_same_data(self):
         # given
-        data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
+        data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx',
+                              number_of_dataset_if_not_generated = 12)
         # when
         X1, y1 = ClassifLibrary.prepare_raw_data(data)
-        X2, y2 = ClassifLibrary.load_samples_from_datasets_first_two_rows()
+        X2, y2 = ClassifLibrary.load_samples_from_datasets_first_two_rows(
+            classifier_data = ClassifierData(number_of_dataset_if_not_generated = 12))
         # then
         self.assertTrue(len(X2) == len(X1))
         self.assertEqual(len(X1[0]), 2)
@@ -147,7 +151,8 @@ class MyLibraryTest(unittest.TestCase):
         # given
         # when
         X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
-        X2, y2 = ClassifLibrary.load_samples_from_datasets_non_parametrised()
+        X2, y2 = ClassifLibrary.load_samples_from_datasets_non_parametrised(
+            classifier_data = ClassifierData(number_of_dataset_if_not_generated = 12))
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
@@ -635,7 +640,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_no_error_on_default_merging_algorithm(self):
         # given
         # when
-        result = apply(ClassifierData())
+        result = run(ClassifierData())
         # then
         self.assertTrue(result)
 
@@ -643,7 +648,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         classifier_data = ClassifierData(filename = 'appendicitis.dat')
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -651,7 +656,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         classifier_data = ClassifierData(filename = 'biodeg.scsv')
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -659,7 +664,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv')
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -667,14 +672,14 @@ class MyLibraryTest(unittest.TestCase):
         # given
         classifier_data = ClassifierData(filename = 'pop_failures.tsv')
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
     def test_should_return_no_error_on_default_merging_algorithm_show_plot(self):
         # given
         # when
-        result = apply(ClassifierData(show_plots = True))
+        result = run(ClassifierData(show_plots = True))
         # then
         self.assertTrue(result)
 
@@ -682,7 +687,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -690,7 +695,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -698,7 +703,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -706,14 +711,14 @@ class MyLibraryTest(unittest.TestCase):
         # given
         classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
     def test_should_return_no_error_on_default_merging_algorithm_plots_builtin(self):
         # given
         # when
-        result = apply(ClassifierData(show_plots = True, show_color_plot = True))
+        result = run(ClassifierData(show_plots = True, show_color_plot = True))
         # then
         self.assertTrue(result)
 
@@ -721,7 +726,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -729,7 +734,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True, show_color_plot = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -738,7 +743,7 @@ class MyLibraryTest(unittest.TestCase):
         classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True,
                                          show_color_plot = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -746,14 +751,14 @@ class MyLibraryTest(unittest.TestCase):
         # given
         classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True, show_color_plot = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
     def test_should_return_no_error_on_default_merging_algorithm_plots_builtin_computed(self):
         # given
         # when
-        result = apply(ClassifierData(show_plots = True, show_color_plot = True, write_computed_scores = True))
+        result = run(ClassifierData(show_plots = True, show_color_plot = True, write_computed_scores = True))
         # then
         self.assertTrue(result)
 
@@ -762,7 +767,7 @@ class MyLibraryTest(unittest.TestCase):
         classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True,
                                          write_computed_scores = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -771,7 +776,7 @@ class MyLibraryTest(unittest.TestCase):
         classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True, show_color_plot = True,
                                          write_computed_scores = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -780,7 +785,7 @@ class MyLibraryTest(unittest.TestCase):
         classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True,
                                          show_color_plot = True, write_computed_scores = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
@@ -789,7 +794,7 @@ class MyLibraryTest(unittest.TestCase):
         classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True, show_color_plot = True,
                                          write_computed_scores = True)
         # when
-        result = apply(classifier_data)
+        result = run(classifier_data)
         # then
         self.assertTrue(result)
 
