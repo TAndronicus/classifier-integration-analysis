@@ -6,7 +6,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     """Invokes merging algorithm for classification data
 
     :param classif_data: ClassifLibrary.ClassifierData
-    :return: true on success
+    :return: mv_score, merged_score, mv_mcc, merged_mcc
     """
     classif_data.validate()
     show_plots = classif_data.show_plots
@@ -70,4 +70,4 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     overall_scores, overall_mcc = ClassifLibrary.get_permutation_results(score_pro_permutation, mccs_pro_permutation)
     ClassifLibrary.print_permutation_results(overall_scores, overall_mcc)
     print('\n#####\n')
-    return True
+    return overall_scores[-1], overall_scores[-2], overall_mcc[-1], overall_mcc[-2]

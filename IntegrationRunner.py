@@ -31,4 +31,4 @@ for filename in filenames:
                                       is_validation_hard = is_validation_hard,
                                       filename = 'datasets//' + filename)
 
-    MergingAlgorithm.run(classifier_data)
+    mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
