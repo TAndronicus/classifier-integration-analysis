@@ -2,6 +2,7 @@ import unittest
 from ClassifierData import ClassifierData
 from MergingAlgorithm import run
 
+
 class MyLibraryTest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm(self):
@@ -170,7 +171,8 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_no_error_on_default_merging_algorithm_plots_builtin_computed(self):
         # given
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(show_plots = True, show_color_plot = True, write_computed_scores = True))
+        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(show_plots = True, show_color_plot = True,
+                                                                        write_computed_scores = True))
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(merged_score)
