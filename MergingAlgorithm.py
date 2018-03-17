@@ -47,8 +47,9 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
         confusion_matrices.append(conf_mat)
         cumulated_scores.append(cumulated_score)
         score_pro_permutation.append(cumulated_scores)
+        mccs = ClassifLibrary.compute_mcc(confusion_matrices)
 
-        ClassifLibrary.print_results_with_conf_mats(scores, cumulated_scores, confusion_matrices)
+        ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores, cumulated_scores, confusion_matrices, mccs)
 
         X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
             ClassifLibrary.generate_permutation(

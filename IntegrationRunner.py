@@ -27,7 +27,8 @@ for filename in filenames:
                                       number_of_classifiers = number_of_classifiers,
                                       number_of_best_classifiers = number_of_best_classifiers,
                                       show_color_plot = draw_color_plot, write_computed_scores = write_computed_scores,
-                                      show_plots = show_plots, columns = columns, is_validation_hard = is_validation_hard,
+                                      show_plots = show_plots, columns = columns,
+                                      is_validation_hard = is_validation_hard,
                                       filename = 'datasets//' + filename)
 
     MergingAlgorithm.run(classifier_data)

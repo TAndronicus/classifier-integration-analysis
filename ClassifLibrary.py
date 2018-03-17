@@ -1119,7 +1119,7 @@ def prepare_majority_voting(clfs: [], X_test: [], y_test: []):
 
 
 def compute_mcc(conf_matrices: []):
-    """Computes matthews correlation coefficient
+    """Computes Matthews correlation coefficient
 
     :param conf_matrices: []
     :return: mcc: []
@@ -1187,8 +1187,6 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
         else:
             score.append(0)
         part_lengths.append(len(X_part))
-        prop_0_pred_0, prop_0_pred_1 = prop_0_pred_1, prop_0_pred_0
-        prop_1_pred_0, prop_1_pred_1 = prop_1_pred_1, prop_1_pred_0
     cumulated_score = 0
     for i in range(len(score)):
         cumulated_score += score[i] * part_lengths[i]
@@ -1197,6 +1195,8 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
         cumulated_score = 1 - cumulated_score
         for i in range(len(score)):
             score[i] = 1 - score[1]
+        prop_0_pred_0, prop_0_pred_1 = prop_0_pred_1, prop_0_pred_0
+        prop_1_pred_0, prop_1_pred_1 = prop_1_pred_1, prop_1_pred_0
     scores.append(score)
     prop_0, prop_1 = [], []
     prop_0.append(prop_0_pred_0)
@@ -1227,7 +1227,7 @@ def get_number_of_samples_in_subspace(X: [], j: int, classifier_data: Classifier
     return count
 
 
-def print_results(scores: []):
+def print_scores_pro_classif(scores: []):
     """Prints final scores
 
     :param scores: []
@@ -1240,7 +1240,7 @@ def print_results(scores: []):
         i += 1
 
 
-def print_results_with_cumulated_score(scores: [], cumulated_scores: []):
+def print_scores_pro_classif_pro_subspace(scores: [], cumulated_scores: []):
     """Prints partial and overall results
 
     :param scores: []
@@ -1253,7 +1253,7 @@ def print_results_with_cumulated_score(scores: [], cumulated_scores: []):
         print('Overall result: {}'.format(cumulated_scores[i]))
 
 
-def print_results_with_conf_mats(scores: [], cumulated_scores: [], conf_mat: []):
+def print_scores_conf_mats_pro_classif_pro_subspace(scores: [], cumulated_scores: [], conf_mat: []):
     """Prints partial and overall results
 
     :param scores: []
@@ -1278,6 +1278,39 @@ def print_results_with_conf_mats(scores: [], cumulated_scores: [], conf_mat: [])
         print('Scores for {}. classifier'.format(i + 1))
         print(scores[i])
         print('Overall result: {}'.format(cumulated_scores[i]))
+        for j in range(len(conf_mat[i])):
+            print(conf_mat[i][j])
+
+
+def print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores: [], cumulated_scores: [], conf_mat: [], mcc: []):
+    """Prints partial and overall results
+
+    :param scores: []
+    :param cumulated_scores: []
+    :param conf_mat: []
+    :param mcc: []
+    :return: void
+    """
+    print('\n\nIteration results\n\n')
+    for i in range(len(cumulated_scores)):
+        if i == len(cumulated_scores) - 1:
+            print('Scores for composite classifier')
+            print(scores[i - 1])
+            print('Overall result: {}'.format(cumulated_scores[i]))
+            print('Matthews correlation coefficient: {}'.format(mcc[i]))
+            for j in range(len(conf_mat[i])):
+                print(conf_mat[i][j])
+            continue
+        if i == len(cumulated_scores) - 2:
+            print('Overall result for majority voting: {}'.format(cumulated_scores[i]))
+            print('Matthews correlation coefficient: {}'.format(mcc[i]))
+            for j in range(len(conf_mat[i])):
+                print(conf_mat[i][j])
+            continue
+        print('Scores for {}. classifier'.format(i + 1))
+        print(scores[i])
+        print('Overall result: {}'.format(cumulated_scores[i]))
+        print('Matthews correlation coefficient: {}'.format(mcc[i]))
         for j in range(len(conf_mat[i])):
             print(conf_mat[i][j])
 
