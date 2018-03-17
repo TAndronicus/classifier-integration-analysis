@@ -1,5 +1,6 @@
 import MergingAlgorithm
 import ClassifLibrary
+import FileHelper
 
 filenames = ['appendicitis.dat', 'biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
              'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat', 'sonar.dat',
@@ -14,9 +15,10 @@ number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
 draw_color_plot = False
 write_computed_scores = False
-show_plots = True
+show_plots = False
 is_validation_hard = False
 
+results = []
 for filename in filenames:
     classifier_data = \
         ClassifLibrary.ClassifierData(type_of_classifier = type_of_classifier,
@@ -32,3 +34,5 @@ for filename in filenames:
                                       filename = 'datasets//' + filename)
 
     mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
+    results.append([mv_score, merged_score, mv_mcc, merged_mcc])
+FileHelper.save_merging_results(filenames, results)

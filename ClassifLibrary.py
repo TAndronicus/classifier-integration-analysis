@@ -1131,6 +1131,8 @@ def compute_mcc(conf_matrices: []):
         mcc_score = (prop_0_pred_0 * prop_1_pred_1 - prop_0_pred_1 * prop_1_pred_0) / \
                     math.sqrt((prop_1_pred_1 + prop_0_pred_1) * (prop_1_pred_1 + prop_1_pred_0) *
                               (prop_0_pred_0 + prop_0_pred_1) * (prop_0_pred_0 + prop_1_pred_0))
+        if math.isnan(mcc_score):
+            mcc_score = 0
         mcc.append(mcc_score)
     return mcc
 
