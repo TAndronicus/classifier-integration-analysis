@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import ClassifLibrary
 
+
 def run(classif_data = ClassifLibrary.ClassifierData()):
     """Invokes merging algorithm for classification data
 
@@ -25,9 +26,9 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
     number_of_permutations = 0
 
-    score_pro_permutation = []
+    score_pro_permutation, mccs_pro_permutation = [], []
     while True:
-        print("\n{}. iteration\n".format(number_of_permutations))
+        print('\n{}. iteration\n'.format(number_of_permutations))
         clfs, coefficients = \
             ClassifLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots, classif_data)
 
@@ -46,10 +47,12 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
         confusion_matrices.append(conf_mat)
         cumulated_scores.append(cumulated_score)
-        score_pro_permutation.append(cumulated_scores)
         mccs = ClassifLibrary.compute_mcc(confusion_matrices)
+        score_pro_permutation.append(cumulated_scores)
+        mccs_pro_permutation.append(mccs)
 
-        ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores, cumulated_scores, confusion_matrices, mccs)
+        ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores, cumulated_scores,
+                                                                           confusion_matrices, mccs)
 
         X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
             ClassifLibrary.generate_permutation(
@@ -61,9 +64,10 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
         if number_of_permutations == number_of_classifiers + 2:
             break
-        classif_data.show_plots = False
+        classif_data.show_plots = False  # Convenience
 
-    print("\n\nOverall results:")
-    ClassifLibrary.print_permutation_results(score_pro_permutation)
+    print('\n#####\nOverall results:')
+    overall_scores, overall_mcc = ClassifLibrary.get_permutation_results(score_pro_permutation, mccs_pro_permutation)
+    ClassifLibrary.print_permutation_results(overall_scores, overall_mcc)
+    print('\n#####\n')
     return True
-

@@ -1241,7 +1241,7 @@ def print_scores_pro_classif(scores: []):
 
 
 def print_scores_pro_classif_pro_subspace(scores: [], cumulated_scores: []):
-    """Prints partial and overall results
+    """Prints partial and overall scores
 
     :param scores: []
     :param cumulated_scores: []
@@ -1254,7 +1254,7 @@ def print_scores_pro_classif_pro_subspace(scores: [], cumulated_scores: []):
 
 
 def print_scores_conf_mats_pro_classif_pro_subspace(scores: [], cumulated_scores: [], conf_mat: []):
-    """Prints partial and overall results
+    """Prints partial and overall scores and confusion matrices
 
     :param scores: []
     :param cumulated_scores: []
@@ -1283,7 +1283,7 @@ def print_scores_conf_mats_pro_classif_pro_subspace(scores: [], cumulated_scores
 
 
 def print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores: [], cumulated_scores: [], conf_mat: [], mcc: []):
-    """Prints partial and overall results
+    """Prints partial and overall scores, confusion matrices and Matthews correlation coefficients
 
     :param scores: []
     :param cumulated_scores: []
@@ -1339,24 +1339,39 @@ def generate_permutation(X_whole_train_old: [], y_whole_train_old: [], X_validat
     return X_whole_train_new, y_whole_train_new, X_validation_new, y_validation_new, X_test_new, y_test_new
 
 
-def print_permutation_results(score_pro_permutation: []):
-    """Prints scores after permutation
+def get_permutation_results(score_pro_permutation: [], mccs_pro_permutation: []):
+    """Returns scores and Matthews correlation coefficients after all permutations
 
     :param score_pro_permutation: []
+    :param mccs_pro_permutation: []
     :return: void
     """
     print("\n")
     classifier_scores = np.zeros(len(score_pro_permutation[0]))
+    classifier_mcc = np.zeros(len(mccs_pro_permutation[0]))
     number_of_permutations = len(score_pro_permutation)
     for i in range(number_of_permutations):
         for j in range(len(score_pro_permutation[i])):
             classifier_scores[j] += score_pro_permutation[i][j]
+            classifier_mcc[j] += mccs_pro_permutation[i][j]
     classifier_scores /= number_of_permutations
+    classifier_mcc /= number_of_permutations
+    return classifier_scores, classifier_mcc
+
+
+def print_permutation_results(classifier_scores: [], classifier_mcc: []):
+    """Prints overall rsults
+
+    :param classifier_scores: []
+    :param classifier_mcc: []
+    :return:
+    """
     for i in range(len(classifier_scores)):
         if i == len(classifier_scores) - 1:
-            print('Score for composite classifier: {}'.format(classifier_scores[i]))
-            continue
-        if i == len(classifier_scores) - 2:
-            print('Score for majority voting classifier: {}'.format(classifier_scores[i]))
-            continue
-        print('Score for {}. classifier: {}'.format(i, classifier_scores[i]))
+            print('Composite classifier')
+        elif i == len(classifier_scores) - 2:
+            print('Majority voting classifier')
+        else:
+            print('{}. classifier'.format(i))
+        print('Score: {}'.format(classifier_scores[i]))
+        print('Matthews correlation coefficient: {}'.format(classifier_mcc[i]))
