@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import ClassifLibrary
+import itertools
 
 
 def run(classif_data = ClassifLibrary.ClassifierData()):
@@ -16,19 +17,23 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
     X, y = ClassifLibrary.prepare_raw_data(classif_data)
 
-    X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
-        ClassifLibrary.split_sorted_samples(X, y, classif_data)
+    X_splitted, y_splitted = ClassifLibrary.split_sorted_unitary(X, y, classif_data)
 
     if show_plots:
         number_of_subplots = ClassifLibrary.determine_number_of_subplots(classif_data)
     else:
         number_of_subplots = 0
 
-    number_of_permutations = 0
+    number_of_permutations = 1
 
     score_pro_permutation, mccs_pro_permutation = [], []
-    while True:
+    for tup in itertools.permutations(range(number_of_classifiers + 2), 2):
+
         print('\n{}. iteration\n'.format(number_of_permutations))
+
+        X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
+            ClassifLibrary.generate_permutation(X_splitted, y_splitted, tup, classif_data)
+
         clfs, coefficients = \
             ClassifLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots, classif_data)
 
@@ -54,19 +59,15 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
         ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores, cumulated_scores,
                                                                            confusion_matrices, mccs)
 
-        X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
-            ClassifLibrary.generate_permutation(
-                X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test)
         number_of_permutations += 1
 
         if show_plots:
             plt.show()
 
-        if number_of_permutations == number_of_classifiers + 2:
-            break
-        classif_data.show_plots = False  # Convenience
+        show_plots = False  # Convenience
+    number_of_permutations -= 1
 
-    print('\n#####\nOverall results:')
+    print('\n#####\nOverall results after {} iterations:'.format(number_of_permutations))
     overall_scores, overall_mcc = ClassifLibrary.get_permutation_results(score_pro_permutation, mccs_pro_permutation)
     ClassifLibrary.print_permutation_results(overall_scores, overall_mcc)
     print('\n#####\n')

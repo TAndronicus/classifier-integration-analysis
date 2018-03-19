@@ -769,6 +769,32 @@ def split_sorted_samples(X: [], y: [], classifier_data: ClassifierData = Classif
     return X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test
 
 
+def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = ClassifierData()):
+    """
+
+    :param X: []
+    :param y: []
+    :param classifier_data: ClassifierData
+    :return: X_splitted, y_splitted: [], []
+    """
+    number_of_classifiers = classifier_data.number_of_classifiers
+    number_of_space_parts = classifier_data.number_of_space_parts
+    print('Splitting samples')
+    if len(X) < (number_of_classifiers + 2) * number_of_space_parts:
+        print('Not enough samples')
+        raise Exception('Not enough samples')
+    X_splitted, y_splitted = [], []
+    length = int(len(X) / (number_of_classifiers + 2))
+    for i in range(number_of_classifiers + 2):
+        X_temp, y_temp = np.zeros((length, 2)), np.zeros(length, dtype = np.int)
+        for j in range(length):
+            X_temp[j, :] = (X[j * (number_of_classifiers + 2) + i, :])
+            y_temp[j] = (y[j * (number_of_classifiers + 2) + i])
+        X_splitted.append(X_temp)
+        y_splitted.append(y_temp)
+    return X_splitted, y_splitted
+
+
 def train_test_sorted_split(X_one: [], y_one: [], quotient: float = 2 / 3):
     """Splits dataset into training and testing
 
@@ -1317,8 +1343,8 @@ def print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores: [], cumulated_sc
             print(conf_mat[i][j])
 
 
-def generate_permutation(X_whole_train_old: [], y_whole_train_old: [], X_validation_old: [], y_validation_old: [],
-                         X_test_old: [], y_test_old: []):
+def generate_permutation(X_splitted: [], y_splitted: [], tup: tuple,
+                         classifier_data: ClassifierData = ClassifierData()):
     """Returns permutation of datasets, which are moved right
 
     :param X_whole_train_old: []
@@ -1330,15 +1356,19 @@ def generate_permutation(X_whole_train_old: [], y_whole_train_old: [], X_validat
     :return: X_whole_train_new, y_whole_train_new, X_validation_new, y_validation_new, X_test_new, y_test_new: [], [],
     np.array, np.array, np.array, np.array
     """
-    X_whole_train_new, y_whole_train_new = [], []
-    X_whole_train_new.append(X_test_old)
-    y_whole_train_new.append(y_test_old)
-    for i in range(len(X_whole_train_old) - 1):
-        X_whole_train_new.append(X_whole_train_old[i])
-        y_whole_train_new.append(y_whole_train_old[i])
-    X_validation_new, y_validation_new = X_whole_train_old[-1], y_whole_train_old[-1]
-    X_test_new, y_test_new = X_validation_old, y_validation_old
-    return X_whole_train_new, y_whole_train_new, X_validation_new, y_validation_new, X_test_new, y_test_new
+    number_of_classifiers = classifier_data.number_of_classifiers
+    X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = [], [], [], [], [], []
+    for i in range(number_of_classifiers + 2):
+        if i == tup[0]:
+            X_validation = X_splitted[i]
+            y_validation = y_splitted[i]
+        elif i == tup[1]:
+            X_test = X_splitted[i]
+            y_test = y_splitted[i]
+        else:
+            X_whole_train.append(X_splitted[i])
+            y_whole_train.append(y_splitted[i])
+    return X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test
 
 
 def get_permutation_results(score_pro_permutation: [], mccs_pro_permutation: []):
