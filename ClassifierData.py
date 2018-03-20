@@ -13,7 +13,8 @@ class ClassifierData():
                  switch_columns_while_loading: bool = False, number_of_space_parts: int = 5,
                  number_of_classifiers: int = 3, number_of_best_classifiers: int = 2, show_color_plot: bool = False,
                  write_computed_scores: bool = False, show_plots: bool = False, columns: [] = [0, 1],
-                 is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx'):
+                 is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx',
+                 generate_all_permutations: bool = True):
         self.type_of_classifier = type_of_classifier
         self.are_samples_generated = are_samples_generated
         self.number_of_samples_if_generated = number_of_samples_if_generated
@@ -28,6 +29,7 @@ class ClassifierData():
         self.columns = columns
         self.is_validation_hard = is_validation_hard
         self.filename = filename
+        self.generate_all_permutations = generate_all_permutations
 
     def validate(self):
         print('Validating parameters')
@@ -45,6 +47,7 @@ class ClassifierData():
         self.validate_columns()
         self.validate_is_validation_hard()
         self.validate_filename()
+        self.validate_generate_all_permutations()
         print('Parameters valid\n')
 
     def validate_type_of_classifier(self):
@@ -121,3 +124,7 @@ class ClassifierData():
     def validate_filename(self):
         if not type(self.filename) is str:
             raise Exception('filename must be of type str')
+
+    def validate_generate_all_permutations(self):
+        if not type(self.generate_all_permutations) is bool:
+            raise Exception('generate_all_permutations must be of type bool')

@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import ClassifLibrary
-import itertools
 
 
 def run(classif_data = ClassifLibrary.ClassifierData()):
@@ -11,7 +10,6 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     """
     classif_data.validate()
     show_plots = classif_data.show_plots
-    number_of_classifiers = classif_data.number_of_classifiers
 
     clfs = ClassifLibrary.initialize_classifiers(classif_data)
 
@@ -27,12 +25,13 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     number_of_permutations = 1
 
     score_pro_permutation, mccs_pro_permutation = [], []
-    for tup in itertools.permutations(range(number_of_classifiers + 2), 2):
+    permutations = ClassifLibrary.generate_permutations(classif_data)
+    for tup in permutations:
 
         print('\n{}. iteration\n'.format(number_of_permutations))
 
         X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
-            ClassifLibrary.generate_permutation(X_splitted, y_splitted, tup, classif_data)
+            ClassifLibrary.get_permutation(X_splitted, y_splitted, tup, classif_data)
 
         clfs, coefficients = \
             ClassifLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots, classif_data)

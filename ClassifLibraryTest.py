@@ -636,6 +636,34 @@ class MyLibraryTest(unittest.TestCase):
         self.assertEqual(len([self.conf_matrix]), len(mcc))
         self.assertEqual((tp * tn - fp * fn) / math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)), mcc[0])
 
+    def test_should_return_one_permutation(self):
+        # given
+        generate_all_permutations = False
+        # when
+        classifier_data = ClassifierData(generate_all_permutations = generate_all_permutations)
+        permutation = ClassifLibrary.generate_permutations(classifier_data)
+        # then
+        self.assertEqual(1, len(permutation))
+        self.assertEqual((0, 1), permutation[0])
+
+    def test_should_return_right_permutations_on_default(self):
+        # given
+        # when
+        permutations = ClassifLibrary.generate_permutations()
+        # then
+        self.assertEqual(len(list(permutations)),
+                         int(self.NUMBER_OF_CLASSIFIERS + 2) * (self.NUMBER_OF_CLASSIFIERS + 1))
+
+    def test_should_return_right_permutations(self):
+        # given
+        number_of_classifiers = 10
+        classifier_data = ClassifierData(number_of_classifiers = number_of_classifiers)
+        # when
+        permutations = ClassifLibrary.generate_permutations(classifier_data)
+        # then
+        self.assertEqual(len(list(permutations)),
+                         int((number_of_classifiers + 2) * (number_of_classifiers + 1)))
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -15,6 +15,18 @@ class MyLibraryTest(unittest.TestCase):
         self.assertIsNotNone(mv_mcc)
         self.assertIsNotNone(merged_mcc)
 
+    def test_should_return_no_error_on_default_merging_algorithm_with_no_permutations(self):
+        # given
+        generate_all_permutations = False
+        classifier_data = ClassifierData(generate_all_permutations = generate_all_permutations)
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+
     def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file(self):
         # given
         classifier_data = ClassifierData(filename = 'appendicitis.dat')

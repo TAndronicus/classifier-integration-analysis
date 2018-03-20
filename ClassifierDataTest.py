@@ -202,6 +202,15 @@ class ClassifierDataTest(unittest.TestCase):
         with self.assertRaisesRegex(Exception, 'filename must be of type str'):
             classifier_data.validate_filename()
 
+    def test_validate_generate_all_permutations(self):
+        # given
+        generate_all_permutations = 'test'
+        # when
+        classifier_data = ClassifierData(generate_all_permutations = generate_all_permutations)
+        # then
+        with self.assertRaisesRegex(Exception, 'generate_all_permutations must be of type bool'):
+            classifier_data.validate_generate_all_permutations()
+
 
 if __name__ == '__main__':
     unittest.main()

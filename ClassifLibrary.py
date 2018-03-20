@@ -8,6 +8,7 @@ import xlrd
 import numpy as np
 import matplotlib.pyplot as plt
 import math
+import itertools
 from ClfType import ClfType
 from ClassifierData import ClassifierData
 
@@ -1343,8 +1344,22 @@ def print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores: [], cumulated_sc
             print(conf_mat[i][j])
 
 
-def generate_permutation(X_splitted: [], y_splitted: [], tup: tuple,
-                         classifier_data: ClassifierData = ClassifierData()):
+def generate_permutations(classifier_data: ClassifierData = ClassifierData()):
+    """Generates permutations for datasets
+
+    :param classifier_data: ClassifierData
+    :return: []
+    """
+    number_of_classifiers = classifier_data.number_of_classifiers
+    generate_all_permutations = classifier_data.generate_all_permutations
+    if generate_all_permutations:
+        return itertools.permutations(range(number_of_classifiers + 2), 2)
+    else:
+        return [(0, 1)]
+
+
+def get_permutation(X_splitted: [], y_splitted: [], tup: tuple,
+                    classifier_data: ClassifierData = ClassifierData()):
     """Returns permutation of datasets, which are moved right
 
     :param X_whole_train_old: []
