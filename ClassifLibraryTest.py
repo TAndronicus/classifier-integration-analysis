@@ -664,6 +664,24 @@ class MyLibraryTest(unittest.TestCase):
         self.assertEqual(len(list(permutations)),
                          int((number_of_classifiers + 2) * (number_of_classifiers + 1)))
 
+    def test_should_return_right_dataset_permutation(self):
+        # given
+        X = [[0], [1], [2], [3], [4]]
+        y = [[5], [6], [7], [8], [9]]
+        tup = (1, 3)
+        # when
+        X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
+            ClassifLibrary.get_permutation(X, y, tup, ClassifierData())
+        # then
+        self.assertEqual(X[tup[0]], X_validation)
+        self.assertEqual(y[tup[0]], y_validation)
+        self.assertEqual(X[tup[1]], X_test)
+        self.assertEqual(y[tup[1]], y_test)
+        for i in range(len(X)):
+            if not tup.__contains__(i):
+                self.assertTrue(X_whole_train.__contains__(X[i]))
+                self.assertTrue(y_whole_train.__contains__(y[i]))
+
 
 if __name__ == '__main__':
     unittest.main()
