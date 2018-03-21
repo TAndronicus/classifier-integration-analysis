@@ -168,6 +168,18 @@ class MyLibraryTest(unittest.TestCase):
         self.assertEqual(len(X1[0]), 2)
         self.assertEqual(len(X2[0]), 2)
 
+    def test_should_select_right_features(self):
+        # given
+        X = [[0, 5, 10], [1, 0, 10], [2, 6, 10], [3, -1, 10], [4, 4, 10]]
+        y = [1, 0, 1, 0, 1]
+        expected_X0 = [[0, 1], [-1, 3]]
+        expected_X1 = [[5, 0], [6, 2], [4, 4]]
+        # when
+        X0, X1 = ClassifLibrary.make_selection(X, y, ClassifLibrary.ClassifierData())
+        # then
+        self.assertEqual(expected_X0, X0)
+        self.assertEqual(expected_X1, X1)
+
     def test_cumulative_length_of_returned_datasets_should_be_multiply_of_number_of_subspaces(self):
         # given
         X0_full = np.array(

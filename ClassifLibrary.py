@@ -256,7 +256,7 @@ def load_samples_from_datasets(classifier_data: ClassifierData = ClassifierData(
         X, y = read_sv_file(classifier_data, ';')
     else:
         X, y = read_excel_file(classifier_data)
-    X0, X1 = make_selection(X, y)
+    X0, X1 = make_selection(X, y, classifier_data)
     print('Ratio (0:1): {}:{}'.format(len(X0), len(X1)))
     X0, X1 = sort_attributes(X0), sort_attributes(X1)
     if is_validation_hard:
@@ -312,17 +312,21 @@ def read_sv_file(classifier_data: ClassifierData = ClassifierData(), separator: 
     return X, y
 
 
-def make_selection(X: [], y: []):
+def make_selection(X: [], y: [], classifier_data: ClassifierData = ClassifierData()):
     """Returns 2 best columns in 2 datasets for each class
 
     :param X: []
     :param y: []
+    :param classifier_data: ClassifierData
     :return: X0, X1: [], []
     """
+    switch_columns_while_loading = classifier_data.switch_columns_while_loading
     selection = SelectKBest(k = 2, score_func = f_classif)
     selection.fit(X, y)
     feature_scores = selection.scores_
     columns = get_columns_from_scores(feature_scores)
+    if switch_columns_while_loading:
+        pass
     return get_separate_columns(X, y, columns)
 
 
@@ -1362,12 +1366,10 @@ def get_permutation(X_splitted: [], y_splitted: [], tup: tuple,
                     classifier_data: ClassifierData = ClassifierData()):
     """Returns permutation of datasets, which are moved right
 
-    :param X_whole_train_old: []
-    :param y_whole_train_old: []
-    :param X_validation_old: np.array
-    :param y_validation_old: np.array
-    :param X_test_old: np.array
-    :param y_test_old: np.array
+    :param X_splitted: []
+    :param y_splitted: []
+    :param tup: ()
+    :param classifier_data: ClassifierData
     :return: X_whole_train_new, y_whole_train_new, X_validation_new, y_validation_new, X_test_new, y_test_new: [], [],
     np.array, np.array, np.array, np.array
     """
