@@ -180,6 +180,19 @@ class MyLibraryTest(unittest.TestCase):
         self.assertEqual(expected_X0, X0)
         self.assertEqual(expected_X1, X1)
 
+    def test_should_select_right_features_when_swapped(self):
+        # given
+        X = [[0, 5, 10], [1, 0, 10], [2, 6, 10], [3, -1, 10], [4, 4, 10]]
+        y = [1, 0, 1, 0, 1]
+        expected_X0 = [[1, 0], [3, -1]]
+        expected_X1 = [[0, 5], [2, 6], [4, 4]]
+        classifier_data = ClassifierData(switch_columns_while_loading = True)
+        # when
+        X0, X1 = ClassifLibrary.make_selection(X, y, classifier_data)
+        # then
+        self.assertEqual(expected_X0, X0)
+        self.assertEqual(expected_X1, X1)
+
     def test_cumulative_length_of_returned_datasets_should_be_multiply_of_number_of_subspaces(self):
         # given
         X0_full = np.array(

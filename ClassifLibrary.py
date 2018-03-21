@@ -326,7 +326,8 @@ def make_selection(X: [], y: [], classifier_data: ClassifierData = ClassifierDat
     feature_scores = selection.scores_
     columns = get_columns_from_scores(feature_scores)
     if switch_columns_while_loading:
-        pass
+        columns[0], columns[1] = columns[1], columns[0]
+        print('Columns switched: {} and {}'.format(columns[0], columns[1]))
     return get_separate_columns(X, y, columns)
 
 
