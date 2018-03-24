@@ -13,9 +13,9 @@ columns = [0, 1]
 number_of_space_parts = 5
 number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
-draw_color_plot = False
+draw_color_plot = True
 write_computed_scores = False
-show_plots = False
+show_plots = True
 is_validation_hard = False
 generate_all_permutations = False
 

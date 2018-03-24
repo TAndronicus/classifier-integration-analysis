@@ -3,12 +3,12 @@ from ClassifierData import ClassifierData
 from MergingAlgorithm import run
 
 
-class MyLibraryTest(unittest.TestCase):
+class MergingAlgorithmTest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm(self):
         # given
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData())
+        mv_score, merged_score, mv_mcc, merged_mcc = run()
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(merged_score)
@@ -19,6 +19,32 @@ class MyLibraryTest(unittest.TestCase):
         # given
         generate_all_permutations = False
         classifier_data = ClassifierData(generate_all_permutations = generate_all_permutations)
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+
+    def test_should_return_no_error_on_default_merging_algorithm_switching_columns(self):
+        # given
+        switch_columns_while_loading = True
+        classifier_data = ClassifierData(switch_columns_while_loading = switch_columns_while_loading)
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+
+    def test_should_return_no_error_on_default_merging_algorithm_with_no_permutations_switching_columns(self):
+        # given
+        generate_all_permutations = False
+        switch_columns_while_loading = True
+        classifier_data = ClassifierData(generate_all_permutations = generate_all_permutations,
+                                         switch_columns_while_loading = switch_columns_while_loading)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
