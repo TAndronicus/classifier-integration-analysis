@@ -885,7 +885,6 @@ def get_plot_data(X: []):
     :param X: np.array
     :return: xx, yy, x_min_plot, x_max_plot: dnarray, dnarray, float, float
     """
-    print('Getting data for plot')
     x_min, x_max, y_min, y_max = get_samples_limits(X)
     x_shift = 0.1 * (x_max - x_min)
     y_shift = 0.1 * (y_max - y_min)
@@ -983,7 +982,6 @@ def prepare_builtin_train_plot(X: [], clf: [], current_subplot: int, number_of_s
     :return:
     """
     xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X)
-    print('Drawing color plot')
     ax = plt.subplot(1, number_of_subplots, current_subplot)
     if hasattr(clf, 'decision_function'):
         Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
@@ -1269,9 +1267,6 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
             score.append(0)
         part_lengths.append(len(X_part))
     cumulated_score = (prop_0_pred_0 + prop_1_pred_1) / (prop_0_pred_0 + prop_0_pred_1 + prop_1_pred_0 + prop_1_pred_1)
-    for i in range(len(score)):
-        cumulated_score += score[i] * part_lengths[i]
-    cumulated_score /= len(X_test)
     if cumulated_score < 0.5:
         cumulated_score = 1 - cumulated_score
         for i in range(len(score)):

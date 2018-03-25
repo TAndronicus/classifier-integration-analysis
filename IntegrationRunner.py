@@ -15,17 +15,25 @@ number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
 draw_color_plot = True
 write_computed_scores = False
-show_plots = True
+show_plots = False
 is_validation_hard = False
-generate_all_permutations = False
+generate_all_permutations = True
+files_to_switch = ['haberman.dat', 'seismic_bumps.dat', 'sonar.dat']
 
 results = []
 for filename in filenames:
+    print('Analysing ' + filename)
+    if files_to_switch.__contains__(filename):
+        switch_columns_while_loading = True
+        print('Switching columns')
+    else:
+        switch_columns_while_loading = False
     classifier_data = \
         ClassifLibrary.ClassifierData(type_of_classifier = type_of_classifier,
                                       are_samples_generated = are_samples_generated,
                                       number_of_samples_if_generated = number_of_samples_if_generated,
                                       number_of_dataset_if_not_generated = number_of_dataset_if_not_generated,
+                                      switch_columns_while_loading = switch_columns_while_loading,
                                       number_of_space_parts = number_of_space_parts,
                                       number_of_classifiers = number_of_classifiers,
                                       number_of_best_classifiers = number_of_best_classifiers,
