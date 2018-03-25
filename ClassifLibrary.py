@@ -1182,12 +1182,12 @@ def prepare_majority_voting(clfs: [], X_test: [], y_test: []):
     prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1, score = 0, 0, 0, 0, 0
     for i in range(len(y_predicted)):
         if y_test[i] == 0:
-            if y_predicted[i] == 0:
+            if y_predicted[i] < .5:
                 prop_0_pred_0 += 1
             else:
                 prop_0_pred_1 += 1
         else:
-            if y_predicted[i] == 0:
+            if y_predicted[i] < .5:
                 prop_1_pred_0 += 1
             else:
                 prop_1_pred_1 += 1
@@ -1248,22 +1248,20 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
 
         X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data)
         if len(X_part) > 0:
-            propperly_classified = 0
             all_classified = 0
             for k in range(len(X_part)):
-                all_classified += 1
-                if (a * X_part[k][0] + b > X_part[k][1]) ^ (y_part[k] == 1):
-                    propperly_classified += 1
-                    if y_part[k] == 0:
-                        prop_0_pred_0 += 1
-                    else:
+                if y_part[k] >= .5:
+                    if a * X_part[k][0] + b > X_part[k][1]:
                         prop_1_pred_1 += 1
-                else:
-                    if y_part[k] == 0:
-                        prop_0_pred_1 += 1
                     else:
                         prop_1_pred_0 += 1
-            score.append(propperly_classified / all_classified)
+                else:
+                    if a * X_part[k][0] + b > X_part[k][1]:
+                        prop_0_pred_1 += 1
+                    else:
+                        prop_0_pred_0 += 1
+            score.append((prop_0_pred_0 + prop_1_pred_1) /
+                         (prop_0_pred_0 + prop_0_pred_1 + prop_1_pred_0 + prop_1_pred_1))
         else:
             score.append(0)
         part_lengths.append(len(X_part))
@@ -1274,7 +1272,7 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
     if cumulated_score < 0.5:
         cumulated_score = 1 - cumulated_score
         for i in range(len(score)):
-            score[i] = 1 - score[1]
+            score[i] = 1 - score[i]
         prop_0_pred_0, prop_0_pred_1 = prop_0_pred_1, prop_0_pred_0
         prop_1_pred_0, prop_1_pred_1 = prop_1_pred_1, prop_1_pred_0
     scores.append(score)

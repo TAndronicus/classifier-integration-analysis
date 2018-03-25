@@ -72,4 +72,4 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     overall_scores, overall_mcc = ClassifLibrary.get_permutation_results(score_pro_permutation, mccs_pro_permutation)
     ClassifLibrary.print_permutation_results(overall_scores, overall_mcc)
     print('\n#####\n')
-    return overall_scores[-1], overall_scores[-2], overall_mcc[-1], overall_mcc[-2]
+    return overall_scores[-2], overall_scores[-1], overall_mcc[-2], overall_mcc[-1]
