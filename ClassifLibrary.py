@@ -12,6 +12,7 @@ import itertools
 from ClfType import ClfType
 from ClassifierData import ClassifierData
 
+
 def determine_clf_type(clf):
     """Determines type of classifier
 
@@ -1248,7 +1249,6 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
 
         X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data)
         if len(X_part) > 0:
-            all_classified = 0
             for k in range(len(X_part)):
                 if y_part[k] >= .5:
                     if a * X_part[k][0] + b > X_part[k][1]:
