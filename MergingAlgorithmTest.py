@@ -1,9 +1,10 @@
 import unittest
+import math
 from ClassifierData import ClassifierData
 from MergingAlgorithm import run
 
 
-class MergingAlgorithmTest(unittest.TestCase):
+class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm(self):
         # given
@@ -264,6 +265,46 @@ class MergingAlgorithmTest(unittest.TestCase):
         self.assertIsNotNone(merged_score)
         self.assertIsNotNone(mv_mcc)
         self.assertIsNotNone(merged_mcc)
+
+    def test_should_return_right_value_on_mock_test_case(self):
+        # given
+        filename = 'TestCases.xlsx'
+        are_samples_generated = False
+        classifier_data = ClassifierData(filename = filename, are_samples_generated = are_samples_generated)
+        TP = 500
+        TN = 400
+        FP = 70
+        FN = 30
+        expected_score = (TP + TN) / (TP + TN + FP + FN)
+        expected_mcc = (TP * TN - FP * FN) / math.sqrt((TP + FP) * (TP + FN) * (TN + FN) * (TN + FP))
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertAlmostEqual(expected_score, mv_score, delta = .01)
+        self.assertAlmostEqual(expected_score, merged_score, delta = .02)
+        self.assertAlmostEqual(expected_mcc, mv_mcc, delta = .02)
+        self.assertAlmostEqual(expected_mcc, merged_mcc, delta = .04)
+
+    def test_should_return_right_value_on_mock_test_case_one_iter(self):
+        # given
+        filename = 'TestCases.xlsx'
+        are_samples_generated = False
+        generate_all_permutations = False
+        classifier_data = ClassifierData(filename = filename, are_samples_generated = are_samples_generated,
+                                         generate_all_permutations = generate_all_permutations)
+        TP = 500
+        TN = 400
+        FP = 70
+        FN = 30
+        expected_score = (TP + TN) / (TP + TN + FP + FN)
+        expected_mcc = (TP * TN - FP * FN) / math.sqrt((TP + FP) * (TP + FN) * (TN + FN) * (TN + FP))
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertAlmostEqual(expected_score, mv_score, delta = .01)
+        self.assertAlmostEqual(expected_score, merged_score, delta = .03)
+        self.assertAlmostEqual(expected_mcc, mv_mcc, delta = .01)
+        self.assertAlmostEqual(expected_mcc, merged_mcc, delta = .05)
 
 
 if __name__ == '__main__':

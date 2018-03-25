@@ -17,7 +17,7 @@ draw_color_plot = True
 write_computed_scores = False
 show_plots = True
 is_validation_hard = False
-generate_all_permutations = False
+generate_all_permutations = True
 
 results = []
 for filename in filenames:
