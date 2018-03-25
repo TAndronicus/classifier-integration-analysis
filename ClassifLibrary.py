@@ -400,6 +400,14 @@ def assert_distribution(X0: [], X1: [], classifier_data: ClassifierData = Classi
 
 
 def cut_out_from_larger(X0: [], X1: [], from_front: bool, classifier_data: ClassifierData = ClassifierData()):
+    """Cuts value from set
+
+    :param X0: []
+    :param X1: []
+    :param from_front: bool
+    :param classifier_data: ClassifierData
+    :return:
+    """
     if from_front:
         if len(X0) > len(X1):
             return assert_distribution(X0[1:], X1, classifier_data)
@@ -916,9 +924,6 @@ def train_classifiers(clfs: [], X_whole_train: [], y_whole_train: [], X: [], num
     draw_color_plot = classifier_data.draw_color_plot
     show_plots = classifier_data.show_plots
 
-    if show_plots:
-        xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X)
-
     print('Training classifiers')
     trained_clfs, coefficients, current_subplot = [], [], 1
     for clf, X_train, y_train in zip(clfs, X_whole_train, y_whole_train):
@@ -934,29 +939,59 @@ def train_classifiers(clfs: [], X_whole_train: [], y_whole_train: [], X: [], num
 
         # Prepare plot
         if show_plots:
-            ax = plt.subplot(1, number_of_subplots, current_subplot)
-            ax.scatter(X_train[:, 0], X_train[:, 1], c = y_train)
-            x = np.linspace(x_min_plot, x_max_plot)
-            y = a * x + b
-            ax.plot(x, y)
-            ax.set_xlim(x_min_plot, x_max_plot)
-            ax.set_ylim(y_min_plot, y_max_plot)
+            prepare_train_plot(X, X_train, y_train, a, b, number_of_subplots, current_subplot)
             current_subplot += 1
 
+        # Draw color plot
         if show_plots and draw_color_plot:
-            # Draw color plot
-            print('Drawing color plot')
-            ax = plt.subplot(1, number_of_subplots, current_subplot)
-            if hasattr(clf, 'decision_function'):
-                Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
-            elif hasattr(clf, 'predict_proba'):
-                Z = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
-            else:
-                Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
-            Z = Z.reshape(xx.shape)
-            ax.contourf(xx, yy, Z, alpha = .8)
+            prepare_builtin_train_plot(X, clf, current_subplot, number_of_subplots)
             current_subplot += 1
     return trained_clfs, coefficients
+
+
+def prepare_train_plot(X: [], X_train: [], y_train: [], a: float, b: float, number_of_subplots: int,
+                       current_subplot: int):
+    """
+
+    :param X: []
+    :param X_train: []
+    :param y_train: []
+    :param a: float
+    :param b: floar
+    :param number_of_subplots: int
+    :param current_subplot: int
+    :return:
+    """
+    xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X)
+    ax = plt.subplot(1, number_of_subplots, current_subplot)
+    ax.scatter(X_train[:, 0], X_train[:, 1], c = y_train)
+    x = np.linspace(x_min_plot, x_max_plot)
+    y = a * x + b
+    ax.plot(x, y)
+    ax.set_xlim(x_min_plot, x_max_plot)
+    ax.set_ylim(y_min_plot, y_max_plot)
+
+
+def prepare_builtin_train_plot(X: [], clf: [], current_subplot: int, number_of_subplots: int):
+    """Prepares plot built in scikit learn
+
+    :param X: []
+    :param clf: []
+    :param current_subplot: int
+    :param number_of_subplots: int
+    :return:
+    """
+    xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X)
+    print('Drawing color plot')
+    ax = plt.subplot(1, number_of_subplots, current_subplot)
+    if hasattr(clf, 'decision_function'):
+        Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
+    elif hasattr(clf, 'predict_proba'):
+        Z = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
+    else:
+        Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    ax.contourf(xx, yy, Z, alpha = .8)
 
 
 def extract_coefficients_for_linear(clf):
@@ -1073,31 +1108,47 @@ def test_classifiers(clfs: [], X_validation: [], y_validation: [], X: [], coeffi
         a, b = coefficients[i]
 
         if write_computed_scores:
-            print('Computing scores manually')
-            manually_computed_scores, overall_absolute_score = [], 0
-            for j in range(number_of_space_parts):
-                X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, X, j, classifier_data)
-                propperly_classified, all_classified = 0, 0
-                for k in range(len(X_part)):
-                    if (a * X_part[k][0] + b > X_part[k][1]) ^ (y_part[k] == 1):
-                        propperly_classified += 1
-                    all_classified += 1
-                if not (all_classified == 0):
-                    manually_computed_scores.append(propperly_classified / all_classified)
-                    overall_absolute_score += propperly_classified
-                else:
-                    manually_computed_scores.append('No samples')
-            if 2 * overall_absolute_score < len(X_validation):
-                for computed_score in manually_computed_scores:
-                    try:
-                        print(1 - computed_score)
-                    except TypeError:
-                        print(computed_score)
-            else:
-                for computed_score in manually_computed_scores:
-                    print(computed_score)
+            compute_scores_manually(X, X_validation, y_validation, a, b, classifier_data)
         i += 1
     return scores, cumulated_scores
+
+
+def compute_scores_manually(X: [], X_validation: [], y_validation: [], a: float, b: float,
+                            classifier_data: ClassifierData = ClassifierData()):
+    """Computes and prints scores manually
+
+    :param X: []
+    :param X_validation: []
+    :param y_validation: []
+    :param a: float
+    :param b: float
+    :param classifier_data: ClassifierData
+    :return:
+    """
+    print('Computing scores manually')
+    number_of_space_parts = classifier_data.number_of_space_parts
+    manually_computed_scores, overall_absolute_score = [], 0
+    for j in range(number_of_space_parts):
+        X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, X, j, classifier_data)
+        propperly_classified, all_classified = 0, 0
+        for k in range(len(X_part)):
+            if (a * X_part[k][0] + b > X_part[k][1]) ^ (y_part[k] == 1):
+                propperly_classified += 1
+            all_classified += 1
+        if not (all_classified == 0):
+            manually_computed_scores.append(propperly_classified / all_classified)
+            overall_absolute_score += propperly_classified
+        else:
+            manually_computed_scores.append('No samples')
+    if 2 * overall_absolute_score < len(X_validation):
+        for computed_score in manually_computed_scores:
+            try:
+                print(1 - computed_score)
+            except TypeError:
+                print(computed_score)
+    else:
+        for computed_score in manually_computed_scores:
+            print(computed_score)
 
 
 def compute_confusion_matrix(clfs: [], X_test: [], y_test: []):
@@ -1140,12 +1191,7 @@ def prepare_majority_voting(clfs: [], X_test: [], y_test: []):
                 prop_1_pred_0 += 1
             else:
                 prop_1_pred_1 += 1
-    prop_0, prop_1 = [], []
-    prop_0.append(prop_0_pred_0)
-    prop_0.append(prop_0_pred_1)
-    prop_1.append(prop_1_pred_0)
-    prop_1.append(prop_1_pred_1)
-    conf_mat = [prop_0, prop_1]
+    conf_mat = compose_conf_matrix(prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1)
     score = (prop_0_pred_0 + prop_1_pred_1) / len(y_test)
     return np.array(conf_mat), score
 
@@ -1232,17 +1278,30 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
         prop_0_pred_0, prop_0_pred_1 = prop_0_pred_1, prop_0_pred_0
         prop_1_pred_0, prop_1_pred_1 = prop_1_pred_1, prop_1_pred_0
     scores.append(score)
+    conf_mat = compose_conf_matrix(prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1)
+    if show_plots:
+        xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X)
+        ax.set_xlim(x_min_plot, x_max_plot)
+        ax.set_ylim(y_min_plot, y_max_plot)
+    return scores, cumulated_score, np.array(conf_mat)
+
+
+def compose_conf_matrix(prop_0_pred_0: int, prop_0_pred_1: int, prop_1_pred_0: int, prop_1_pred_1: int):
+    """Composes confusion matrix from cells
+
+    :param prop_0_pred_0: int
+    :param prop_0_pred_1: int
+    :param prop_1_pred_0: int
+    :param prop_1_pred_1: int
+    :return: conf_mat: []
+    """
     prop_0, prop_1 = [], []
     prop_0.append(prop_0_pred_0)
     prop_0.append(prop_0_pred_1)
     prop_1.append(prop_1_pred_0)
     prop_1.append(prop_1_pred_1)
     conf_mat = [prop_0, prop_1]
-    if show_plots:
-        xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X)
-        ax.set_xlim(x_min_plot, x_max_plot)
-        ax.set_ylim(y_min_plot, y_max_plot)
-    return scores, cumulated_score, np.array(conf_mat)
+    return conf_mat
 
 
 def get_number_of_samples_in_subspace(X: [], j: int, classifier_data: ClassifierData = ClassifierData()):
