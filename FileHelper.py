@@ -1,10 +1,10 @@
 import xlwt
 
 
-def save_merging_results(filenames: [], results: []):
+def save_merging_results(filenames: [], results: [], filename: str = 'Results.xlsx', sheetname: str = 'Result'):
     workbook = xlwt.Workbook()
-    workbook.add_sheet("Result")
-    sheet = workbook.get_sheet("Result")
+    workbook.add_sheet(sheetname)
+    sheet = workbook.get_sheet(sheetname)
     sheet.write(0, 0, "filename")
     sheet.write(0, 1, "majority voting score")
     sheet.write(0, 2, "integrated classifier score")
@@ -14,4 +14,4 @@ def save_merging_results(filenames: [], results: []):
         sheet.write(i + 1, 0, filenames[i])
         for j in range(len(results[i])):
             sheet.write(i + 1, j + 1, results[i][j])
-    workbook.save("Results.xlsx")
+    workbook.save(filename)

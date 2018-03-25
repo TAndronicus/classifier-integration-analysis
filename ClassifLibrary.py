@@ -1248,11 +1248,14 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
             ax.plot(x, y)
 
         X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data)
+        all_classified, propperly_classified = 0, 0
         if len(X_part) > 0:
             for k in range(len(X_part)):
+                all_classified += 1
                 if y_part[k] >= .5:
                     if a * X_part[k][0] + b > X_part[k][1]:
                         prop_1_pred_1 += 1
+                        propperly_classified += 1
                     else:
                         prop_1_pred_0 += 1
                 else:
@@ -1260,12 +1263,12 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
                         prop_0_pred_1 += 1
                     else:
                         prop_0_pred_0 += 1
-            score.append((prop_0_pred_0 + prop_1_pred_1) /
-                         (prop_0_pred_0 + prop_0_pred_1 + prop_1_pred_0 + prop_1_pred_1))
+                        propperly_classified += 1
+            score.append(propperly_classified / all_classified)
         else:
             score.append(0)
         part_lengths.append(len(X_part))
-    cumulated_score = 0
+    cumulated_score = (prop_0_pred_0 + prop_1_pred_1) / (prop_0_pred_0 + prop_0_pred_1 + prop_1_pred_0 + prop_1_pred_1)
     for i in range(len(score)):
         cumulated_score += score[i] * part_lengths[i]
     cumulated_score /= len(X_test)
