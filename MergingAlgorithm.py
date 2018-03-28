@@ -10,6 +10,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     """
     classif_data.validate()
     show_plots = classif_data.show_plots
+    show_only_first_plot = classif_data.show_only_first_plot
 
     clfs = ClassifLibrary.initialize_classifiers(classif_data)
 
@@ -63,9 +64,10 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
         if show_plots:
             plt.show()
 
-        show_plots = False  # Convenience
-        classif_data.show_plots = False
-        classif_data.draw_color_plot = False
+        if show_only_first_plot:
+            show_plots = False  # Convenience
+            classif_data.show_plots = False
+            classif_data.draw_color_plot = False
     number_of_permutations -= 1
 
     print('\n#####\nOverall results after {} iterations:'.format(number_of_permutations))

@@ -148,6 +148,15 @@ class ClassifierDataTest(unittest.TestCase):
         with self.assertRaisesRegex(Exception, 'show_plots must be of type boolean'):
             classifier_data.validate_show_plots()
 
+    def test_validate_show_only_first_plot(self):
+        # given
+        show_only_first_plot = 'test'
+        # when
+        classifier_data = ClassifierData(show_only_first_plot = show_only_first_plot)
+        # then
+        with self.assertRaisesRegex(Exception, 'show_only_first_plot must be of type boolean'):
+            classifier_data.validate_show_only_first_plot()
+
     def test_validate_columns_non_matrix(self):
         # given
         columns = 'test'

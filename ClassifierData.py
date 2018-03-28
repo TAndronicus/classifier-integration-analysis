@@ -12,8 +12,8 @@ class ClassifierData():
                  number_of_samples_if_generated: int = 1000, number_of_dataset_if_not_generated: int = 0,
                  switch_columns_while_loading: bool = False, number_of_space_parts: int = 5,
                  number_of_classifiers: int = 3, number_of_best_classifiers: int = 2, show_color_plot: bool = False,
-                 write_computed_scores: bool = False, show_plots: bool = False, columns: [] = [0, 1],
-                 is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx',
+                 write_computed_scores: bool = False, show_plots: bool = False, show_only_first_plot: bool = True,
+                 columns: [] = [0, 1], is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx',
                  generate_all_permutations: bool = True):
         self.type_of_classifier = type_of_classifier
         self.are_samples_generated = are_samples_generated
@@ -26,6 +26,7 @@ class ClassifierData():
         self.draw_color_plot = show_color_plot
         self.write_computed_scores = write_computed_scores
         self.show_plots = show_plots
+        self.show_only_first_plot = show_only_first_plot
         self.columns = columns
         self.is_validation_hard = is_validation_hard
         self.filename = filename
@@ -44,6 +45,7 @@ class ClassifierData():
         self.validate_draw_color_plot()
         self.validate_write_computed_scores()
         self.validate_show_plots()
+        self.validate_show_only_first_plot()
         self.validate_columns()
         self.validate_is_validation_hard()
         self.validate_filename()
@@ -103,6 +105,10 @@ class ClassifierData():
     def validate_show_plots(self):
         if not type(self.show_plots) is bool:
             raise Exception('show_plots must be of type boolean')
+
+    def validate_show_only_first_plot(self):
+        if not type(self.show_only_first_plot) is bool:
+            raise Exception('show_only_first_plot must be of type boolean')
 
     def validate_columns(self):
         if len(self.columns) == 0:

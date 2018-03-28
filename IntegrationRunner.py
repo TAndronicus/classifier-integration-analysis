@@ -15,9 +15,10 @@ number_of_classifiers = 3
 number_of_best_classifiers = number_of_classifiers - 1
 draw_color_plot = False
 write_computed_scores = False
-show_plots = False
+show_plots = True
+show_only_first_plot = True
 is_validation_hard = False
-generate_all_permutations = True
+generate_all_permutations = False
 files_to_switch = ['haberman.dat', 'seismic_bumps.dat', 'sonar.dat']
 
 results = []
@@ -37,12 +38,15 @@ for filename in filenames:
                                       number_of_space_parts = number_of_space_parts,
                                       number_of_classifiers = number_of_classifiers,
                                       number_of_best_classifiers = number_of_best_classifiers,
-                                      show_color_plot = draw_color_plot, write_computed_scores = write_computed_scores,
-                                      show_plots = show_plots, columns = columns,
+                                      show_color_plot = draw_color_plot,
+                                      write_computed_scores = write_computed_scores,
+                                      show_plots = show_plots,
+                                      show_only_first_plot = show_only_first_plot,
+                                      columns = columns,
                                       is_validation_hard = is_validation_hard,
                                       filename = 'datasets//' + filename,
                                       generate_all_permutations = generate_all_permutations)
 
     mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
     results.append([mv_score, merged_score, mv_mcc, merged_mcc])
-FileHelper.save_merging_results(filenames, results)
+#FileHelper.save_merging_results(filenames, results)
