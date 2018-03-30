@@ -1350,7 +1350,7 @@ def print_scores_conf_mats_pro_classif_pro_subspace(scores: [], cumulated_scores
     :param conf_mat: []
     :return: void
     """
-    print('\n\nIteration results\n\n')
+    print('\n\nIteration results_pro_division\n\n')
     for i in range(len(cumulated_scores)):
         if i == len(cumulated_scores) - 1:
             print('Scores for composite classifier')
@@ -1380,7 +1380,7 @@ def print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores: [], cumulated_sc
     :param mcc: []
     :return: void
     """
-    print('\n\nIteration results\n\n')
+    print('\n\nIteration results_pro_division\n\n')
     for i in range(len(cumulated_scores)):
         if i == len(cumulated_scores) - 1:
             print('Scores for composite classifier')

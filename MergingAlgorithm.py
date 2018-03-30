@@ -70,7 +70,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
             classif_data.draw_color_plot = False
     number_of_permutations -= 1
 
-    print('\n#####\nOverall results after {} iterations:'.format(number_of_permutations))
+    print('\n#####\nOverall results_pro_division after {} iterations:'.format(number_of_permutations))
     overall_scores, overall_mcc = ClassifLibrary.get_permutation_results(score_pro_permutation, mccs_pro_permutation)
     ClassifLibrary.print_permutation_results(overall_scores, overall_mcc)
     print('\n#####\n')

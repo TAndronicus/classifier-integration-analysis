@@ -1,7 +1,7 @@
 from ClfType import ClfType
 
 
-class ClassifierData():
+class ClassifierData:
     """Clas to produce parameter object for classification
 
     """
