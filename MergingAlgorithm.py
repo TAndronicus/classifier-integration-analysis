@@ -52,7 +52,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
         confusion_matrices.append(conf_mat)
         cumulated_scores.append(cumulated_score)
-        mccs = ClassifLibrary.compute_mcc(confusion_matrices)
+        mccs = ClassifLibrary.compute_mccs(confusion_matrices)
         score_pro_permutation.append(cumulated_scores)
         mccs_pro_permutation.append(mccs)
 

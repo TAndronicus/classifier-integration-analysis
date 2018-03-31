@@ -656,7 +656,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         tp, tn, fp, fn = self.conf_matrix[0][0], self.conf_matrix[1][1], self.conf_matrix[1][0], self.conf_matrix[0][1]
         # when
-        mcc = ClassifLibrary.compute_mcc([self.conf_matrix])
+        mcc = ClassifLibrary.compute_mccs([self.conf_matrix])
         # then
         self.assertEqual(len([self.conf_matrix]), len(mcc))
         self.assertEqual((tp * tn - fp * fn) / math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn)), mcc[0])

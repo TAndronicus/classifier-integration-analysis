@@ -1,7 +1,7 @@
 import xlwt
 
 
-def save_merging_results_one_space_division(filenames: [], results: [], filename: str = 'Results.xlsx',
+def save_merging_results_one_space_division(filenames: [], results: [], filename: str = 'Results.xls',
                                             sheetname: str = 'Result'):
     workbook = xlwt.Workbook()
     workbook.add_sheet(sheetname)
@@ -19,7 +19,7 @@ def save_merging_results_one_space_division(filenames: [], results: [], filename
 
 
 def save_merging_results(filenames: [], results_pro_space_division: [], space_division: [],
-                         filename: str = 'Results.xlsx', sheetname: str = 'Result'):
+                         filename: str = 'Results.xls', sheetname: str = 'Result'):
     workbook = xlwt.Workbook()
     workbook.add_sheet(sheetname)
     sheet = workbook.get_sheet(sheetname)

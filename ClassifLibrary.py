@@ -850,8 +850,8 @@ def prepare_samples_for_subspace(X_test: [], y_test: [], X: [], j: int,
     :return: X_part, y_part: [], []
     """
     x_samp_max, x_samp_min = get_subspace_limits(X, j, classifier_data)
-    X_part = [row for row in X_test if x_samp_min < row[0] < x_samp_max]
-    y_part = [y_test[k] for k in range(len(y_test)) if x_samp_min < X_test[k][0] < x_samp_max]
+    X_part = [row for row in X_test if x_samp_min <= row[0] < x_samp_max]
+    y_part = [y_test[k] for k in range(len(y_test)) if x_samp_min <= X_test[k][0] < x_samp_max]
     return X_part, y_part
 
 
@@ -1195,23 +1195,30 @@ def prepare_majority_voting(clfs: [], X_test: [], y_test: []):
     return np.array(conf_mat), score
 
 
-def compute_mcc(conf_matrices: []):
+def compute_mccs(conf_matrices: []):
     """Computes Matthews correlation coefficient
 
     :param conf_matrices: []
     :return: mcc: []
     """
-    mcc = []
-    for conf_matrix in conf_matrices:
-        prop_0_pred_0, prop_0_pred_1 = conf_matrix[0]
-        prop_1_pred_0, prop_1_pred_1 = conf_matrix[1]
-        mcc_score = (prop_0_pred_0 * prop_1_pred_1 - prop_0_pred_1 * prop_1_pred_0) / \
-                    math.sqrt((prop_1_pred_1 + prop_0_pred_1) * (prop_1_pred_1 + prop_1_pred_0) *
-                              (prop_0_pred_0 + prop_0_pred_1) * (prop_0_pred_0 + prop_1_pred_0))
+    mcc = np.zeros(len(conf_matrices), dtype = float)
+    for i in range(len(conf_matrices)):
+        prop_0_pred_0, prop_0_pred_1 = conf_matrices[i][0]
+        prop_1_pred_0, prop_1_pred_1 = conf_matrices[i][1]
+        mcc_score = compute_mcc(prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1)
         if math.isnan(mcc_score):
             mcc_score = 0
-        mcc.append(mcc_score)
+        mcc[i] = mcc_score
     return mcc
+
+
+def compute_mcc(prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1):
+    numerator = prop_0_pred_0 * prop_1_pred_1 - prop_0_pred_1 * prop_1_pred_0
+    denominator_sq = (prop_1_pred_1 + prop_0_pred_1) * (prop_1_pred_1 + prop_1_pred_0) * \
+                     (prop_0_pred_0 + prop_0_pred_1) * (prop_0_pred_0 + prop_1_pred_0)
+    denominator = np.sqrt(denominator_sq)
+    mcc_score = numerator / denominator
+    return mcc_score
 
 
 def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: [], scores: [], number_of_subplots: int,

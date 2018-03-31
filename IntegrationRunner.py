@@ -5,6 +5,7 @@ import FileHelper
 filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
              'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
              'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+#  filenames = ['wdbc.dat']
 type_of_classifier = ClassifLibrary.ClfType.LINEAR
 are_samples_generated = False
 number_of_samples_if_generated = 10000
@@ -15,12 +16,13 @@ number_of_best_classifiers = number_of_classifiers - 1
 draw_color_plot = False
 write_computed_scores = False
 show_plots = False
-show_only_first_plot = False
+show_only_first_plot = True
 is_validation_hard = False
 generate_all_permutations = True
 
-files_to_switch = ['haberman.dat', 'seismic_bumps.dat', 'sonar.dat']
+files_to_switch = ['haberman.dat', 'sonar.dat']
 space_division = list(range(3, 11))
+#  space_division = [9]
 
 results = []
 for number_of_space_parts in space_division:
