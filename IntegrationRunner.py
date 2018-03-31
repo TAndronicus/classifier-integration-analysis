@@ -1,11 +1,12 @@
 import MergingAlgorithm
 import ClassifLibrary
 import FileHelper
+import os.path as path
+from datetime import datetime
 
 filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
              'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
              'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
-#  filenames = ['wdbc.dat']
 type_of_classifier = ClassifLibrary.ClfType.LINEAR
 are_samples_generated = False
 number_of_samples_if_generated = 10000
@@ -18,11 +19,19 @@ write_computed_scores = False
 show_plots = False
 show_only_first_plot = True
 is_validation_hard = False
-generate_all_permutations = True
+generate_all_permutations = False
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
 space_division = list(range(3, 11))
-#  space_division = [9]
+
+log_number = 0
+while True:
+    if not path.isfile('integration' + str(log_number) + '.log'):
+        break
+    log_number += 1
+log = open('integration' + str(log_number) + '.log', 'w')
+log.write('Starting algorithm: ' + str(datetime.now()) + '\n\n')
+log.close()
 
 results = []
 for number_of_space_parts in space_division:
@@ -50,9 +59,14 @@ for number_of_space_parts in space_division:
                                           columns = columns,
                                           is_validation_hard = is_validation_hard,
                                           filename = 'datasets//' + filename,
-                                          generate_all_permutations = generate_all_permutations)
+                                          generate_all_permutations = generate_all_permutations,
+                                          log_number = log_number)
 
         mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
         results_pro_division.append([mv_score, merged_score, mv_mcc, merged_mcc])
     results.append(results_pro_division)
 FileHelper.save_merging_results(filenames, results, space_division)
+
+log = open('integration' + str(log_number) + '.log', 'a')
+log.write('Finishing algorithm: ' + str(datetime.now()))
+log.close()
