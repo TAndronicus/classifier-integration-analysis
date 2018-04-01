@@ -1,7 +1,7 @@
 import xlwt
 
 
-def save_merging_results_one_space_division(filenames: [], results: [], filename: str = 'Results.xls',
+def save_merging_results_one_space_division(filenames: [], results: [], result_filename: str = 'results//Results.xls',
                                             sheetname: str = 'Result'):
     workbook = xlwt.Workbook()
     workbook.add_sheet(sheetname)
@@ -15,11 +15,11 @@ def save_merging_results_one_space_division(filenames: [], results: [], filename
         sheet.write(i + 1, 0, filenames[i])
         for j in range(len(results[i])):
             sheet.write(i + 1, j + 1, results[i][j])
-    workbook.save(filename)
+    workbook.save(result_filename)
 
 
 def save_merging_results(filenames: [], results_pro_space_division: [], space_division: [],
-                         filename: str = 'Results.xls', sheetname: str = 'Result'):
+                         result_filename: str = 'results//Results.xls', sheetname: str = 'Result'):
     workbook = xlwt.Workbook()
     workbook.add_sheet(sheetname)
     sheet = workbook.get_sheet(sheetname)
@@ -36,4 +36,4 @@ def save_merging_results(filenames: [], results_pro_space_division: [], space_di
         for j in range(len(space_division)):
             for k in range(len(results_pro_space_division[j][i])):
                 sheet.write(i + 2, 4 * j + k + 1, results_pro_space_division[j][i][k])
-    workbook.save(filename)
+    workbook.save(result_filename)

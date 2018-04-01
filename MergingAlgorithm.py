@@ -4,7 +4,7 @@ import sys
 
 
 def enable_logging_to_file(log_number):
-    sys.stdout = open('integration' + str(log_number) + '.log', 'a')
+    sys.stdout = open('results//integration' + str(log_number) + '.log', 'a')
 
 
 def disable_logging_to_file():

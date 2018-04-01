@@ -26,19 +26,26 @@ space_division = list(range(3, 11))
 
 log_number = 0
 while True:
-    if not path.isfile('integration' + str(log_number) + '.log'):
+    if not path.isfile('results//integration' + str(log_number) + '.log'):
         break
     log_number += 1
-log = open('integration' + str(log_number) + '.log', 'w')
+log = open('results//integration' + str(log_number) + '.log', 'w')
 log.write('Starting algorithm: ' + str(datetime.now()) + '\n\n')
 log.close()
 
+result_file_number = 0
+while True:
+    if not path.isfile('results//Results' + str(result_file_number) + '.xls'):
+        break
+    result_file_number += 1
+
 results = []
 for number_of_space_parts in space_division:
+    print('Number of space parts:', number_of_space_parts)
     results_pro_division = []
     for filename in filenames:
         print('Analysing ' + filename)
-        if files_to_switch.__contains__(filename):
+        if filename in files_to_switch:
             switch_columns_while_loading = True
             print('Switching columns')
         else:
@@ -65,8 +72,8 @@ for number_of_space_parts in space_division:
         mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
         results_pro_division.append([mv_score, merged_score, mv_mcc, merged_mcc])
     results.append(results_pro_division)
-FileHelper.save_merging_results(filenames, results, space_division)
+FileHelper.save_merging_results(filenames, results, space_division, result_filename = 'results//Results' + str(result_file_number) + '.xls')
 
-log = open('integration' + str(log_number) + '.log', 'a')
+log = open('results//integration' + str(log_number) + '.log', 'a')
 log.write('Finishing algorithm: ' + str(datetime.now()))
 log.close()

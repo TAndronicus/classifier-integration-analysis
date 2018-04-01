@@ -104,7 +104,7 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
-            self.assertTrue(X1.__contains__(X2[i]))
+            self.assertTrue(X2[i] in X1)
 
     def test_should_not_change_data_whole(self):
         # given
@@ -155,7 +155,7 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertTrue(len(X2) <= len(X1))
         for i in range(len(X2)):
-            self.assertTrue(X1.__contains__(X2[i]))
+            self.assertTrue(X2[i] in X1)
 
     def test_should_contain_same_data_given_columns(self):
         # given
@@ -574,7 +574,7 @@ class MyLibraryTest(unittest.TestCase):
         treshold = X_sort[0][0] + (X_sort[-1][0] - X_sort[0][0]) / self.NUMBER_OF_SUBSPACES
         # then
         for i in range(len(X_sub)):
-            self.assertTrue(X_sub[i] <= treshold)
+            self.assertTrue(X_sub[i][0] <= treshold)
 
     def test_should_return_right_minima_and_maxima(self):
         # given
@@ -703,9 +703,9 @@ class MyLibraryTest(unittest.TestCase):
         self.assertEqual(X[tup[1]], X_test)
         self.assertEqual(y[tup[1]], y_test)
         for i in range(len(X)):
-            if not tup.__contains__(i):
-                self.assertTrue(X_whole_train.__contains__(X[i]))
-                self.assertTrue(y_whole_train.__contains__(y[i]))
+            if not i in tup:
+                self.assertTrue(X[i] in X_whole_train)
+                self.assertTrue(y[i] in y_whole_train)
 
 
 if __name__ == '__main__':
