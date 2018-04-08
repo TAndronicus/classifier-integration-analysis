@@ -69,7 +69,7 @@ def save_merging_results_pro_space_division_pro_base_classif(filenames: [],
     :param space_division: array of space divisions
     :param result_filename: filename to write results to
     :param sheetname: sheetname to write results to
-    :return: 
+    :return:
     """
     workbook = xlwt.Workbook()
     workbook.add_sheet(sheetname)

@@ -9,6 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import itertools
+import warnings
 from ClfType import ClfType
 from ClassifierData import ClassifierData
 
@@ -1059,7 +1060,9 @@ def evaluate_weighted_average_coefficients_from_n_best(coefficients: [], scores:
         scoreSum += params[number_of_classifiers - 1 - i][0]
         a += params[number_of_classifiers - 1 - i][1][0] * params[number_of_classifiers - 1 - i][0]
         b += params[number_of_classifiers - 1 - i][1][1] * params[number_of_classifiers - 1 - i][0]
-    return a / scoreSum, b / scoreSum
+    a /= scoreSum
+    b /= scoreSum
+    return a, b
 
 
 def get_subspace_limits(X: [], j: int, classifier_data: ClassifierData = ClassifierData()):
@@ -1252,7 +1255,9 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
     score, part_lengths, flip_index = [], [], 0
     prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1 = 0, 0, 0, 0
     for j in range(number_of_space_parts):
-        a, b = evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, j, classifier_data)
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            a, b = evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, j, classifier_data)
 
         if show_plots:
             x_subspace_min, x_subspace_max = get_subspace_limits(X, j, classifier_data)
@@ -1262,7 +1267,7 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
 
         X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data)
         all_classified, propperly_classified = 0, 0
-        if len(X_part) > 0:
+        if len(X_part) > 0 and not(math.isnan(a)) and not(math.isnan(b)):
             for k in range(len(X_part)):
                 all_classified += 1
                 if y_part[k] >= .5:
