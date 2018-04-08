@@ -12,6 +12,7 @@ import itertools
 import warnings
 from ClfType import ClfType
 from ClassifierData import ClassifierData
+from NotEnoughSamplesError import NotEnoughSamplesError
 
 
 def determine_clf_type(clf):
@@ -324,7 +325,9 @@ def make_selection(X: [], y: [], classifier_data: ClassifierData = ClassifierDat
     """
     switch_columns_while_loading = classifier_data.switch_columns_while_loading
     selection = SelectKBest(k = 2, score_func = f_classif)
-    selection.fit(X, y)
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        selection.fit(X, y)
     feature_scores = selection.scores_
     columns = get_columns_from_scores(feature_scores)
     if switch_columns_while_loading:
@@ -441,7 +444,6 @@ def assert_distribution_simplified(X0: [], X1: [], classifier_data: ClassifierDa
                                                                                          classifier_data)
         if counter0 + counter1 < number_of_classifiers + 2:
             print('Only {} samples in {}. subspace'.format(counter0 + counter1, i + 1))
-            # raise Exception('Not enough samples')
         remainder = (counter0 + counter1) % (number_of_classifiers + 2)
         if remainder != 0:
             if i != number_of_space_parts - 1:
@@ -763,8 +765,7 @@ def split_sorted_samples(X: [], y: [], classifier_data: ClassifierData = Classif
     number_of_space_parts = classifier_data.number_of_space_parts
     print('Splitting samples')
     if len(X) < (number_of_classifiers + 2) * number_of_space_parts:
-        print('Not enough samples')
-        raise Exception('Not enough samples')
+        raise NotEnoughSamplesError('Not enough samples found when sorting (len(X) = {})'.format(len(X)))
     length = int(len(X) / (number_of_classifiers + 2))
     X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
         [], [], np.zeros((length, 2)), np.zeros(length, dtype = np.int), np.zeros((length, 2)), \
@@ -797,8 +798,7 @@ def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = Classif
     number_of_space_parts = classifier_data.number_of_space_parts
     print('Splitting samples')
     if len(X) < (number_of_classifiers + 2) * number_of_space_parts:
-        print('Not enough samples')
-        raise Exception('Not enough samples')
+        raise NotEnoughSamplesError('Not enough samples found when sorting (len(X) = {})'.format(len(X)))
     X_splitted, y_splitted = [], []
     length = int(len(X) / (number_of_classifiers + 2))
     for i in range(number_of_classifiers + 2):

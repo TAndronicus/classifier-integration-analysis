@@ -1,18 +1,17 @@
 import MergingAlgorithm
 import ClassifLibrary
 import FileHelper
+from NotEnoughSamplesError import NotEnoughSamplesError
 import os
 from datetime import datetime
 
-#filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
- #            'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
-  #           'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
-filenames = ['seismic_bumps.dat', 'biodeg.scsv']
+filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+             'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
 type_of_classifier = ClassifLibrary.ClfType.LINEAR
 are_samples_generated = False
-number_of_samples_if_generated = 10000
+number_of_samples_if_generated = 1000
 number_of_dataset_if_not_generated = 0
-columns = [0, 1]
 draw_color_plot = False
 write_computed_scores = False
 show_plots = False
@@ -23,8 +22,8 @@ generate_all_permutations = False
 results_directory_relative = 'results'
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
-numbers_of_base_classifiers = list(range(3, 10))
-space_division = list(range(3, 11))
+numbers_of_base_classifiers = list(range(3, 6))
+space_division = list(range(3, 10))
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
 try:
@@ -75,14 +74,16 @@ for number_of_base_classifiers in numbers_of_base_classifiers:
                                               write_computed_scores = write_computed_scores,
                                               show_plots = show_plots,
                                               show_only_first_plot = show_only_first_plot,
-                                              columns = columns,
                                               is_validation_hard = is_validation_hard,
                                               filename = 'datasets//' + filename,
                                               generate_all_permutations = generate_all_permutations,
                                               log_number = log_number)
-
-            mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
-            results_pro_division.append([mv_score, merged_score, mv_mcc, merged_mcc])
+            try:
+                mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
+                results_pro_division.append([mv_score, merged_score, mv_mcc, merged_mcc])
+            except NotEnoughSamplesError as e:
+                print(e.args[0])
+                mv_score, merged_score, mv_mcc, merged_mcc = float('nan'), float('nan'), float('nan'), float('nan')
         results_pro_classifier.append(results_pro_division)
     results.append(results_pro_classifier)
 FileHelper.save_merging_results_pro_space_division_pro_base_classif(filenames, results, numbers_of_base_classifiers,
@@ -91,6 +92,6 @@ FileHelper.save_merging_results_pro_space_division_pro_base_classif(filenames, r
                                                                                       '//Results' +
                                                                                       str(result_file_number) + '.xls')
 
-log = open('results//integration' + str(log_number) + '.log', 'a')
+log = open(results_directory_relative + '//integration' + str(log_number) + '.log', 'a')
 log.write('Finishing algorithm: ' + str(datetime.now()))
 log.close()

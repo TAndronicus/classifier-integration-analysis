@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import ClassifLibrary
+from NotEnoughSamplesError import NotEnoughSamplesError
 import sys
 
 
@@ -9,6 +10,17 @@ def enable_logging_to_file(log_number):
 
 def disable_logging_to_file():
     sys.stdout = sys.__stdout__
+
+
+def indicate_insufficient_samples(e: NotEnoughSamplesError = NotEnoughSamplesError('Not enough samples for plot'),
+                                  classifier_data: ClassifLibrary.ClassifierData = ClassifLibrary.ClassifierData()):
+    print('\n#####\n')
+    print('Not enough samples, raising error (filename = {}, number of classifiers = {}, number of subspaces = {})'
+          .format(classifier_data.filename, classifier_data.number_of_classifiers,
+                  classifier_data.number_of_space_parts))
+    print(e.args[0])
+    print('\n#####\n')
+    raise e
 
 
 def run(classif_data = ClassifLibrary.ClassifierData()):
@@ -27,7 +39,10 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
     X, y = ClassifLibrary.prepare_raw_data(classif_data)
 
-    X_splitted, y_splitted = ClassifLibrary.split_sorted_unitary(X, y, classif_data)
+    try:
+        X_splitted, y_splitted = ClassifLibrary.split_sorted_unitary(X, y, classif_data)
+    except NotEnoughSamplesError as e:
+        indicate_insufficient_samples(e, classif_data)
 
     if show_plots:
         number_of_subplots = ClassifLibrary.determine_number_of_subplots(classif_data)
@@ -73,7 +88,10 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
         number_of_permutations += 1
 
         if show_plots:
-            plt.show()
+            try:
+                plt.show()
+            except AttributeError:
+                indicate_insufficient_samples()
 
         if show_only_first_plot:
             show_plots = False  # Convenience

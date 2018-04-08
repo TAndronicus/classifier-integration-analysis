@@ -87,9 +87,9 @@ def save_merging_results_pro_space_division_pro_base_classif(filenames: [],
         sheet.write(len(filenames) * j + 2, 0, str(numbers_of_base_classifiers[j]))
     for i in range(len(numbers_of_base_classifiers)):
         for j in range(len(filenames)):
-            sheet.write(i * len(numbers_of_base_classifiers) + j + 2, 1, filenames[j])
+            sheet.write(i * len(filenames) + j + 2, 1, filenames[j])
             for k in range(len(space_division)):
                 for l in range(len(results_pro_space_division_pro_base_classif[i][k][j])):
-                    sheet.write(i * len(numbers_of_base_classifiers) + j + 2, 4 * k + l + 2,
+                    sheet.write(i * len(filenames) + j + 2, 4 * k + l + 2,
                                 results_pro_space_division_pro_base_classif[i][k][j][l])
     workbook.save(result_filename)
