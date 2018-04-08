@@ -1,8 +1,8 @@
 from ClfType import ClfType
 
 
-class ClassifierData():
-    """Clas to produce parameter object for classification
+class ClassifierData:
+    """Clas to produce and validate parameter object for classification
 
     """
 
@@ -12,9 +12,9 @@ class ClassifierData():
                  number_of_samples_if_generated: int = 1000, number_of_dataset_if_not_generated: int = 0,
                  switch_columns_while_loading: bool = False, number_of_space_parts: int = 5,
                  number_of_classifiers: int = 3, number_of_best_classifiers: int = 2, show_color_plot: bool = False,
-                 write_computed_scores: bool = False, show_plots: bool = False, columns: [] = [0, 1],
-                 is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx',
-                 generate_all_permutations: bool = True):
+                 write_computed_scores: bool = False, show_plots: bool = False, show_only_first_plot: bool = True,
+                 columns: [] = [0, 1], is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx',
+                 generate_all_permutations: bool = True, log_number: int = 0):
         self.type_of_classifier = type_of_classifier
         self.are_samples_generated = are_samples_generated
         self.number_of_samples_if_generated = number_of_samples_if_generated
@@ -26,10 +26,12 @@ class ClassifierData():
         self.draw_color_plot = show_color_plot
         self.write_computed_scores = write_computed_scores
         self.show_plots = show_plots
+        self.show_only_first_plot = show_only_first_plot
         self.columns = columns
         self.is_validation_hard = is_validation_hard
         self.filename = filename
         self.generate_all_permutations = generate_all_permutations
+        self.log_number = log_number
 
     def validate(self):
         print('Validating parameters')
@@ -44,10 +46,12 @@ class ClassifierData():
         self.validate_draw_color_plot()
         self.validate_write_computed_scores()
         self.validate_show_plots()
+        self.validate_show_only_first_plot()
         self.validate_columns()
         self.validate_is_validation_hard()
         self.validate_filename()
         self.validate_generate_all_permutations()
+        self.validate_log_number()
         print('Parameters valid\n')
 
     def validate_type_of_classifier(self):
@@ -104,6 +108,10 @@ class ClassifierData():
         if not type(self.show_plots) is bool:
             raise Exception('show_plots must be of type boolean')
 
+    def validate_show_only_first_plot(self):
+        if not type(self.show_only_first_plot) is bool:
+            raise Exception('show_only_first_plot must be of type boolean')
+
     def validate_columns(self):
         if len(self.columns) == 0:
             return
@@ -128,3 +136,7 @@ class ClassifierData():
     def validate_generate_all_permutations(self):
         if not type(self.generate_all_permutations) is bool:
             raise Exception('generate_all_permutations must be of type bool')
+
+    def validate_log_number(self):
+        if not type(self.log_number) is int:
+            raise Exception('log_number must be of type int')

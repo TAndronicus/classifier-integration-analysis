@@ -148,6 +148,15 @@ class ClassifierDataTest(unittest.TestCase):
         with self.assertRaisesRegex(Exception, 'show_plots must be of type boolean'):
             classifier_data.validate_show_plots()
 
+    def test_validate_show_only_first_plot(self):
+        # given
+        show_only_first_plot = 'test'
+        # when
+        classifier_data = ClassifierData(show_only_first_plot = show_only_first_plot)
+        # then
+        with self.assertRaisesRegex(Exception, 'show_only_first_plot must be of type boolean'):
+            classifier_data.validate_show_only_first_plot()
+
     def test_validate_columns_non_matrix(self):
         # given
         columns = 'test'
@@ -210,6 +219,15 @@ class ClassifierDataTest(unittest.TestCase):
         # then
         with self.assertRaisesRegex(Exception, 'generate_all_permutations must be of type bool'):
             classifier_data.validate_generate_all_permutations()
+
+    def test_validate_log_number(self):
+        # given
+        log_number = 'test'
+        # when
+        classifier_data = ClassifierData(log_number = log_number)
+        # then
+        with self.assertRaisesRegex(Exception, 'log_number must be of type int'):
+            classifier_data.validate_log_number()
 
 
 if __name__ == '__main__':

@@ -1,5 +1,26 @@
 import matplotlib.pyplot as plt
 import ClassifLibrary
+from NotEnoughSamplesError import NotEnoughSamplesError
+import sys
+
+
+def enable_logging_to_file(log_number):
+    sys.stdout = open('results//integration' + str(log_number) + '.log', 'a')
+
+
+def disable_logging_to_file():
+    sys.stdout = sys.__stdout__
+
+
+def indicate_insufficient_samples(e: NotEnoughSamplesError = NotEnoughSamplesError('Not enough samples for plot'),
+                                  classifier_data: ClassifLibrary.ClassifierData = ClassifLibrary.ClassifierData()):
+    print('\n#####\n')
+    print('Not enough samples, raising error (filename = {}, number of classifiers = {}, number of subspaces = {})'
+          .format(classifier_data.filename, classifier_data.number_of_classifiers,
+                  classifier_data.number_of_space_parts))
+    print(e.args[0])
+    print('\n#####\n')
+    raise e
 
 
 def run(classif_data = ClassifLibrary.ClassifierData()):
@@ -8,14 +29,20 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     :param classif_data: ClassifLibrary.ClassifierData
     :return: mv_score, merged_score, mv_mcc, merged_mcc
     """
+    log_number = classif_data.log_number
+    enable_logging_to_file(log_number)
     classif_data.validate()
     show_plots = classif_data.show_plots
+    show_only_first_plot = classif_data.show_only_first_plot
 
     clfs = ClassifLibrary.initialize_classifiers(classif_data)
 
     X, y = ClassifLibrary.prepare_raw_data(classif_data)
 
-    X_splitted, y_splitted = ClassifLibrary.split_sorted_unitary(X, y, classif_data)
+    try:
+        X_splitted, y_splitted = ClassifLibrary.split_sorted_unitary(X, y, classif_data)
+    except NotEnoughSamplesError as e:
+        indicate_insufficient_samples(e, classif_data)
 
     if show_plots:
         number_of_subplots = ClassifLibrary.determine_number_of_subplots(classif_data)
@@ -51,7 +78,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
         confusion_matrices.append(conf_mat)
         cumulated_scores.append(cumulated_score)
-        mccs = ClassifLibrary.compute_mcc(confusion_matrices)
+        mccs = ClassifLibrary.compute_mccs(confusion_matrices)
         score_pro_permutation.append(cumulated_scores)
         mccs_pro_permutation.append(mccs)
 
@@ -61,13 +88,20 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
         number_of_permutations += 1
 
         if show_plots:
-            plt.show()
+            try:
+                plt.show()
+            except AttributeError:
+                indicate_insufficient_samples()
 
-        show_plots = False  # Convenience
+        if show_only_first_plot:
+            show_plots = False  # Convenience
+            classif_data.show_plots = False
+            classif_data.draw_color_plot = False
     number_of_permutations -= 1
 
-    print('\n#####\nOverall results after {} iterations:'.format(number_of_permutations))
+    print('\n#####\nOverall results_pro_division after {} iterations:'.format(number_of_permutations))
     overall_scores, overall_mcc = ClassifLibrary.get_permutation_results(score_pro_permutation, mccs_pro_permutation)
     ClassifLibrary.print_permutation_results(overall_scores, overall_mcc)
     print('\n#####\n')
-    return overall_scores[-1], overall_scores[-2], overall_mcc[-1], overall_mcc[-2]
+    disable_logging_to_file()
+    return overall_scores[-2], overall_scores[-1], overall_mcc[-2], overall_mcc[-1]
