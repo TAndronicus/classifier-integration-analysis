@@ -12,8 +12,6 @@ are_samples_generated = False
 number_of_samples_if_generated = 10000
 number_of_dataset_if_not_generated = 0
 columns = [0, 1]
-number_of_classifiers = 3
-number_of_best_classifiers = number_of_classifiers - 1
 draw_color_plot = False
 write_computed_scores = False
 show_plots = False
@@ -22,6 +20,7 @@ is_validation_hard = False
 generate_all_permutations = False
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
+numbers_of_base_classifiers = list(range(3, 7))
 space_division = list(range(3, 11))
 
 log_number = 0
@@ -40,39 +39,46 @@ while True:
     result_file_number += 1
 
 results = []
-for number_of_space_parts in space_division:
-    print('Number of space parts:', number_of_space_parts)
-    results_pro_division = []
-    for filename in filenames:
-        print('Analysing ' + filename)
-        if filename in files_to_switch:
-            switch_columns_while_loading = True
-            print('Switching columns')
-        else:
-            switch_columns_while_loading = False
-        classifier_data = \
-            ClassifLibrary.ClassifierData(type_of_classifier = type_of_classifier,
-                                          are_samples_generated = are_samples_generated,
-                                          number_of_samples_if_generated = number_of_samples_if_generated,
-                                          number_of_dataset_if_not_generated = number_of_dataset_if_not_generated,
-                                          switch_columns_while_loading = switch_columns_while_loading,
-                                          number_of_space_parts = number_of_space_parts,
-                                          number_of_classifiers = number_of_classifiers,
-                                          number_of_best_classifiers = number_of_best_classifiers,
-                                          show_color_plot = draw_color_plot,
-                                          write_computed_scores = write_computed_scores,
-                                          show_plots = show_plots,
-                                          show_only_first_plot = show_only_first_plot,
-                                          columns = columns,
-                                          is_validation_hard = is_validation_hard,
-                                          filename = 'datasets//' + filename,
-                                          generate_all_permutations = generate_all_permutations,
-                                          log_number = log_number)
+for number_of_base_classifiers in numbers_of_base_classifiers:
+    print('Number of classifiers: ', number_of_base_classifiers)
+    results_pro_classifier = []
+    for number_of_space_parts in space_division:
+        print('Number of space parts:', number_of_space_parts)
+        results_pro_division = []
+        for filename in filenames:
+            print('Analysing ' + filename)
+            if filename in files_to_switch:
+                switch_columns_while_loading = True
+                print('Switching columns')
+            else:
+                switch_columns_while_loading = False
+            classifier_data = \
+                ClassifLibrary.ClassifierData(type_of_classifier = type_of_classifier,
+                                              are_samples_generated = are_samples_generated,
+                                              number_of_samples_if_generated = number_of_samples_if_generated,
+                                              number_of_dataset_if_not_generated = number_of_dataset_if_not_generated,
+                                              switch_columns_while_loading = switch_columns_while_loading,
+                                              number_of_space_parts = number_of_space_parts,
+                                              number_of_classifiers = number_of_base_classifiers,
+                                              number_of_best_classifiers = number_of_base_classifiers - 1,
+                                              show_color_plot = draw_color_plot,
+                                              write_computed_scores = write_computed_scores,
+                                              show_plots = show_plots,
+                                              show_only_first_plot = show_only_first_plot,
+                                              columns = columns,
+                                              is_validation_hard = is_validation_hard,
+                                              filename = 'datasets//' + filename,
+                                              generate_all_permutations = generate_all_permutations,
+                                              log_number = log_number)
 
-        mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
-        results_pro_division.append([mv_score, merged_score, mv_mcc, merged_mcc])
-    results.append(results_pro_division)
-FileHelper.save_merging_results(filenames, results, space_division, result_filename = 'results//Results' + str(result_file_number) + '.xls')
+            mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
+            results_pro_division.append([mv_score, merged_score, mv_mcc, merged_mcc])
+        results_pro_classifier.append(results_pro_division)
+    results.append(results_pro_classifier)
+FileHelper.save_merging_results_pro_space_division_pro_base_classif(filenames, results, numbers_of_base_classifiers,
+                                                                    space_division,
+                                                                    result_filename = 'results//Results' +
+                                                                                      str(result_file_number) + '.xls')
 
 log = open('results//integration' + str(log_number) + '.log', 'a')
 log.write('Finishing algorithm: ' + str(datetime.now()))
