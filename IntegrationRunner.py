@@ -7,7 +7,7 @@ from datetime import datetime
 #filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
  #            'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
   #           'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
-filenames = ['cryotherapy.xlsx']
+filenames = ['seismic_bumps.dat', 'biodeg.scsv']
 type_of_classifier = ClassifLibrary.ClfType.LINEAR
 are_samples_generated = False
 number_of_samples_if_generated = 10000
@@ -23,7 +23,7 @@ generate_all_permutations = False
 results_directory_relative = 'results'
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
-numbers_of_base_classifiers = list(range(3, 7))
+numbers_of_base_classifiers = list(range(3, 10))
 space_division = list(range(3, 11))
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)

@@ -1208,7 +1208,9 @@ def compute_mccs(conf_matrices: []):
     for i in range(len(conf_matrices)):
         prop_0_pred_0, prop_0_pred_1 = conf_matrices[i][0]
         prop_1_pred_0, prop_1_pred_1 = conf_matrices[i][1]
-        mcc_score = compute_mcc(prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1)
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            mcc_score = compute_mcc(prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1)
         if math.isnan(mcc_score):
             mcc_score = 0
         mcc[i] = mcc_score
