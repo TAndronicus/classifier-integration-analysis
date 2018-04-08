@@ -1,7 +1,7 @@
 import MergingAlgorithm
 import ClassifLibrary
 import FileHelper
-import os.path as path
+import os
 from datetime import datetime
 
 #filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
@@ -20,22 +20,31 @@ show_only_first_plot = True
 is_validation_hard = False
 generate_all_permutations = False
 
+results_directory_relative = 'results'
+
 files_to_switch = ['haberman.dat', 'sonar.dat']
 numbers_of_base_classifiers = list(range(3, 7))
 space_division = list(range(3, 11))
 
+results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
+try:
+    os.makedirs(results_directory_absolute)
+    print('Created results directory: ', results_directory_absolute)
+except FileExistsError:
+    pass
+
 log_number = 0
 while True:
-    if not path.isfile('results//integration' + str(log_number) + '.log'):
+    if not os.path.isfile(results_directory_relative + '//integration' + str(log_number) + '.log'):
         break
     log_number += 1
-log = open('results//integration' + str(log_number) + '.log', 'w')
+log = open(results_directory_relative + '//integration' + str(log_number) + '.log', 'w')
 log.write('Starting algorithm: ' + str(datetime.now()) + '\n\n')
 log.close()
 
 result_file_number = 0
 while True:
-    if not path.isfile('results//Results' + str(result_file_number) + '.xls'):
+    if not os.path.isfile(results_directory_relative + '//Results' + str(result_file_number) + '.xls'):
         break
     result_file_number += 1
 
@@ -78,7 +87,8 @@ for number_of_base_classifiers in numbers_of_base_classifiers:
     results.append(results_pro_classifier)
 FileHelper.save_merging_results_pro_space_division_pro_base_classif(filenames, results, numbers_of_base_classifiers,
                                                                     space_division,
-                                                                    result_filename = 'results//Results' +
+                                                                    result_filename = results_directory_relative +
+                                                                                      '//Results' +
                                                                                       str(result_file_number) + '.xls')
 
 log = open('results//integration' + str(log_number) + '.log', 'a')
