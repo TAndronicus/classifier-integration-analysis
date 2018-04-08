@@ -1212,7 +1212,15 @@ def compute_mccs(conf_matrices: []):
     return mcc
 
 
-def compute_mcc(prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1):
+def compute_mcc(prop_0_pred_0: int, prop_0_pred_1: int, prop_1_pred_0: int, prop_1_pred_1: int):
+    """Computes Matthews correlation coefficient given cells of konfusion matrix
+
+    :param prop_0_pred_0: int
+    :param prop_0_pred_1: int
+    :param prop_1_pred_0: int
+    :param prop_1_pred_1: int
+    :return: mcc_score: float
+    """
     numerator = prop_0_pred_0 * prop_1_pred_1 - prop_0_pred_1 * prop_1_pred_0
     denominator_sq = (prop_1_pred_1 + prop_0_pred_1) * (prop_1_pred_1 + prop_1_pred_0) * \
                      (prop_0_pred_0 + prop_0_pred_1) * (prop_0_pred_0 + prop_1_pred_0)

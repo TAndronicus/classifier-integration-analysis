@@ -2,7 +2,7 @@ from ClfType import ClfType
 
 
 class ClassifierData:
-    """Clas to produce parameter object for classification
+    """Clas to produce and validate parameter object for classification
 
     """
 

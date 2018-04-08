@@ -3,6 +3,14 @@ import xlwt
 
 def save_merging_results_one_space_division(filenames: [], results: [], result_filename: str = 'results//Results.xls',
                                             sheetname: str = 'Result'):
+    """Saves results of merging algorithm for one space division and one number of base classifier
+
+    :param filenames: names of files being analysed
+    :param results: resulting matrix
+    :param result_filename: filename to write results to
+    :param sheetname: sheetname to write results to
+    :return:
+    """
     workbook = xlwt.Workbook()
     workbook.add_sheet(sheetname)
     sheet = workbook.get_sheet(sheetname)
@@ -20,6 +28,15 @@ def save_merging_results_one_space_division(filenames: [], results: [], result_f
 
 def save_merging_results(filenames: [], results_pro_space_division: [], space_division: [],
                          result_filename: str = 'results//Results.xls', sheetname: str = 'Result'):
+    """Saves results of merging algorithm for one number of base classifier
+
+    :param filenames: names of files being analysed
+    :param results_pro_space_division: matrix of results pro space division
+    :param space_division: matrix of space divisions
+    :param result_filename: filename to write results to
+    :param sheetname: sheetname to write results to
+    :return:
+    """
     workbook = xlwt.Workbook()
     workbook.add_sheet(sheetname)
     sheet = workbook.get_sheet(sheetname)
