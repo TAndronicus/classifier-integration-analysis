@@ -1,17 +1,19 @@
-from sklearn.model_selection import train_test_split
-from sklearn.datasets import make_classification
-from sklearn.metrics import confusion_matrix
-from sklearn.svm import LinearSVC
-from sklearn.neighbors import NearestCentroid
-from sklearn.feature_selection import SelectKBest, f_classif
-import xlrd
-import numpy as np
-import matplotlib.pyplot as plt
-import math
 import itertools
+import math
 import warnings
-from ClfType import ClfType
+
+import matplotlib.pyplot as plt
+import numpy as np
+import xlrd
+from sklearn.datasets import make_classification
+from sklearn.feature_selection import SelectKBest, f_classif
+from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import NearestCentroid
+from sklearn.svm import LinearSVC
+
 from ClassifierData import ClassifierData
+from ClfType import ClfType
 from NotEnoughSamplesError import NotEnoughSamplesError
 
 

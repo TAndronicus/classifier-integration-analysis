@@ -1,10 +1,12 @@
-import unittest
-import ClassifLibrary
-import numpy as np
 import math
-from sklearn.svm import LinearSVC
-from sklearn.neighbors import NearestCentroid
+import unittest
+
+import numpy as np
 from sklearn.datasets import make_classification
+from sklearn.neighbors import NearestCentroid
+from sklearn.svm import LinearSVC
+
+import ClassifLibrary
 from ClassifLibrary import ClassifierData
 
 

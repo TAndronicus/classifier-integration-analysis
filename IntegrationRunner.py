@@ -17,13 +17,13 @@ write_computed_scores = False
 show_plots = False
 show_only_first_plot = True
 is_validation_hard = False
-generate_all_permutations = False
+generate_all_permutations = True
 
 results_directory_relative = 'results'
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
 numbers_of_base_classifiers = list(range(3, 6))
-space_division = list(range(3, 10))
+space_division = list(range(3, 11))
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
 try:
