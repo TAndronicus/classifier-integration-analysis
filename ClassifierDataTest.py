@@ -230,6 +230,16 @@ class ClassifierDataTest(unittest.TestCase):
         with self.assertRaisesRegex(Exception, 'log_number must be of type int'):
             classifier_data.validate_log_number()
 
+    def test_validate_bagging(self):
+        # given
+        bagging = 'test'
+        # when
+        classifier_data = ClassifierData(bagging = bagging)
+        # then
+        with self.assertRaisesRegex(Exception, 'bagging must be of type bool'):
+            classifier_data.validate_log_number()
+
+
 
 if __name__ == '__main__':
     unittest.main()

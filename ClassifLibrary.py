@@ -11,6 +11,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import NearestCentroid
 from sklearn.svm import LinearSVC
+from random import randint
 
 from ClassifierData import ClassifierData
 from ClfType import ClfType
@@ -49,7 +50,7 @@ def initialize_classifiers(classifier_data: ClassifierData = ClassifierData()):
     clfs = []
     if type_of_classifier == ClfType.LINEAR:
         for i in range(number_of_classifiers):
-            clfs.append(LinearSVC(max_iter = 1e6, tol = 1e-10, C = 100))
+            clfs.append(LinearSVC(max_iter = 1e7, tol = 1e-10, C = 10000))
     elif type_of_classifier == ClfType.MEAN:
         for i in range(number_of_classifiers):
             clfs.append(NearestCentroid())
@@ -798,18 +799,30 @@ def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = Classif
     """
     number_of_classifiers = classifier_data.number_of_classifiers
     number_of_space_parts = classifier_data.number_of_space_parts
+    bagging = classifier_data.bagging
     print('Splitting samples')
     if len(X) < (number_of_classifiers + 2) * number_of_space_parts:
         raise NotEnoughSamplesError('Not enough samples found when sorting (len(X) = {})'.format(len(X)))
     X_splitted, y_splitted = [], []
-    length = int(len(X) / (number_of_classifiers + 2))
-    for i in range(number_of_classifiers + 2):
-        X_temp, y_temp = np.zeros((length, 2)), np.zeros(length, dtype = np.int)
-        for j in range(length):
-            X_temp[j, :] = (X[j * (number_of_classifiers + 2) + i, :])
-            y_temp[j] = (y[j * (number_of_classifiers + 2) + i])
-        X_splitted.append(X_temp)
-        y_splitted.append(y_temp)
+    length_of_subset = int(len(X) / (number_of_classifiers + 2))
+    length = len(X)
+    if bagging:
+        for i in range(number_of_classifiers + 2):
+            X_temp, y_temp = np.zeros((length_of_subset, 2)), np.zeros(length_of_subset, dtype = np.int)
+            for j in range(length_of_subset):
+                rand = randint(0, length - 1)
+                X_temp[j, :] = X[rand, :]
+                y_temp[j] = y[rand]
+            X_splitted.append(X_temp)
+            y_splitted.append(y_temp)
+    else:
+        for i in range(number_of_classifiers + 2):
+            X_temp, y_temp = np.zeros((length_of_subset, 2)), np.zeros(length_of_subset, dtype = np.int)
+            for j in range(length_of_subset):
+                X_temp[j, :] = (X[j * (number_of_classifiers + 2) + i, :])
+                y_temp[j] = (y[j * (number_of_classifiers + 2) + i])
+            X_splitted.append(X_temp)
+            y_splitted.append(y_temp)
     return X_splitted, y_splitted
 
 

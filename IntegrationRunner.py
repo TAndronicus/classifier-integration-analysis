@@ -14,16 +14,17 @@ number_of_samples_if_generated = 1000
 number_of_dataset_if_not_generated = 0
 draw_color_plot = False
 write_computed_scores = False
-show_plots = False
+show_plots = True
 show_only_first_plot = True
 is_validation_hard = False
-generate_all_permutations = True
+generate_all_permutations = False
+bagging = False
 
 results_directory_relative = 'results'
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
-numbers_of_base_classifiers = list(range(3, 6))
-space_division = list(range(3, 11))
+numbers_of_base_classifiers = list(range(3, 4))
+space_division = [3]
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
 try:
@@ -77,7 +78,8 @@ for number_of_base_classifiers in numbers_of_base_classifiers:
                                               is_validation_hard = is_validation_hard,
                                               filename = 'datasets//' + filename,
                                               generate_all_permutations = generate_all_permutations,
-                                              log_number = log_number)
+                                              log_number = log_number,
+                                              bagging = bagging)
             try:
                 mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
                 results_pro_division.append([mv_score, merged_score, mv_mcc, merged_mcc])
