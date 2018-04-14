@@ -808,8 +808,8 @@ def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = Classif
     length = len(X)
     if bagging:
         for i in range(number_of_classifiers + 2):
-            X_temp, y_temp = np.zeros((length_of_subset, 2)), np.zeros(length_of_subset, dtype = np.int)
-            for j in range(length_of_subset):
+            X_temp, y_temp = np.zeros((length, 2)), np.zeros(length, dtype = np.int)
+            for j in range(length):
                 rand = randint(0, length - 1)
                 X_temp[j, :] = X[rand, :]
                 y_temp[j] = y[rand]
