@@ -50,7 +50,7 @@ def initialize_classifiers(classifier_data: ClassifierData = ClassifierData()):
     clfs = []
     if type_of_classifier == ClfType.LINEAR:
         for i in range(number_of_classifiers):
-            clfs.append(LinearSVC(max_iter = 1e7, tol = 1e-10, C = 10000))
+            clfs.append(LinearSVC(max_iter = 1e6, tol = 1e-10, C = 1000))
     elif type_of_classifier == ClfType.MEAN:
         for i in range(number_of_classifiers):
             clfs.append(NearestCentroid())
@@ -790,7 +790,7 @@ def split_sorted_samples(X: [], y: [], classifier_data: ClassifierData = Classif
 
 
 def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = ClassifierData()):
-    """
+    """Splits data into subsets for training, validating and testing
 
     :param X: []
     :param y: []
@@ -812,9 +812,21 @@ def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = Classif
             for j in range(length):
                 rand = randint(0, length - 1)
                 X_temp[j, :] = X[rand, :]
+                try:
+                    if X[rand, 0] < minimum:
+                        minimum = X[rand, 0]
+                except UnboundLocalError:
+                    minimum = X[rand, 0]
+                try:
+                    if X[rand, 0] > maximum:
+                        maximum = X[rand, 0]
+                except UnboundLocalError:
+                    maximum = X[rand, 0]
                 y_temp[j] = y[rand]
             X_splitted.append(X_temp)
             y_splitted.append(y_temp)
+        classifier_data.minimum = minimum
+        classifier_data.maximum = maximum
     else:
         for i in range(number_of_classifiers + 2):
             X_temp, y_temp = np.zeros((length_of_subset, 2)), np.zeros(length_of_subset, dtype = np.int)
@@ -823,6 +835,7 @@ def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = Classif
                 y_temp[j] = (y[j * (number_of_classifiers + 2) + i])
             X_splitted.append(X_temp)
             y_splitted.append(y_temp)
+        classifier_data.minimum, classifier_data.maximum = min(X[:, 0]), max(X[:, 0])
     return X_splitted, y_splitted
 
 
@@ -865,7 +878,7 @@ def prepare_samples_for_subspace(X_test: [], y_test: [], X: [], j: int,
     :param classifier_data: ClassifierData
     :return: X_part, y_part: [], []
     """
-    x_samp_max, x_samp_min = get_subspace_limits(X, j, classifier_data)
+    x_samp_max, x_samp_min = get_subspace_limits(j, classifier_data)
     X_part = [row for row in X_test if x_samp_min <= row[0] < x_samp_max]
     y_part = [y_test[k] for k in range(len(y_test)) if x_samp_min <= X_test[k][0] < x_samp_max]
     return X_part, y_part
@@ -1080,7 +1093,7 @@ def evaluate_weighted_average_coefficients_from_n_best(coefficients: [], scores:
     return a, b
 
 
-def get_subspace_limits(X: [], j: int, classifier_data: ClassifierData = ClassifierData()):
+def get_subspace_limits(j: int, classifier_data: ClassifierData = ClassifierData()):
     """Gets limits of j-th subspace
 
     :param X: np.array
@@ -1089,9 +1102,11 @@ def get_subspace_limits(X: [], j: int, classifier_data: ClassifierData = Classif
     :return: x_subspace_max, x_subspace_min: float, float
     """
     number_of_space_parts = classifier_data.number_of_space_parts
+    minimum = classifier_data.minimum
+    maximum = classifier_data.maximum
     x_subspace_min, x_subspace_max = \
-        X[:, 0].min() + j * (X[:, 0].max() - X[:, 0].min()) / number_of_space_parts, \
-        X[:, 0].min() + (j + 1) * (X[:, 0].max() - X[:, 0].min()) / number_of_space_parts
+        minimum + j * (maximum - minimum) / number_of_space_parts, \
+        minimum + (j + 1) * (maximum - minimum) / number_of_space_parts
     return x_subspace_max, x_subspace_min
 
 
@@ -1277,7 +1292,7 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
             a, b = evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, j, classifier_data)
 
         if show_plots:
-            x_subspace_min, x_subspace_max = get_subspace_limits(X, j, classifier_data)
+            x_subspace_min, x_subspace_max = get_subspace_limits(j, classifier_data)
             x = np.linspace(x_subspace_min, x_subspace_max)
             y = a * x + b
             ax.plot(x, y)
@@ -1337,7 +1352,7 @@ def compose_conf_matrix(prop_0_pred_0: int, prop_0_pred_1: int, prop_1_pred_0: i
     return conf_mat
 
 
-def get_number_of_samples_in_subspace(X: [], j: int, classifier_data: ClassifierData = ClassifierData()):
+def get_number_of_samples_in_subspace(X:[], j: int, classifier_data: ClassifierData = ClassifierData()):
     """Returns number of samples in j-th subspace
 
     :param X: np.array
@@ -1345,7 +1360,7 @@ def get_number_of_samples_in_subspace(X: [], j: int, classifier_data: Classifier
     :param classifier_data: ClassifierData
     :return: count: int
     """
-    x_subspace_max, x_subspace_min = get_subspace_limits(X, j, classifier_data)
+    x_subspace_max, x_subspace_min = get_subspace_limits(j, classifier_data)
     count = 0
     for i in range(len(X)):
         if x_subspace_min <= X[i][0] <= x_subspace_max:

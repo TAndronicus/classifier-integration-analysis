@@ -42,6 +42,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     try:
         X_splitted, y_splitted = ClassifLibrary.split_sorted_unitary(X, y, classif_data)
     except NotEnoughSamplesError as e:
+        X_splitted, y_splitted = [], []
         indicate_insufficient_samples(e, classif_data)
 
     if show_plots:

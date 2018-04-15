@@ -14,11 +14,11 @@ number_of_samples_if_generated = 1000
 number_of_dataset_if_not_generated = 0
 draw_color_plot = False
 write_computed_scores = False
-show_plots = True
+show_plots = False
 show_only_first_plot = True
 is_validation_hard = False
 generate_all_permutations = False
-bagging = False
+bagging = True
 
 results_directory_relative = 'results'
 

@@ -237,7 +237,25 @@ class ClassifierDataTest(unittest.TestCase):
         classifier_data = ClassifierData(bagging = bagging)
         # then
         with self.assertRaisesRegex(Exception, 'bagging must be of type bool'):
-            classifier_data.validate_log_number()
+            classifier_data.validate_bagging()
+
+    def test_validate_minimum(self):
+        # given
+        minimum = 'test'
+        # when
+        classifier_data = ClassifierData(minimum = minimum)
+        # then
+        with self.assertRaisesRegex(Exception, 'minimum must be of type float'):
+            classifier_data.validate_minimum()
+
+    def test_validate_maximum(self):
+        # given
+        maximum = 'test'
+        # when
+        classifier_data = ClassifierData(maximum = maximum)
+        # then
+        with self.assertRaisesRegex(Exception, 'maximum must be of type float'):
+            classifier_data.validate_maximum()
 
 
 

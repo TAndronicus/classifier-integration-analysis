@@ -14,7 +14,8 @@ class ClassifierData:
                  number_of_classifiers: int = 3, number_of_best_classifiers: int = 2, show_color_plot: bool = False,
                  write_computed_scores: bool = False, show_plots: bool = False, show_only_first_plot: bool = True,
                  columns: [] = [0, 1], is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx',
-                 generate_all_permutations: bool = True, log_number: int = 0, bagging: bool = False):
+                 generate_all_permutations: bool = True, log_number: int = 0, bagging: bool = False,
+                 minimum: float = 0, maximum: float = 0):
         self.type_of_classifier = type_of_classifier
         self.are_samples_generated = are_samples_generated
         self.number_of_samples_if_generated = number_of_samples_if_generated
@@ -33,6 +34,8 @@ class ClassifierData:
         self.generate_all_permutations = generate_all_permutations
         self.log_number = log_number
         self.bagging = bagging
+        self.minimum = minimum
+        self.maximum = maximum
 
     def validate(self):
         print('Validating parameters')
@@ -144,5 +147,13 @@ class ClassifierData:
             raise Exception('log_number must be of type int')
 
     def validate_bagging(self):
-        if not type(self.generate_all_permutations) is bool:
+        if not type(self.bagging) is bool:
             raise Exception('bagging must be of type bool')
+
+    def validate_minimum(self):
+        if not type(self.minimum) is float:
+            raise Exception('minimum must be of type float')
+
+    def validate_maximum(self):
+        if not type(self.maximum) is float:
+            raise Exception('maximum must be of type float')
