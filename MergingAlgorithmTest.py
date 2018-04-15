@@ -603,6 +603,54 @@ class MergingAlgorithmtest(unittest.TestCase):
         self.assertAlmostEqual(expected_mcc, mv_mcc, delta = .01)
         self.assertAlmostEqual(expected_mcc, merged_mcc, delta = .05)
 
+    def test_should_return_no_error_on_default_merging_algorithm_with_bagging(self):
+        # given
+        bagging = True
+        logging_to_file = False
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(bagging = bagging,
+                                                                        logging_to_file = logging_to_file))
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+        if mv_score > .5:
+            self.assertTrue(mv_mcc >= 0)
+        elif mv_score < .5:
+            self.assertTrue(mv_mcc <= 0)
+        if merged_score > .5:
+            self.assertTrue(merged_mcc >= 0)
+        elif merged_score < .5:
+            self.assertTrue(merged_mcc <= 0)
+
+    def test_should_return_no_error_with_bagging_on_generated_samples(self):
+        # given
+        are_samples_generated = True
+        generate_all_permutations = False
+        bagging = True
+        logging_to_file = False
+        classifier_data = ClassifierData(are_samples_generated = are_samples_generated,
+                                         generate_all_permutations = generate_all_permutations,
+                                         bagging = bagging,
+                                         logging_to_file = logging_to_file)
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+        if mv_score > .5:
+            self.assertTrue(mv_mcc >= 0)
+        elif mv_score < .5:
+            self.assertTrue(mv_mcc <= 0)
+        if merged_score > .5:
+            self.assertTrue(merged_mcc >= 0)
+        elif merged_score < .5:
+            self.assertTrue(merged_mcc <= 0)
+
+
 
 if __name__ == '__main__':
     unittest.main()
