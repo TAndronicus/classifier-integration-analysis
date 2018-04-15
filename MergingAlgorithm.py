@@ -30,7 +30,9 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     :return: mv_score, merged_score, mv_mcc, merged_mcc
     """
     log_number = classif_data.log_number
-    enable_logging_to_file(log_number)
+    logging_to_file = classif_data.logging_to_file
+    if logging_to_file:
+        enable_logging_to_file(log_number)
     classif_data.validate()
     show_plots = classif_data.show_plots
     show_only_first_plot = classif_data.show_only_first_plot
@@ -104,5 +106,6 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     overall_scores, overall_mcc = ClassifLibrary.get_permutation_results(score_pro_permutation, mccs_pro_permutation)
     ClassifLibrary.print_permutation_results(overall_scores, overall_mcc)
     print('\n#####\n')
-    disable_logging_to_file()
+    if logging_to_file:
+        disable_logging_to_file()
     return overall_scores[-2], overall_scores[-1], overall_mcc[-2], overall_mcc[-1]

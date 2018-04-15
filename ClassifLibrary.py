@@ -50,7 +50,7 @@ def initialize_classifiers(classifier_data: ClassifierData = ClassifierData()):
     clfs = []
     if type_of_classifier == ClfType.LINEAR:
         for i in range(number_of_classifiers):
-            clfs.append(LinearSVC(max_iter = 1e6, tol = 1e-10, C = 1000))
+            clfs.append(LinearSVC(max_iter = 1e6, tol = 1e-10, C = 100))
     elif type_of_classifier == ClfType.MEAN:
         for i in range(number_of_classifiers):
             clfs.append(NearestCentroid())

@@ -12,7 +12,7 @@ class MergingAlgorithmtest(unittest.TestCase):
     def test_should_return_no_error_on_default_merging_algorithm(self):
         # given
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run()
+        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(logging_to_file = False))
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(merged_score)
@@ -30,7 +30,9 @@ class MergingAlgorithmtest(unittest.TestCase):
     def test_should_return_no_error_on_default_merging_algorithm_with_no_permutations(self):
         # given
         generate_all_permutations = False
-        classifier_data = ClassifierData(generate_all_permutations = generate_all_permutations)
+        logging_to_file = False
+        classifier_data = ClassifierData(generate_all_permutations = generate_all_permutations,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -50,7 +52,9 @@ class MergingAlgorithmtest(unittest.TestCase):
     def test_should_return_no_error_on_default_merging_algorithm_switching_columns(self):
         # given
         switch_columns_while_loading = True
-        classifier_data = ClassifierData(switch_columns_while_loading = switch_columns_while_loading)
+        logging_to_file = False
+        classifier_data = ClassifierData(switch_columns_while_loading = switch_columns_while_loading,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -71,8 +75,10 @@ class MergingAlgorithmtest(unittest.TestCase):
         # given
         generate_all_permutations = False
         switch_columns_while_loading = True
+        logging_to_file = False
         classifier_data = ClassifierData(generate_all_permutations = generate_all_permutations,
-                                         switch_columns_while_loading = switch_columns_while_loading)
+                                         switch_columns_while_loading = switch_columns_while_loading,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -91,7 +97,8 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file(self):
         # given
-        classifier_data = ClassifierData(filename = 'appendicitis.dat')
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = 'appendicitis.dat', logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -110,7 +117,8 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file(self):
         # given
-        classifier_data = ClassifierData(filename = 'biodeg.scsv')
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = 'biodeg.scsv', logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -129,7 +137,9 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file(self):
         # given
-        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv')
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv',
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -148,7 +158,8 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file(self):
         # given
-        classifier_data = ClassifierData(filename = 'pop_failures.tsv')
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = 'pop_failures.tsv', logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -167,8 +178,11 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_show_plot(self):
         # given
+        show_plots = True
+        logging_to_file = False
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(show_plots = True))
+        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(show_plots = show_plots,
+                                                                        logging_to_file = logging_to_file))
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(merged_score)
@@ -185,7 +199,12 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots(self):
         # given
-        classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True)
+        filename = 'appendicitis.dat'
+        show_plots = True
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         show_plots = show_plots,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -204,7 +223,12 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots(self):
         # given
-        classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True)
+        filename = 'biodeg.scsv'
+        show_plots = True
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         show_plots = show_plots,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -223,7 +247,12 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots(self):
         # given
-        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True)
+        filename = 'data_banknote_authentication.csv'
+        show_plots = True
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         show_plots = show_plots,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -242,7 +271,12 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots(self):
         # given
-        classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True)
+        filename = 'pop_failures.tsv'
+        show_plots = True
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         show_plots = show_plots,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -261,8 +295,13 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_plots_builtin(self):
         # given
+        show_plots = True
+        show_color_plot = True
+        logging_to_file = False
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(show_plots = True, show_color_plot = True))
+        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(show_plots = show_plots,
+                                                                        show_color_plot = show_color_plot,
+                                                                        logging_to_file = logging_to_file))
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(merged_score)
@@ -279,7 +318,14 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots_builtin(self):
         # given
-        classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True)
+        filename = 'appendicitis.dat'
+        show_plots = True
+        show_color_plot = True
+        logging_to_file = False
+        classifier_data = ClassifierData(filename= filename,
+                                         show_plots = show_plots,
+                                         show_color_plot = show_color_plot,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -298,7 +344,14 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots_builtin(self):
         # given
-        classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True, show_color_plot = True)
+        filename = 'biodeg.scsv'
+        show_plots = True
+        show_color_plot = True
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         show_plots = show_plots,
+                                         show_color_plot = show_color_plot,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -317,8 +370,14 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots_builtin(self):
         # given
-        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True,
-                                         show_color_plot = True)
+        filename = 'data_banknote_authentication.csv'
+        show_plots = True
+        show_color_plot = True
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         show_plots = show_plots,
+                                         show_color_plot = show_color_plot,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -337,7 +396,14 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots_builtin(self):
         # given
-        classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True, show_color_plot = True)
+        filename = 'pop_failures.tsv'
+        show_plots = True
+        show_color_plot = True
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         show_plots = show_plots,
+                                         show_color_plot = show_color_plot,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -356,9 +422,15 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_plots_builtin_computed(self):
         # given
+        show_plots = True
+        show_color_plot = True
+        write_computed_scores = True
+        logging_to_file = False
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(show_plots = True, show_color_plot = True,
-                                                                        write_computed_scores = True))
+        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(show_plots = show_plots,
+                                                                        show_color_plot = show_color_plot,
+                                                                        write_computed_scores = write_computed_scores,
+                                                                        logging_to_file = logging_to_file))
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(merged_score)
@@ -375,8 +447,16 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots_builtin_computed(self):
         # given
-        classifier_data = ClassifierData(filename = 'appendicitis.dat', show_plots = True, show_color_plot = True,
-                                         write_computed_scores = True)
+        filename = 'appendicitis.dat'
+        show_plots = True
+        show_color_plot = True
+        write_computed_scores = True
+        logging_too_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         show_plots = show_plots,
+                                         show_color_plot = show_color_plot,
+                                         write_computed_scores = write_computed_scores,
+                                         logging_to_file = logging_too_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -395,8 +475,16 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots_builtin_computed(self):
         # given
-        classifier_data = ClassifierData(filename = 'biodeg.scsv', show_plots = True, show_color_plot = True,
-                                         write_computed_scores = True)
+        filename = 'biodeg.scsv'
+        show_plots = True
+        show_color_plot = True
+        write_computed_scores = True
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         show_plots = show_plots,
+                                         show_color_plot = show_color_plot,
+                                         write_computed_scores = write_computed_scores,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -415,8 +503,16 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots_builtin_computed(self):
         # given
-        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv', show_plots = True,
-                                         show_color_plot = True, write_computed_scores = True)
+        filename = 'data_banknote_authentication.csv'
+        show_plots = True
+        show_color_plot = True
+        write_computed_scores = True
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         show_plots = show_plots,
+                                         show_color_plot = show_color_plot,
+                                         write_computed_scores = write_computed_scores,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -435,8 +531,16 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots_builtin_computed(self):
         # given
-        classifier_data = ClassifierData(filename = 'pop_failures.tsv', show_plots = True, show_color_plot = True,
-                                         write_computed_scores = True)
+        filename = 'pop_failures.tsv'
+        show_plots = True
+        show_color_plot = True
+        write_computed_scores = True
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         show_plots = show_plots,
+                                         show_color_plot = show_color_plot,
+                                         write_computed_scores = write_computed_scores,
+                                         logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -457,7 +561,10 @@ class MergingAlgorithmtest(unittest.TestCase):
         # given
         filename = 'TestCases.xlsx'
         are_samples_generated = False
-        classifier_data = ClassifierData(filename = filename, are_samples_generated = are_samples_generated)
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         are_samples_generated = are_samples_generated,
+                                         logging_to_file = logging_to_file)
         TP = 500
         TN = 400
         FP = 70
@@ -477,8 +584,11 @@ class MergingAlgorithmtest(unittest.TestCase):
         filename = 'TestCases.xlsx'
         are_samples_generated = False
         generate_all_permutations = False
-        classifier_data = ClassifierData(filename = filename, are_samples_generated = are_samples_generated,
-                                         generate_all_permutations = generate_all_permutations)
+        logging_to_file = False
+        classifier_data = ClassifierData(filename = filename,
+                                         are_samples_generated = are_samples_generated,
+                                         generate_all_permutations = generate_all_permutations,
+                                         logging_to_file = logging_to_file)
         TP = 500
         TN = 400
         FP = 70

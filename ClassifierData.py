@@ -15,7 +15,7 @@ class ClassifierData:
                  write_computed_scores: bool = False, show_plots: bool = False, show_only_first_plot: bool = True,
                  columns: [] = [0, 1], is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx',
                  generate_all_permutations: bool = True, log_number: int = 0, bagging: bool = False,
-                 minimum: float = 0, maximum: float = 0):
+                 logging_to_file: bool = True, minimum: float = 0, maximum: float = 0):
         self.type_of_classifier = type_of_classifier
         self.are_samples_generated = are_samples_generated
         self.number_of_samples_if_generated = number_of_samples_if_generated
@@ -34,6 +34,7 @@ class ClassifierData:
         self.generate_all_permutations = generate_all_permutations
         self.log_number = log_number
         self.bagging = bagging
+        self.logging_to_file = logging_to_file
         self.minimum = minimum
         self.maximum = maximum
 
@@ -57,6 +58,7 @@ class ClassifierData:
         self.validate_generate_all_permutations()
         self.validate_log_number()
         self.validate_bagging()
+        self.validate_logging_to_file()
         print('Parameters valid\n')
 
     def validate_type_of_classifier(self):
@@ -149,6 +151,10 @@ class ClassifierData:
     def validate_bagging(self):
         if not type(self.bagging) is bool:
             raise Exception('bagging must be of type bool')
+
+    def validate_logging_to_file(self):
+        if not type(self.logging_to_file) is bool:
+            raise Exception('logging_to_file must be of type bool')
 
     def validate_minimum(self):
         if not type(self.minimum) is float:

@@ -21,6 +21,7 @@ generate_all_permutations = False
 bagging = True
 
 results_directory_relative = 'results'
+logging_to_file = True
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
 numbers_of_base_classifiers = list(range(3, 4))
@@ -79,7 +80,8 @@ for number_of_base_classifiers in numbers_of_base_classifiers:
                                               filename = 'datasets//' + filename,
                                               generate_all_permutations = generate_all_permutations,
                                               log_number = log_number,
-                                              bagging = bagging)
+                                              bagging = bagging,
+                                              logging_to_file = logging_to_file)
             try:
                 mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
                 results_pro_division.append([mv_score, merged_score, mv_mcc, merged_mcc])
