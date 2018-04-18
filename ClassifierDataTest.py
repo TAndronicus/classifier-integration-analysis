@@ -267,5 +267,15 @@ class ClassifierDataTest(unittest.TestCase):
             classifier_data.validate_maximum()
 
 
+    def test_validate_type_of_mv(self):
+        # given
+        type_of_mv = 'test'
+        # when
+        classifier_data = ClassifierData(type_of_mv = type_of_mv)
+        # then
+        with self.assertRaisesRegex(Exception, 'type_of_mv must be of type MVType'):
+            classifier_data.validate_type_of_mv()
+
+
 if __name__ == '__main__':
     unittest.main()

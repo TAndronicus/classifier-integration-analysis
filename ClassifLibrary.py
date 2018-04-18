@@ -1199,14 +1199,16 @@ def compute_confusion_matrix(clfs: [], X_test: [], y_test: []):
     return confusion_matrices
 
 
-def prepare_majority_voting(clfs: [], X_test: [], y_test: []):
+def prepare_majority_voting(clfs: [], X_test: [], y_test: [], classifier_data: ClassifierData = ClassifierData()):
     """Returns confusion matrix and score of majority voting of give classifiers
 
     :param clfs: []
     :param X_test: np.array
     :param y_test: np.array
+    :param classifier_data: ClassifierData
     :return: conf_mat, score: [], float
     """
+    type_of_mv = classifier_data.type_of_mv #  TODO
     y_predicted = np.empty(len(X_test), dtype = float)
     for clf in clfs:
         y_predicted += clf.predict(X_test)
