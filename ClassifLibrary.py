@@ -789,6 +789,44 @@ def split_sorted_samples(X: [], y: [], classifier_data: ClassifierData = Classif
     return X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test
 
 
+def split_sorted_unitary_bagging(X: [], y: [], classifier_data: ClassifierData = ClassifierData()):
+    """Splits data into subsets for training, validating and testing using bagging
+
+    :param X: []
+    :param y: []
+    :param classifier_data: ClassifierData
+    :return: X_splitted, y_splitted: [], []
+    """
+    number_of_classifiers = classifier_data.number_of_classifiers
+    number_of_space_parts = classifier_data.number_of_space_parts
+    print('Splitting samples')
+    if len(X) < (number_of_classifiers + 2) * number_of_space_parts:
+        raise NotEnoughSamplesError('Not enough samples found when sorting (len(X) = {})'.format(len(X)))
+    X_splitted, y_splitted = [], []
+    length = len(X)
+    for i in range(number_of_classifiers + 2):
+        X_temp, y_temp = np.zeros((length, 2)), np.zeros(length, dtype = np.int)
+        for j in range(length):
+            rand = randint(0, length - 1)
+            X_temp[j, :] = X[rand, :]
+            try:
+                if X[rand, 0] < minimum:
+                    minimum = X[rand, 0]
+            except UnboundLocalError:
+                minimum = X[rand, 0]
+            try:
+                if X[rand, 0] > maximum:
+                    maximum = X[rand, 0]
+            except UnboundLocalError:
+                maximum = X[rand, 0]
+            y_temp[j] = y[rand]
+        X_splitted.append(X_temp)
+        y_splitted.append(y_temp)
+    classifier_data.minimum = minimum
+    classifier_data.maximum = maximum
+    return X_splitted, y_splitted
+
+
 def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = ClassifierData()):
     """Splits data into subsets for training, validating and testing
 
@@ -799,43 +837,19 @@ def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = Classif
     """
     number_of_classifiers = classifier_data.number_of_classifiers
     number_of_space_parts = classifier_data.number_of_space_parts
-    bagging = classifier_data.bagging
     print('Splitting samples')
     if len(X) < (number_of_classifiers + 2) * number_of_space_parts:
         raise NotEnoughSamplesError('Not enough samples found when sorting (len(X) = {})'.format(len(X)))
     X_splitted, y_splitted = [], []
     length_of_subset = int(len(X) / (number_of_classifiers + 2))
-    length = len(X)
-    if bagging:
-        for i in range(number_of_classifiers + 2):
-            X_temp, y_temp = np.zeros((length, 2)), np.zeros(length, dtype = np.int)
-            for j in range(length):
-                rand = randint(0, length - 1)
-                X_temp[j, :] = X[rand, :]
-                try:
-                    if X[rand, 0] < minimum:
-                        minimum = X[rand, 0]
-                except UnboundLocalError:
-                    minimum = X[rand, 0]
-                try:
-                    if X[rand, 0] > maximum:
-                        maximum = X[rand, 0]
-                except UnboundLocalError:
-                    maximum = X[rand, 0]
-                y_temp[j] = y[rand]
-            X_splitted.append(X_temp)
-            y_splitted.append(y_temp)
-        classifier_data.minimum = minimum
-        classifier_data.maximum = maximum
-    else:
-        for i in range(number_of_classifiers + 2):
-            X_temp, y_temp = np.zeros((length_of_subset, 2)), np.zeros(length_of_subset, dtype = np.int)
-            for j in range(length_of_subset):
-                X_temp[j, :] = (X[j * (number_of_classifiers + 2) + i, :])
-                y_temp[j] = (y[j * (number_of_classifiers + 2) + i])
-            X_splitted.append(X_temp)
-            y_splitted.append(y_temp)
-        classifier_data.minimum, classifier_data.maximum = min(X[:, 0]), max(X[:, 0])
+    for i in range(number_of_classifiers + 2):
+        X_temp, y_temp = np.zeros((length_of_subset, 2)), np.zeros(length_of_subset, dtype = np.int)
+        for j in range(length_of_subset):
+            X_temp[j, :] = (X[j * (number_of_classifiers + 2) + i, :])
+            y_temp[j] = (y[j * (number_of_classifiers + 2) + i])
+        X_splitted.append(X_temp)
+        y_splitted.append(y_temp)
+    classifier_data.minimum, classifier_data.maximum = min(X[:, 0]), max(X[:, 0])
     return X_splitted, y_splitted
 
 

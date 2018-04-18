@@ -7,9 +7,10 @@ from ClfType import ClfType
 from MVType import MVType
 from datetime import datetime
 
-filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
-             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
-             'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+#filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+ #            'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+  #           'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+filenames = ['meter_a.tsv']
 type_of_classifier = ClfType.LINEAR
 are_samples_generated = False
 number_of_samples_if_generated = 1000

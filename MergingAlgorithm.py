@@ -31,6 +31,9 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     """
     log_number = classif_data.log_number
     logging_to_file = classif_data.logging_to_file
+
+    bagging = classif_data.bagging
+
     if logging_to_file:
         enable_logging_to_file(log_number)
     classif_data.validate()
@@ -42,7 +45,10 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     X, y = ClassifLibrary.prepare_raw_data(classif_data)
 
     try:
-        X_splitted, y_splitted = ClassifLibrary.split_sorted_unitary(X, y, classif_data)
+        if bagging:
+            X_splitted, y_splitted = ClassifLibrary.split_sorted_unitary_bagging(X, y, classif_data)
+        else:
+            X_splitted, y_splitted = ClassifLibrary.split_sorted_unitary(X, y, classif_data)
     except NotEnoughSamplesError as e:
         X_splitted, y_splitted = [], []
         indicate_insufficient_samples(e, classif_data)

@@ -559,6 +559,72 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertEqual(len(X_whole_train), self.NUMBER_OF_CLASSIFIERS)
 
+    def test_should_return_same_division_every_time(self):
+        # given
+        X = np.array([[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0],
+                     [84, 0], [84, 0], [84, 0], [100, 0], [100, 0], [0, 0], [0, 0], [21, 0], [21, 0], [21, 0],
+                     [42, 0], [42, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0], [100, 0], [100, 0], [100, 0]])
+        y = np.array((1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0))
+        # when
+        X_1, y_1 = ClassifLibrary.split_sorted_unitary(X, y)
+        X_2, y_2 = ClassifLibrary.split_sorted_unitary(X, y)
+        # then
+        for i in range(len(X_1)):
+            self.assertEqual(len(X_1[i]), len(X_2[i]))
+            for j in range(len(X_1[i])):
+                self.assertTrue(X_1[i][j] in X_2[i])
+                self.assertTrue(X_2[i][j] in X_1[i])
+
+    def test_should_return_same_division_on_generated_data_every_time(self):
+        # given
+        ar, N = [], 10000
+        for _ in range(N):
+            ar.append(np.random.normal(size = (1, 2))[0])
+        X = np.array(ar)
+        y = np.ones(shape = (N, 1))
+        # when
+        X_1, y_1 = ClassifLibrary.split_sorted_unitary(X, y)
+        X_2, y_2 = ClassifLibrary.split_sorted_unitary(X, y)
+        # then
+        for i in range(len(X_1)):
+            self.assertEquals(len(X_1[i]), len(X_2[i]))
+            for j in range(len(X_1[i])):
+                self.assertTrue(X_1[i][j] in X_2[i])
+                self.assertTrue(X_2[i][j] in X_1[i])
+
+    def test_should_return_same_division_in_right_order_every_time(self):
+        # given
+        X = np.array([[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0],
+                     [84, 0], [84, 0], [84, 0], [100, 0], [100, 0], [0, 0], [0, 0], [21, 0], [21, 0], [21, 0],
+                     [42, 0], [42, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0], [100, 0], [100, 0], [100, 0]])
+        y = np.array((1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0))
+        # when
+        X_1, y_1 = ClassifLibrary.split_sorted_unitary(X, y)
+        X_2, y_2 = ClassifLibrary.split_sorted_unitary(X, y)
+        # then
+        for i in range(len(X_1)):
+            self.assertEqual(len(X_1[i]), len(X_2[i]))
+            for j in range(len(X_1[i])):
+                self.assertEqual(X_1[i][j][0], X_2[i][j][0])
+                self.assertEqual(X_1[i][j][1], X_2[i][j][1])
+
+    def test_should_return_same_division_in_right_order_on_generated_data_every_time(self):
+        # given
+        ar, N, mi = [], 10000, 30
+        for _ in range(N):
+            ar.append(np.random.normal(loc = mi, scale = 1, size = (1, 2))[0])
+        X = np.array(ar)
+        y = np.ones(shape = (N, 1))
+        # when
+        X_1, y_1 = ClassifLibrary.split_sorted_unitary(X, y)
+        X_2, y_2 = ClassifLibrary.split_sorted_unitary(X, y)
+        # then
+        for i in range(len(X_1)):
+            self.assertEqual(len(X_1[i]), len(X_2[i]))
+            for j in range(len(X_1[i])):
+                self.assertEqual(X_1[i][j][0], X_2[i][j][0])
+                self.assertEqual(X_1[i][j][1], X_2[i][j][1])
+
     def ignore_deprecated_test_train_test_sorted_split(self):
         # given
         # when
