@@ -1,5 +1,5 @@
 from ClfType import ClfType
-from MVType import MVType
+from CompositionType import CompositionType
 
 
 class ClassifierData:
@@ -16,8 +16,8 @@ class ClassifierData:
                  write_computed_scores: bool = False, show_plots: bool = False, show_only_first_plot: bool = True,
                  columns: [] = [0, 1], is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx',
                  generate_all_permutations: bool = True, log_number: int = 0, bagging: bool = False,
-                 logging_to_file: bool = True, type_of_mv: MVType = MVType.MEAN, minimum: float = 0,
-                 maximum: float = 0):
+                 logging_to_file: bool = True, type_of_composition: CompositionType = CompositionType.MEAN,
+                 minimum: float = 0, maximum: float = 0):
         self.type_of_classifier = type_of_classifier
         self.are_samples_generated = are_samples_generated
         self.number_of_samples_if_generated = number_of_samples_if_generated
@@ -37,7 +37,7 @@ class ClassifierData:
         self.log_number = log_number
         self.bagging = bagging
         self.logging_to_file = logging_to_file
-        self.type_of_mv = type_of_mv
+        self.type_of_composition = type_of_composition
         self.minimum = minimum
         self.maximum = maximum
 
@@ -62,7 +62,7 @@ class ClassifierData:
         self.validate_log_number()
         self.validate_bagging()
         self.validate_logging_to_file()
-        self.validate_type_of_mv()
+        self.validate_type_of_composition()
         print('Parameters valid\n')
 
     def validate_type_of_classifier(self):
@@ -168,6 +168,6 @@ class ClassifierData:
         if not type(self.maximum) is float:
             raise Exception('maximum must be of type float')
 
-    def validate_type_of_mv(self):
-        if not type(self.type_of_mv) is MVType:
-            raise Exception('type_of_mv must be of type MVType')
+    def validate_type_of_composition(self):
+        if not type(self.type_of_composition) is CompositionType:
+            raise Exception('type_of_composition must be of type CompositionType')

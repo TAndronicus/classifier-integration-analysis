@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class MVType(Enum):
+class CompositionType(Enum):
     """Defines the type of majority voting strategy
 
 

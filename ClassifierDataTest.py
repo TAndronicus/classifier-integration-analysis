@@ -267,14 +267,14 @@ class ClassifierDataTest(unittest.TestCase):
             classifier_data.validate_maximum()
 
 
-    def test_validate_type_of_mv(self):
+    def test_validate_type_of_composition(self):
         # given
-        type_of_mv = 'test'
+        type_of_composition = 'test'
         # when
-        classifier_data = ClassifierData(type_of_mv = type_of_mv)
+        classifier_data = ClassifierData(type_of_composition = type_of_composition)
         # then
-        with self.assertRaisesRegex(Exception, 'type_of_mv must be of type MVType'):
-            classifier_data.validate_type_of_mv()
+        with self.assertRaisesRegex(Exception, 'type_of_composition must be of type CompositionType'):
+            classifier_data.validate_type_of_composition()
 
 
 if __name__ == '__main__':

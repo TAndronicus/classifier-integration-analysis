@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import ClassifLibrary
+from CompositionType import CompositionType
 from NotEnoughSamplesError import NotEnoughSamplesError
 import sys
 
@@ -33,6 +34,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     logging_to_file = classif_data.logging_to_file
 
     bagging = classif_data.bagging
+    type_of_composition = classif_data.type_of_composition
 
     if logging_to_file:
         enable_logging_to_file(log_number)
@@ -81,9 +83,14 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
         confusion_matrices.append(mv_conf_mat)
         cumulated_scores.append(mv_score)
 
-        scores, cumulated_score, conf_mat = \
-            ClassifLibrary.prepare_composite_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
-                                                        classif_data)
+        if type_of_composition == CompositionType.MEAN:
+            scores, cumulated_score, conf_mat = \
+                ClassifLibrary.prepare_composite_mean_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
+                                                                 classif_data)
+        elif type_of_composition == CompositionType.MEDIAN:
+            scores, cumulated_score, conf_mat = \
+                ClassifLibrary.prepare_composite_median_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
+                                                                 classif_data)
 
         confusion_matrices.append(conf_mat)
         cumulated_scores.append(cumulated_score)
@@ -103,7 +110,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
                 indicate_insufficient_samples()
 
         if show_only_first_plot:
-            show_plots = False  # Convenience
+            show_plots = False
             classif_data.show_plots = False
             classif_data.draw_color_plot = False
     number_of_permutations -= 1

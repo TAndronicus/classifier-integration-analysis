@@ -4,13 +4,12 @@ import FileHelper
 from NotEnoughSamplesError import NotEnoughSamplesError
 import os
 from ClfType import ClfType
-from MVType import MVType
+from CompositionType import CompositionType
 from datetime import datetime
 
-#filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
- #            'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
-  #           'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
-filenames = ['meter_a.tsv']
+filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+             'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
 type_of_classifier = ClfType.LINEAR
 are_samples_generated = False
 number_of_samples_if_generated = 1000
@@ -22,7 +21,7 @@ show_only_first_plot = True
 is_validation_hard = False
 generate_all_permutations = False
 bagging = True
-type_of_mv = MVType.MEDIAN
+type_of_composition = CompositionType.MEDIAN
 
 results_directory_relative = 'results'
 logging_to_file = True
