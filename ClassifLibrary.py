@@ -1222,7 +1222,6 @@ def prepare_majority_voting(clfs: [], X_test: [], y_test: [], classifier_data: C
     :param classifier_data: ClassifierData
     :return: conf_mat, score: [], float
     """
-    type_of_mv = classifier_data.type_of_mv #  TODO
     y_predicted = np.empty(len(X_test), dtype = float)
     for clf in clfs:
         y_predicted += clf.predict(X_test)
@@ -1377,27 +1376,37 @@ def prepare_composite_median_classifier(X_test: [], y_test: [], X: [], coefficie
     for j in range(number_of_space_parts):
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
-            a, b = reduce_coefficients_in_subspace(coefficients, scores, j, classifier_data)
+            filtered_coeffs = reduce_coefficients_in_subspace(coefficients, scores, j, classifier_data)
+            is_nan = contain_nan(filtered_coeffs)
 
         if show_plots:  # TODO
             x_subspace_min, x_subspace_max = get_subspace_limits(j, classifier_data)
             x = np.linspace(x_subspace_min, x_subspace_max)
-            y = a * x + b
+            #y = a * x + b
+            y = x
             ax.plot(x, y)
 
         X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data)
         all_classified, propperly_classified = 0, 0
-        if len(X_part) > 0 and not(math.isnan(a)) and not(math.isnan(b)):
+        if len(X_part) > 0 and not(is_nan):
             for k in range(len(X_part)):
+                representations = []
+                for coeffs in filtered_coeffs:
+                    representations.append(coeffs[0] * X_part[k][0] + coeffs[1])
+                representations = np.sort(representations)
+                if len(representations % 2 == 1):
+                    decision_limit = representations[int((len(representations) + 1) / 2)]
+                else:
+                    decision_limit = representations[int(len(representations) / 2)]
                 all_classified += 1
                 if y_part[k] >= .5:
-                    if a * X_part[k][0] + b > X_part[k][1]:
+                    if decision_limit > X_part[k][1]:
                         prop_1_pred_1 += 1
                         propperly_classified += 1
                     else:
                         prop_1_pred_0 += 1
                 else:
-                    if a * X_part[k][0] + b > X_part[k][1]:
+                    if decision_limit > X_part[k][1]:
                         prop_0_pred_1 += 1
                     else:
                         prop_0_pred_0 += 1
@@ -1424,12 +1433,20 @@ def prepare_composite_median_classifier(X_test: [], y_test: [], X: [], coefficie
 
 def reduce_coefficients_in_subspace(coefficients: [], scores: [], j: int, classifier_data: ClassifierData = ClassifierData()):
     number_of_best_classifiers = classifier_data.number_of_best_classifiers
-    indices = list(range(len(scores)))
-    scores, indices = (list(t) for t in zip(*sorted(zip(scores, indices))))
+    indices = list(range(len(scores[j])))
+    sorted_scores, indices = (list(t) for t in zip(*sorted(zip(scores[j], indices))))
     filtered_coeffs = []
     for i in range(1, number_of_best_classifiers + 1):
         filtered_coeffs.append(coefficients[indices[-i]])
     return filtered_coeffs
+
+
+def contain_nan(filtered_coeffs):
+    contain_nan = False
+    for i in range(len(filtered_coeffs)):
+        for j in range(len(filtered_coeffs[i])):
+            contain_nan = contain_nan or math.isnan(filtered_coeffs[i][j])
+    return contain_nan
 
 
 def compose_conf_matrix(prop_0_pred_0: int, prop_0_pred_1: int, prop_1_pred_0: int, prop_1_pred_1: int):

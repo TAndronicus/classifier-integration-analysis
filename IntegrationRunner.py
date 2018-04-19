@@ -84,6 +84,7 @@ for number_of_base_classifiers in numbers_of_base_classifiers:
                                               generate_all_permutations = generate_all_permutations,
                                               log_number = log_number,
                                               bagging = bagging,
+                                              type_of_composition = type_of_composition,
                                               logging_to_file = logging_to_file)
             try:
                 mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
