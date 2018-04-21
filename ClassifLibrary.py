@@ -1439,8 +1439,12 @@ def get_decision_limit(sample, filtered_coeffs):
 
 def reduce_coefficients_in_subspace(coefficients: [], scores: [], j: int, classifier_data: ClassifierData = ClassifierData()):
     number_of_best_classifiers = classifier_data.number_of_best_classifiers
-    indices = list(range(len(scores[j])))
-    sorted_scores, indices = (list(t) for t in zip(*sorted(zip(scores[j], indices))))
+    number_of_classifiers = classifier_data.number_of_classifiers
+    scores_in_subspace = np.zeros(number_of_classifiers, dtype = float)
+    for i in range(len(scores)):
+        scores_in_subspace[i] = scores[i][j]
+    indices = list(range(number_of_classifiers))
+    sorted_scores, indices = (list(t) for t in zip(*sorted(zip(scores_in_subspace, indices))))
     filtered_coeffs = []
     for i in range(1, number_of_best_classifiers + 1):
         filtered_coeffs.append(coefficients[indices[-i]])

@@ -1,6 +1,8 @@
 import unittest
 import math
 from ClassifierData import ClassifierData
+from ClfType import ClfType
+from CompositionType import CompositionType
 from MergingAlgorithm import run
 
 
@@ -11,8 +13,56 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm(self):
         # given
+        logging_to_file = False
+        ClassifierData(logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(logging_to_file = False))
+        mv_score, merged_score, mv_mcc, merged_mcc = run()
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+        if mv_score > .5:
+            self.assertTrue(mv_mcc >= 0)
+        elif mv_score < .5:
+            self.assertTrue(mv_mcc <= 0)
+        if merged_score > .5:
+            self.assertTrue(merged_mcc >= 0)
+        elif merged_score < .5:
+            self.assertTrue(merged_mcc <= 0)
+
+    def test_should_return_no_error_for_mean_classifier(self):
+        # given
+        type_of_classifier = ClfType.MEAN
+        logging_to_file = False
+        classifier_data = ClassifierData(type_of_classifier = type_of_classifier,
+                                         logging_to_file = logging_to_file)
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+        if mv_score > .5:
+            self.assertTrue(mv_mcc >= 0)
+        elif mv_score < .5:
+            self.assertTrue(mv_mcc <= 0)
+        if merged_score > .5:
+            self.assertTrue(merged_mcc >= 0)
+        elif merged_score < .5:
+            self.assertTrue(merged_mcc <= 0)
+
+    def test_should_return_no_error_for_mean_classifier_showing_plot(self):
+        # given
+        type_of_classifier = ClfType.MEAN
+        show_plots = True
+        logging_to_file = False
+        classifier_data = ClassifierData(type_of_classifier = type_of_classifier,
+                                         show_plots = show_plots,
+                                         logging_to_file = logging_to_file)
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(merged_score)
@@ -97,8 +147,9 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file(self):
         # given
+        filename = 'appendicitis.dat'
         logging_to_file = False
-        classifier_data = ClassifierData(filename = 'appendicitis.dat', logging_to_file = logging_to_file)
+        classifier_data = ClassifierData(filename = filename, logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -117,8 +168,9 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file(self):
         # given
+        filename = 'biodeg.scsv'
         logging_to_file = False
-        classifier_data = ClassifierData(filename = 'biodeg.scsv', logging_to_file = logging_to_file)
+        classifier_data = ClassifierData(filename = filename, logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
@@ -137,8 +189,9 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file(self):
         # given
+        filename = 'data_banknote_authentication.csv'
         logging_to_file = False
-        classifier_data = ClassifierData(filename = 'data_banknote_authentication.csv',
+        classifier_data = ClassifierData(filename = filename,
                                          logging_to_file = logging_to_file)
         # when
         mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
@@ -180,9 +233,10 @@ class MergingAlgorithmtest(unittest.TestCase):
         # given
         show_plots = True
         logging_to_file = False
+        classifier_data = ClassifierData(show_plots = show_plots,
+                                         logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(show_plots = show_plots,
-                                                                        logging_to_file = logging_to_file))
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(merged_score)
@@ -298,10 +352,11 @@ class MergingAlgorithmtest(unittest.TestCase):
         show_plots = True
         show_color_plot = True
         logging_to_file = False
+        classifier_data = ClassifierData(show_plots = show_plots,
+                                         show_color_plot = show_color_plot,
+                                         logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(show_plots = show_plots,
-                                                                        show_color_plot = show_color_plot,
-                                                                        logging_to_file = logging_to_file))
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(merged_score)
@@ -426,11 +481,12 @@ class MergingAlgorithmtest(unittest.TestCase):
         show_color_plot = True
         write_computed_scores = True
         logging_to_file = False
+        classifier_data = ClassifierData(show_plots = show_plots,
+                                         show_color_plot = show_color_plot,
+                                         write_computed_scores = write_computed_scores,
+                                         logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(show_plots = show_plots,
-                                                                        show_color_plot = show_color_plot,
-                                                                        write_computed_scores = write_computed_scores,
-                                                                        logging_to_file = logging_to_file))
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(merged_score)
@@ -607,9 +663,10 @@ class MergingAlgorithmtest(unittest.TestCase):
         # given
         bagging = True
         logging_to_file = False
+        classifier_data = ClassifierData(bagging = bagging,
+                                         logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(ClassifierData(bagging = bagging,
-                                                                        logging_to_file = logging_to_file))
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(merged_score)
@@ -650,7 +707,123 @@ class MergingAlgorithmtest(unittest.TestCase):
         elif merged_score < .5:
             self.assertTrue(merged_mcc <= 0)
 
+    def test_should_return_no_error_for_mean_classif_when_scores_computed_manually(self):
+        # given
+        type_of_classifier = ClfType.MEAN
+        generate_all_permutations = False
+        write_computed_scores = True
+        logging_to_file = False
+        classifier_data = ClassifierData(type_of_classifier = type_of_classifier,
+                                         generate_all_permutations = generate_all_permutations,
+                                         write_computed_scores = write_computed_scores,
+                                         logging_to_file = logging_to_file)
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+        if mv_score > .5:
+            self.assertTrue(mv_mcc >= 0)
+        elif mv_score < .5:
+            self.assertTrue(mv_mcc <= 0)
+        if merged_score > .5:
+            self.assertTrue(merged_mcc >= 0)
+        elif merged_score < .5:
+            self.assertTrue(merged_mcc <= 0)
 
+    def test_should_return_no_error_for_median_classif_integr(self):
+        # given
+        type_of_composition = CompositionType.MEDIAN
+        logging_to_file = False
+        classifier_data = ClassifierData(type_of_composition = type_of_composition,
+                                         logging_to_file = logging_to_file)
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+        if mv_score > .5:
+            self.assertTrue(mv_mcc >= 0)
+        elif mv_score < .5:
+            self.assertTrue(mv_mcc <= 0)
+        if merged_score > .5:
+            self.assertTrue(merged_mcc >= 0)
+        elif merged_score < .5:
+            self.assertTrue(merged_mcc <= 0)
+
+    def test_should_return_no_error_for_median_classif_integrfor_mean_classifier(self):
+        # given
+        type_of_classifier = ClfType.MEAN
+        type_of_composition = CompositionType.MEDIAN
+        logging_to_file = False
+        classifier_data = ClassifierData(type_of_classifier = type_of_classifier,
+                                         type_of_composition = type_of_composition,
+                                         logging_to_file = logging_to_file)
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+        if mv_score > .5:
+            self.assertTrue(mv_mcc >= 0)
+        elif mv_score < .5:
+            self.assertTrue(mv_mcc <= 0)
+        if merged_score > .5:
+            self.assertTrue(merged_mcc >= 0)
+        elif merged_score < .5:
+            self.assertTrue(merged_mcc <= 0)
+
+    def test_should_return_no_error_for_median_classif_integr_writing_manual(self):
+        # given
+        type_of_composition = CompositionType.MEDIAN
+        write_computed_scores = True
+        logging_to_file = False
+        classifier_data = ClassifierData(type_of_composition = type_of_composition,
+                                         write_computed_scores = write_computed_scores,
+                                         logging_to_file = logging_to_file)
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+        if mv_score > .5:
+            self.assertTrue(mv_mcc >= 0)
+        elif mv_score < .5:
+            self.assertTrue(mv_mcc <= 0)
+        if merged_score > .5:
+            self.assertTrue(merged_mcc >= 0)
+        elif merged_score < .5:
+            self.assertTrue(merged_mcc <= 0)
+
+    def test_should_return_no_error_for_median_classif_integr_showing_plots(self):
+        # given
+        show_plots = True
+        logging_to_file = False
+        classifier_data = ClassifierData(show_plots = show_plots,
+                                         logging_to_file = logging_to_file)
+        # when
+        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        # then
+        self.assertIsNotNone(mv_score)
+        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(mv_mcc)
+        self.assertIsNotNone(merged_mcc)
+        if mv_score > .5:
+            self.assertTrue(mv_mcc >= 0)
+        elif mv_score < .5:
+            self.assertTrue(mv_mcc <= 0)
+        if merged_score > .5:
+            self.assertTrue(merged_mcc >= 0)
+        elif merged_score < .5:
+            self.assertTrue(merged_mcc <= 0)
 
 if __name__ == '__main__':
     unittest.main()
