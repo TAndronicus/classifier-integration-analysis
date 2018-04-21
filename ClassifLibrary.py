@@ -1094,14 +1094,15 @@ def evaluate_weighted_average_coefficients_from_n_best(coefficients: [], scores:
     """
     number_of_classifiers = classifier_data.number_of_classifiers
     number_of_best_classifiers = classifier_data.number_of_best_classifiers
-    a, b, params, scoreSum = 0, 0, [], 0
+    a, b, scoreSum, scores_in_subspace = 0, 0, 0, np.zeros(number_of_classifiers)
     for i in range(number_of_classifiers):
-        params.append([scores[i][j], coefficients[i]])
-    params.sort()
-    for i in range(number_of_best_classifiers):
-        scoreSum += params[number_of_classifiers - 1 - i][0]
-        a += params[number_of_classifiers - 1 - i][1][0] * params[number_of_classifiers - 1 - i][0]
-        b += params[number_of_classifiers - 1 - i][1][1] * params[number_of_classifiers - 1 - i][0]
+        scores_in_subspace[i] = scores[i][j]
+    indices = list(range(number_of_classifiers))
+    sorted_scores, indices = (list(t) for t in zip(*sorted(zip(scores_in_subspace, indices))))
+    for i in range(1, number_of_best_classifiers + 1):
+        scoreSum += sorted_scores[-i]
+        a += sorted_scores[-i] * coefficients[indices[-i]][0]
+        b += sorted_scores[-i] * coefficients[indices[-i]][1]
     a /= scoreSum
     b /= scoreSum
     return a, b
