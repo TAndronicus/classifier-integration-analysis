@@ -16,12 +16,12 @@ number_of_samples_if_generated = 1000
 number_of_dataset_if_not_generated = 0
 draw_color_plot = False
 write_computed_scores = False
-show_plots = False
+show_plots = True
 show_only_first_plot = True
 is_validation_hard = False
 generate_all_permutations = False
-bagging = True
-type_of_composition = CompositionType.MEDIAN
+bagging = False
+type_of_composition = CompositionType.MEAN
 
 results_directory_relative = 'results'
 logging_to_file = True

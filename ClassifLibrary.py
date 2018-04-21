@@ -1379,25 +1379,19 @@ def prepare_composite_median_classifier(X_test: [], y_test: [], X: [], coefficie
             filtered_coeffs = reduce_coefficients_in_subspace(coefficients, scores, j, classifier_data)
             is_nan = contain_nan(filtered_coeffs)
 
-        if show_plots:  # TODO
+        if show_plots:
             x_subspace_min, x_subspace_max = get_subspace_limits(j, classifier_data)
             x = np.linspace(x_subspace_min, x_subspace_max)
-            #y = a * x + b
-            y = x
+            y = np.zeros(shape = (1, len(x)), dtype = float)
+            for i in range(len(x)):
+                y[i] = get_decision_limit(x[i], filtered_coeffs)
             ax.plot(x, y)
 
         X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data)
         all_classified, propperly_classified = 0, 0
         if len(X_part) > 0 and not(is_nan):
             for k in range(len(X_part)):
-                representations = []
-                for coeffs in filtered_coeffs:
-                    representations.append(coeffs[0] * X_part[k][0] + coeffs[1])
-                representations = np.sort(representations)
-                if len(representations % 2 == 1):
-                    decision_limit = representations[int((len(representations) + 1) / 2)]
-                else:
-                    decision_limit = representations[int(len(representations) / 2)]
+                decision_limit = get_decision_limit(X_part[k][0], filtered_coeffs)
                 all_classified += 1
                 if y_part[k] >= .5:
                     if decision_limit > X_part[k][1]:
@@ -1429,6 +1423,18 @@ def prepare_composite_median_classifier(X_test: [], y_test: [], X: [], coefficie
         ax.set_xlim(x_min_plot, x_max_plot)
         ax.set_ylim(y_min_plot, y_max_plot)
     return scores, cumulated_score, np.array(conf_mat)
+
+
+def get_decision_limit(sample, filtered_coeffs):
+    representations = []
+    for coeffs in filtered_coeffs:
+        representations.append(coeffs[0] * sample + coeffs[1])
+    representations = np.sort(representations)
+    if len(representations % 2 == 1):
+        decision_limit = representations[int((len(representations) + 1) / 2)]
+    else:
+        decision_limit = representations[int(len(representations) / 2)]
+    return decision_limit
 
 
 def reduce_coefficients_in_subspace(coefficients: [], scores: [], j: int, classifier_data: ClassifierData = ClassifierData()):
