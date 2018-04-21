@@ -1426,7 +1426,13 @@ def prepare_composite_median_classifier(X_test: [], y_test: [], X: [], coefficie
     return scores, cumulated_score, np.array(conf_mat)
 
 
-def get_decision_limit(sample, filtered_coeffs):
+def get_decision_limit(sample: float, filtered_coeffs: []):
+    """Gets value of decision limit function for given attribute value
+
+    :param sample: float
+    :param filtered_coeffs: []
+    :return:
+    """
     representations = []
     for coeffs in filtered_coeffs:
         representations.append(coeffs[0] * sample + coeffs[1])
@@ -1439,6 +1445,14 @@ def get_decision_limit(sample, filtered_coeffs):
 
 
 def reduce_coefficients_in_subspace(coefficients: [], scores: [], j: int, classifier_data: ClassifierData = ClassifierData()):
+    """Returns array of coefficients for classificator integration (only best)
+
+    :param coefficients: []
+    :param scores:[]
+    :param j: int
+    :param classifier_data: ClassifierData
+    :return:
+    """
     number_of_best_classifiers = classifier_data.number_of_best_classifiers
     number_of_classifiers = classifier_data.number_of_classifiers
     scores_in_subspace = np.zeros(number_of_classifiers, dtype = float)
@@ -1452,7 +1466,12 @@ def reduce_coefficients_in_subspace(coefficients: [], scores: [], j: int, classi
     return filtered_coeffs
 
 
-def contain_nan(filtered_coeffs):
+def contain_nan(filtered_coeffs: []):
+    """Checks if coefficient array contains nan
+
+    :param filtered_coeffs: []
+    :return:
+    """
     contain_nan = False
     for i in range(len(filtered_coeffs)):
         for j in range(len(filtered_coeffs[i])):
