@@ -6,5 +6,5 @@ class CompositionType(Enum):
 
 
     """
-    MEAN = 0
-    MEDIAN = 1
+    MEAN = 'Mean'
+    MEDIAN = 'Median'

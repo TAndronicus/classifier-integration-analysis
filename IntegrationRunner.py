@@ -7,9 +7,9 @@ from ClfType import ClfType
 from CompositionType import CompositionType
 from datetime import datetime
 
-filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
-             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
-             'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv']#,
+#             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+ #            'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
 type_of_classifier = ClfType.LINEAR
 are_samples_generated = False
 number_of_samples_if_generated = 1000
@@ -21,14 +21,14 @@ show_only_first_plot = True
 is_validation_hard = False
 generate_all_permutations = False
 bagging = False
-type_of_composition = CompositionType.MEDIAN
+type_of_composition = CompositionType.MEAN
 
 results_directory_relative = 'results'
 logging_to_file = True
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
 numbers_of_base_classifiers = list(range(3, 4))
-space_division = [3]
+space_division = [5]
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
 try:
@@ -94,11 +94,13 @@ for number_of_base_classifiers in numbers_of_base_classifiers:
                 mv_score, merged_score, mv_mcc, merged_mcc = float('nan'), float('nan'), float('nan'), float('nan')
         results_pro_classifier.append(results_pro_division)
     results.append(results_pro_classifier)
-FileHelper.save_merging_results_pro_space_division_pro_base_classif(filenames, results, numbers_of_base_classifiers,
-                                                                    space_division,
-                                                                    result_filename = results_directory_relative +
-                                                                                      '//Results' +
-                                                                                      str(result_file_number) + '.xls')
+FileHelper.save_merging_results_pro_space_division_pro_base_classif_with_classif_data(filenames, results,
+                                                                                      numbers_of_base_classifiers,
+                                                                                      space_division,
+                                                                                      result_filename = results_directory_relative +
+                                                                                                        '//Results' +
+                                                                                                        str(result_file_number) + '.xls',
+                                                                                      classifier_data = classifier_data)
 
 log = open(results_directory_relative + '//integration' + str(log_number) + '.log', 'a')
 log.write('Finishing algorithm: ' + str(datetime.now()))

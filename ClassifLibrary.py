@@ -1344,10 +1344,12 @@ def prepare_composite_mean_classifier(X_test: [], y_test: [], X: [], coefficient
         prop_1_pred_0, prop_1_pred_1 = prop_1_pred_1, prop_1_pred_0
     scores.append(score)
     conf_mat = compose_conf_matrix(prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1)
+
     if show_plots:
         xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X)
         ax.set_xlim(x_min_plot, x_max_plot)
         ax.set_ylim(y_min_plot, y_max_plot)
+
     return scores, cumulated_score, np.array(conf_mat)
 
 
