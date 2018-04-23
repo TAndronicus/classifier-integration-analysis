@@ -7,9 +7,9 @@ from ClfType import ClfType
 from CompositionType import CompositionType
 from datetime import datetime
 
-filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv']#,
-#             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
- #            'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+             'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
 type_of_classifier = ClfType.LINEAR
 are_samples_generated = False
 number_of_samples_if_generated = 1000
@@ -20,15 +20,16 @@ show_plots = False
 show_only_first_plot = True
 is_validation_hard = False
 generate_all_permutations = False
-bagging = False
+bagging = True
+number_of_bagging_repetitions = 20
 type_of_composition = CompositionType.MEAN
 
 results_directory_relative = 'results'
 logging_to_file = True
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
-numbers_of_base_classifiers = list(range(3, 4))
-space_division = [5]
+numbers_of_base_classifiers = [3]
+space_division = [3, 5, 7, 9]
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
 try:
@@ -87,7 +88,20 @@ for number_of_base_classifiers in numbers_of_base_classifiers:
                                               type_of_composition = type_of_composition,
                                               logging_to_file = logging_to_file)
             try:
-                mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
+                if bagging == True:
+                    mv_score, merged_score, mv_mcc, merged_mcc = 0, 0, 0, 0
+                    for _ in range(number_of_bagging_repetitions):
+                        mv_score_partial, merged_score_partial, mv_mcc_partial, merged_mcc_partial = MergingAlgorithm.run(classifier_data)
+                        mv_score += mv_score_partial
+                        merged_score += merged_score_partial
+                        mv_mcc += mv_mcc_partial
+                        merged_mcc += merged_mcc_partial
+                    mv_score /= number_of_bagging_repetitions
+                    merged_score /= number_of_bagging_repetitions
+                    mv_mcc /= number_of_bagging_repetitions
+                    merged_mcc /= number_of_bagging_repetitions
+                else:
+                    mv_score, merged_score, mv_mcc, merged_mcc = MergingAlgorithm.run(classifier_data)
                 results_pro_division.append([mv_score, merged_score, mv_mcc, merged_mcc])
             except NotEnoughSamplesError as e:
                 print(e.args[0])
