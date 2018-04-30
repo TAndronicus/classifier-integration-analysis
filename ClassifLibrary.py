@@ -1653,15 +1653,8 @@ def get_permutation_results(score_pro_permutation: [], mccs_pro_permutation: [])
     :param mccs_pro_permutation: []
     :return: classifier_scores, classifier_mcc: [], []
     """
-    classifier_scores = np.zeros(len(score_pro_permutation[0]))
-    classifier_mcc = np.zeros(len(mccs_pro_permutation[0]))
-    number_of_permutations = len(score_pro_permutation)
-    for i in range(number_of_permutations):
-        for j in range(len(score_pro_permutation[i])):
-            classifier_scores[j] += score_pro_permutation[i][j]
-            classifier_mcc[j] += mccs_pro_permutation[i][j]
-    classifier_scores /= number_of_permutations
-    classifier_mcc /= number_of_permutations
+    classifier_scores = np.mean(score_pro_permutation, axis = 0)
+    classifier_mcc = np.mean(mccs_pro_permutation, axis = 0)
     return classifier_scores, classifier_mcc
 
 
