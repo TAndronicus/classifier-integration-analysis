@@ -587,7 +587,7 @@ class MyLibraryTest(unittest.TestCase):
         X_2, y_2 = ClassifLibrary.split_sorted_unitary(X, y)
         # then
         for i in range(len(X_1)):
-            self.assertEquals(len(X_1[i]), len(X_2[i]))
+            self.assertEqual(len(X_1[i]), len(X_2[i]))
             for j in range(len(X_1[i])):
                 self.assertTrue(X_1[i][j] in X_2[i])
                 self.assertTrue(X_2[i][j] in X_1[i])

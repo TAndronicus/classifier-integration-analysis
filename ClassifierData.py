@@ -3,7 +3,7 @@ from CompositionType import CompositionType
 
 
 class ClassifierData:
-    """Clas to produce and validate parameter object for classification
+    """Class to produce and validate parameter object for classification
 
     """
 

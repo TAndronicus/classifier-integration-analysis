@@ -16,20 +16,24 @@ class MergingAlgorithmtest(unittest.TestCase):
         logging_to_file = False
         ClassifierData(logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run()
+        res = run()
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_for_mean_classifier(self):
         # given
@@ -38,20 +42,24 @@ class MergingAlgorithmtest(unittest.TestCase):
         classifier_data = ClassifierData(type_of_classifier = type_of_classifier,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_for_mean_classifier_showing_plot(self):
         # given
@@ -62,20 +70,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          show_plots = show_plots,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_with_no_permutations(self):
         # given
@@ -84,20 +96,24 @@ class MergingAlgorithmtest(unittest.TestCase):
         classifier_data = ClassifierData(generate_all_permutations = generate_all_permutations,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_switching_columns(self):
         # given
@@ -106,20 +122,24 @@ class MergingAlgorithmtest(unittest.TestCase):
         classifier_data = ClassifierData(switch_columns_while_loading = switch_columns_while_loading,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_with_no_permutations_switching_columns(self):
         # given
@@ -130,20 +150,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          switch_columns_while_loading = switch_columns_while_loading,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file(self):
         # given
@@ -151,20 +175,24 @@ class MergingAlgorithmtest(unittest.TestCase):
         logging_to_file = False
         classifier_data = ClassifierData(filename = filename, logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file(self):
         # given
@@ -172,20 +200,24 @@ class MergingAlgorithmtest(unittest.TestCase):
         logging_to_file = False
         classifier_data = ClassifierData(filename = filename, logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file(self):
         # given
@@ -194,40 +226,48 @@ class MergingAlgorithmtest(unittest.TestCase):
         classifier_data = ClassifierData(filename = filename,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file(self):
         # given
         logging_to_file = False
         classifier_data = ClassifierData(filename = 'pop_failures.tsv', logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_show_plot(self):
         # given
@@ -236,20 +276,24 @@ class MergingAlgorithmtest(unittest.TestCase):
         classifier_data = ClassifierData(show_plots = show_plots,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots(self):
         # given
@@ -260,20 +304,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          show_plots = show_plots,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots(self):
         # given
@@ -284,20 +332,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          show_plots = show_plots,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots(self):
         # given
@@ -308,20 +360,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          show_plots = show_plots,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots(self):
         # given
@@ -332,20 +388,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          show_plots = show_plots,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_plots_builtin(self):
         # given
@@ -356,20 +416,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          show_color_plot = show_color_plot,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots_builtin(self):
         # given
@@ -382,20 +446,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          show_color_plot = show_color_plot,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots_builtin(self):
         # given
@@ -408,20 +476,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          show_color_plot = show_color_plot,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots_builtin(self):
         # given
@@ -434,20 +506,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          show_color_plot = show_color_plot,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots_builtin(self):
         # given
@@ -460,20 +536,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          show_color_plot = show_color_plot,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_plots_builtin_computed(self):
         # given
@@ -486,20 +566,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          write_computed_scores = write_computed_scores,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_dat_file_plots_builtin_computed(self):
         # given
@@ -514,20 +598,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          write_computed_scores = write_computed_scores,
                                          logging_to_file = logging_too_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_scsv_file_plots_builtin_computed(self):
         # given
@@ -542,20 +630,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          write_computed_scores = write_computed_scores,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_csv_file_plots_builtin_computed(self):
         # given
@@ -570,20 +662,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          write_computed_scores = write_computed_scores,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots_builtin_computed(self):
         # given
@@ -598,20 +694,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          write_computed_scores = write_computed_scores,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_right_value_on_mock_test_case(self):
         # given
@@ -628,12 +728,16 @@ class MergingAlgorithmtest(unittest.TestCase):
         expected_score = (TP + TN) / (TP + TN + FP + FN)
         expected_mcc = (TP * TN - FP * FN) / math.sqrt((TP + FP) * (TP + FN) * (TN + FN) * (TN + FP))
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertAlmostEqual(expected_score, mv_score, delta = .01)
-        self.assertAlmostEqual(expected_score, merged_score, delta = .02)
+        self.assertAlmostEqual(expected_score, i_score, delta = .02)
         self.assertAlmostEqual(expected_mcc, mv_mcc, delta = .02)
-        self.assertAlmostEqual(expected_mcc, merged_mcc, delta = .04)
+        self.assertAlmostEqual(expected_mcc, i_mcc, delta = .04)
 
     def test_should_return_right_value_on_mock_test_case_one_iter(self):
         # given
@@ -652,12 +756,16 @@ class MergingAlgorithmtest(unittest.TestCase):
         expected_score = (TP + TN) / (TP + TN + FP + FN)
         expected_mcc = (TP * TN - FP * FN) / math.sqrt((TP + FP) * (TP + FN) * (TN + FN) * (TN + FP))
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertAlmostEqual(expected_score, mv_score, delta = .01)
-        self.assertAlmostEqual(expected_score, merged_score, delta = .03)
+        self.assertAlmostEqual(expected_score, i_score, delta = .03)
         self.assertAlmostEqual(expected_mcc, mv_mcc, delta = .01)
-        self.assertAlmostEqual(expected_mcc, merged_mcc, delta = .05)
+        self.assertAlmostEqual(expected_mcc, i_mcc, delta = .05)
 
     def test_should_return_no_error_on_default_merging_algorithm_with_bagging(self):
         # given
@@ -666,20 +774,24 @@ class MergingAlgorithmtest(unittest.TestCase):
         classifier_data = ClassifierData(bagging = bagging,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_with_bagging_on_generated_samples(self):
         # given
@@ -692,20 +804,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          bagging = bagging,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_for_mean_classif_when_scores_computed_manually(self):
         # given
@@ -718,20 +834,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          write_computed_scores = write_computed_scores,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_for_median_classif_integr(self):
         # given
@@ -740,20 +860,24 @@ class MergingAlgorithmtest(unittest.TestCase):
         classifier_data = ClassifierData(type_of_composition = type_of_composition,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_for_median_classif_integrfor_mean_classifier(self):
         # given
@@ -764,20 +888,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          type_of_composition = type_of_composition,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_for_median_classif_integr_writing_manual(self):
         # given
@@ -788,20 +916,24 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          write_computed_scores = write_computed_scores,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
     def test_should_return_no_error_for_median_classif_integr_showing_plots(self):
         # given
@@ -810,20 +942,24 @@ class MergingAlgorithmtest(unittest.TestCase):
         classifier_data = ClassifierData(show_plots = show_plots,
                                          logging_to_file = logging_to_file)
         # when
-        mv_score, merged_score, mv_mcc, merged_mcc = run(classifier_data)
+        res = run(classifier_data)
+        mv_score = res.mv_score
+        mv_mcc = res.mv_mcc
+        i_score = res.i_score
+        i_mcc = res.i_mcc
         # then
         self.assertIsNotNone(mv_score)
-        self.assertIsNotNone(merged_score)
+        self.assertIsNotNone(i_score)
         self.assertIsNotNone(mv_mcc)
-        self.assertIsNotNone(merged_mcc)
+        self.assertIsNotNone(i_mcc)
         if mv_score > .5:
             self.assertTrue(mv_mcc >= 0)
         elif mv_score < .5:
             self.assertTrue(mv_mcc <= 0)
-        if merged_score > .5:
-            self.assertTrue(merged_mcc >= 0)
-        elif merged_score < .5:
-            self.assertTrue(merged_mcc <= 0)
+        if i_score > .5:
+            self.assertTrue(i_mcc >= 0)
+        elif i_score < .5:
+            self.assertTrue(i_mcc <= 0)
 
 if __name__ == '__main__':
     unittest.main()

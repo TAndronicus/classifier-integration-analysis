@@ -1,5 +1,6 @@
 import xlwt
 from ClassifierData import ClassifierData
+from IntegrRes import IntegrRes
 
 
 def save_merging_results_one_space_division(filenames: [], results: [], result_filename: str = 'results//Results.xls',
@@ -97,7 +98,7 @@ def save_merging_results_pro_space_division_pro_base_classif(filenames: [],
 
 
 def save_merging_results_pro_space_division_pro_base_classif_with_classif_data(filenames: [],
-                                                                               results_pro_space_division_pro_base_classif: [],
+                                                                               res,
                                                                                numbers_of_base_classifiers: [],
                                                                                space_division: [],
                                                                                result_filename: str = 'results//Results.xls',
@@ -113,6 +114,7 @@ def save_merging_results_pro_space_division_pro_base_classif_with_classif_data(f
     :param sheetname: sheetname to write results to
     :return:
     """
+    results_pro_space_division_pro_base_classif = generate_partial_result_matrix(res)
     workbook = xlwt.Workbook()
     workbook.add_sheet(sheetname)
     sheet = workbook.get_sheet(sheetname)
@@ -152,3 +154,17 @@ def save_merging_results_pro_space_division_pro_base_classif_with_classif_data(f
         sheet.write(last_row, 0, entry_name)
         sheet.write(last_row, 1, output_data.get(entry_name))
     workbook.save(result_filename)
+
+
+def generate_partial_result_matrix(res):
+    overall_results = []
+    for result_pro_classifier in res:
+        mats_pro_classifier = []
+        for result_pro_space_division in result_pro_classifier:
+            mats_pro_space_division = []
+            for result_pro_file in result_pro_space_division:
+                mat = [result_pro_file.mv_score, result_pro_file.i_score, result_pro_file.mv_mcc, result_pro_file.i_mcc]
+                mats_pro_space_division.append(mat)
+            mats_pro_classifier.append(mats_pro_space_division)
+        overall_results.append(mats_pro_classifier)
+    return overall_results

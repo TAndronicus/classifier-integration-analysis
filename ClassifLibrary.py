@@ -15,6 +15,7 @@ from random import randint
 
 from ClassifierData import ClassifierData
 from ClfType import ClfType
+from IntegrRes import IntegrRes
 from NotEnoughSamplesError import NotEnoughSamplesError
 
 
@@ -1648,9 +1649,8 @@ def get_permutation_results(score_pro_permutation: [], mccs_pro_permutation: [])
 
     :param score_pro_permutation: []
     :param mccs_pro_permutation: []
-    :return: void
+    :return: classifier_scores, classifier_mcc: [], []
     """
-    print("\n")
     classifier_scores = np.zeros(len(score_pro_permutation[0]))
     classifier_mcc = np.zeros(len(mccs_pro_permutation[0]))
     number_of_permutations = len(score_pro_permutation)
@@ -1661,6 +1661,18 @@ def get_permutation_results(score_pro_permutation: [], mccs_pro_permutation: [])
     classifier_scores /= number_of_permutations
     classifier_mcc /= number_of_permutations
     return classifier_scores, classifier_mcc
+
+
+def get_permutation_stds(score_pro_permutation: [], mccs_pro_permutation: []):
+    """Returns scores and Matthews correlation coefficients standars deviations after all permutations
+
+    :param score_pro_permutation: []
+    :param mccs_pro_permutation: []
+    :return: void
+    """
+    score_stds = np.std(score_pro_permutation, axis = 0)
+    mcc_stds = np.std(mccs_pro_permutation, axis = 0)
+    return score_stds, mcc_stds
 
 
 def print_permutation_results(classifier_scores: [], classifier_mcc: []):
@@ -1679,3 +1691,54 @@ def print_permutation_results(classifier_scores: [], classifier_mcc: []):
             print('{}. classifier'.format(i))
         print('Score: {}'.format(classifier_scores[i]))
         print('Matthews correlation coefficient: {}'.format(classifier_mcc[i]))
+
+
+def prepare_result_object(scores: [], mccs: [], scores_stds: [], mccs_stds: []):
+    """Prepares result object
+
+    :param scores: []
+    :param mccs: []
+    :param scores_stds: []
+    :param mccs_stds: []
+    :return: res: IntegrRes
+    """
+    mv_score = scores[-2]
+    mv_score_std = scores_stds[-2]
+    mv_mcc = mccs[-2]
+    mv_mcc_std = mccs_stds[-2]
+    i_score = scores[-1]
+    i_score_std = scores_stds[-1]
+    i_mcc = mccs[-1]
+    i_mcc_std = mccs_stds[-1]
+    res = IntegrRes(mv_score = mv_score,
+                    mv_score_std = mv_score_std,
+                    mv_mcc = mv_mcc,
+                    mv_mcc_std = mv_mcc_std,
+                    i_score = i_score,
+                    i_score_std = i_score_std,
+                    i_mcc = i_mcc,
+                    i_mcc_std = i_mcc_std)
+    return res
+
+
+def get_mean_res(partial_ress: []):
+    """Prepares mean result object from partials
+
+    :param partial_ress: []
+    :return: res: IntegrRes
+    """
+    mv_score, mv_mcc, i_score, i_mcc = [], [], [], []
+    for bagging_result in partial_ress:
+        mv_score.append(bagging_result.mv_score)
+        mv_mcc.append(bagging_result.mv_mcc)
+        i_score.append(bagging_result.i_score)
+        i_mcc.append(bagging_result.i_mcc)
+    res = IntegrRes(mv_score = np.mean(mv_score, axis = 0),
+                    mv_score_std = np.std(mv_score, axis = 0),
+                    mv_mcc = np.mean(mv_mcc, axis = 0),
+                    mv_mcc_std = np.std(mv_mcc, axis = 0),
+                    i_score = np.mean(i_score, axis = 0),
+                    i_score_std = np.std(i_score, axis = 0),
+                    i_mcc = np.mean(i_mcc, axis = 0),
+                    i_mcc_std = np.std(i_mcc, axis = 0))
+    return res

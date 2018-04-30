@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import ClassifLibrary
 from CompositionType import CompositionType
+from IntegrRes import IntegrRes
 from NotEnoughSamplesError import NotEnoughSamplesError
 import sys
 
@@ -116,9 +117,11 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     number_of_permutations -= 1
 
     print('\n#####\nOverall results_pro_division after {} iterations:'.format(number_of_permutations))
-    overall_scores, overall_mcc = ClassifLibrary.get_permutation_results(score_pro_permutation, mccs_pro_permutation)
-    ClassifLibrary.print_permutation_results(overall_scores, overall_mcc)
+    overall_scores, overall_mccs = ClassifLibrary.get_permutation_results(score_pro_permutation, mccs_pro_permutation)
+    overall_scores_std, overall_mccs_std = ClassifLibrary.get_permutation_stds(score_pro_permutation, mccs_pro_permutation)
+    ClassifLibrary.print_permutation_results(overall_scores, overall_mccs)
     print('\n#####\n')
     if logging_to_file:
         disable_logging_to_file()
-    return overall_scores[-2], overall_scores[-1], overall_mcc[-2], overall_mcc[-1]
+    res = ClassifLibrary.prepare_result_object(overall_scores, overall_mccs, overall_mccs_std, overall_mccs_std)
+    return res
