@@ -14,9 +14,9 @@ class MergingAlgorithmtest(unittest.TestCase):
     def test_should_return_no_error_on_default_merging_algorithm(self):
         # given
         logging_to_file = False
-        ClassifierData(logging_to_file = logging_to_file)
+        classifier_data = ClassifierData(logging_to_file = logging_to_file)
         # when
-        res = run()
+        res = run(classifier_data)
         mv_score = res.mv_score
         mv_mcc = res.mv_mcc
         i_score = res.i_score
@@ -960,6 +960,7 @@ class MergingAlgorithmtest(unittest.TestCase):
             self.assertTrue(i_mcc >= 0)
         elif i_score < .5:
             self.assertTrue(i_mcc <= 0)
+
 
 if __name__ == '__main__':
     unittest.main()

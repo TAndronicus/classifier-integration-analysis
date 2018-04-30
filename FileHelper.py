@@ -1,6 +1,5 @@
 import xlwt
 from ClassifierData import ClassifierData
-from IntegrRes import IntegrRes
 
 
 def save_merging_results_one_space_division(filenames: [], results: [], result_filename: str = 'results//Results.xls',
@@ -98,20 +97,23 @@ def save_merging_results_pro_space_division_pro_base_classif(filenames: [],
 
 
 def save_merging_results_pro_space_division_pro_base_classif_with_classif_data(filenames: [],
-                                                                               res,
+                                                                               res: [],
                                                                                numbers_of_base_classifiers: [],
                                                                                space_division: [],
-                                                                               result_filename: str = 'results//Results.xls',
+                                                                               result_filename: str =
+                                                                               'results//Results.xls',
                                                                                sheetname: str = 'Result',
-                                                                               classifier_data: ClassifierData = ClassifierData()):
+                                                                               classifier_data: ClassifierData =
+                                                                               ClassifierData()):
     """Saves results of merging algorithm
 
     :param filenames: names of files being analysed
-    :param results_pro_space_division_pro_base_classif: matrix of results pro base classifier
+    :param res: result objects pro base classifiers pro space division pro file
     :param numbers_of_base_classifiers: array of numbers of base classifiers
     :param space_division: array of space divisions
     :param result_filename: filename to write results to
     :param sheetname: sheetname to write results to
+    :param classifier_data: parameter object
     :return:
     """
     results_pro_space_division_pro_base_classif = generate_partial_result_matrix(res)
@@ -136,18 +138,17 @@ def save_merging_results_pro_space_division_pro_base_classif_with_classif_data(f
                 for l in range(len(results_pro_space_division_pro_base_classif[i][k][j])):
                     sheet.write(i * len(filenames) + j + 2, 4 * k + l + 2,
                                 results_pro_space_division_pro_base_classif[i][k][j][l])
-    output_data = {}
-    output_data['type_of_classifier'] = classifier_data.type_of_classifier.value
-    output_data['are_samples_generated'] = str(classifier_data.are_samples_generated)
-    output_data['number_of_samples_if_generated'] = classifier_data.number_of_samples_if_generated
-    output_data['number_of_dataset_if_not_generated'] = classifier_data.number_of_dataset_if_not_generated
-    output_data['switch_columns_while_loading'] = str(classifier_data.switch_columns_while_loading)
-    output_data['number_of_best_classifiers'] = classifier_data.number_of_best_classifiers
-    output_data['columns'] = str(classifier_data.columns)
-    output_data['is_validation_hard'] = str(classifier_data.is_validation_hard)
-    output_data['generate_all_permutations'] = str(classifier_data.generate_all_permutations)
-    output_data['bagging'] = str(classifier_data.bagging)
-    output_data['type_of_composition'] = classifier_data.type_of_composition.value
+    output_data = {'type_of_classifier': classifier_data.type_of_classifier.value,
+                   'are_samples_generated': str(classifier_data.are_samples_generated),
+                   'number_of_samples_if_generated': classifier_data.number_of_samples_if_generated,
+                   'number_of_dataset_if_not_generated': classifier_data.number_of_dataset_if_not_generated,
+                   'switch_columns_while_loading': str(classifier_data.switch_columns_while_loading),
+                   'number_of_best_classifiers': classifier_data.number_of_best_classifiers,
+                   'columns': str(classifier_data.columns),
+                   'is_validation_hard': str(classifier_data.is_validation_hard),
+                   'generate_all_permutations': str(classifier_data.generate_all_permutations),
+                   'bagging': str(classifier_data.bagging),
+                   'type_of_composition': classifier_data.type_of_composition.value}
     last_row = 1 + len(filenames) * len(numbers_of_base_classifiers)
     for entry_name in output_data:
         last_row += 1
@@ -157,6 +158,11 @@ def save_merging_results_pro_space_division_pro_base_classif_with_classif_data(f
 
 
 def generate_partial_result_matrix(res):
+    """Converts result object into partial matrix
+
+    :param res: IntegrRes
+    :return: overall_results: []
+    """
     overall_results = []
     for result_pro_classifier in res:
         mats_pro_classifier = []

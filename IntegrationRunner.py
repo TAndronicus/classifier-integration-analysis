@@ -102,7 +102,6 @@ for number_of_base_classifiers in numbers_of_base_classifiers:
                 results_pro_division.append(res)
             except NotEnoughSamplesError as e:
                 print(e.args[0])
-                mv_score, merged_score, mv_mcc, merged_mcc = float('nan'), float('nan'), float('nan'), float('nan')
         results_pro_classifier.append(results_pro_division)
     results.append(results_pro_classifier)
 FileHelper.save_merging_results_pro_space_division_pro_base_classif_with_classif_data(filenames, results,
