@@ -158,7 +158,8 @@ def save_merging_results_pro_space_division_pro_base_classif_with_classif_data(f
 
 
 def save_res_objects_pro_space_division_pro_base_classif_with_classif_data(filenames: [],
-                                                                           results_pro_space_division_pro_base_classif: [],
+                                                                           results_pro_space_division_pro_base_classif:
+                                                                           [],
                                                                            numbers_of_base_classifiers: [],
                                                                            space_division: [],
                                                                            result_filename: str =
@@ -169,7 +170,7 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data(filen
     """Saves results of merging algorithm
 
     :param filenames: names of files being analysed
-    :param res: result objects pro base classifiers pro space division pro file
+    :param results_pro_space_division_pro_base_classif: result objects pro base classifiers pro space division pro file
     :param numbers_of_base_classifiers: array of numbers of base classifiers
     :param space_division: array of space divisions
     :param result_filename: filename to write results to

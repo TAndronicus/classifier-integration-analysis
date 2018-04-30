@@ -882,13 +882,12 @@ def train_test_sorted_split(X_one: [], y_one: [], quotient: float = 2 / 3):
     return X_train, X_test, y_train, y_test
 
 
-def prepare_samples_for_subspace(X_test: [], y_test: [], X: [], j: int,
+def prepare_samples_for_subspace(X_test: [], y_test: [], j: int,
                                  classifier_data: ClassifierData = ClassifierData()):
     """Preparing sample for testing in j-th subspace
 
     :param X_test: np.array
     :param y_test: np.array
-    :param X: np.array
     :param j: int
     :param classifier_data: ClassifierData
     :return: X_part, y_part: [], []
@@ -1144,7 +1143,7 @@ def test_classifiers(clfs: [], X_validation: [], y_validation: [], X: [], coeffi
     for clf in clfs:
         score, cumulated_score = [], 0
         for j in range(number_of_space_parts):
-            X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, X, j, classifier_data)
+            X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, j, classifier_data)
             if len(X_part) > 0:
                 score.append(clf.score(X_part, y_part))
                 cumulated_score += clf.score(X_part, y_part) * len(X_part)
@@ -1177,7 +1176,7 @@ def compute_scores_manually(X: [], X_validation: [], y_validation: [], a: float,
     number_of_space_parts = classifier_data.number_of_space_parts
     manually_computed_scores, overall_absolute_score = [], 0
     for j in range(number_of_space_parts):
-        X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, X, j, classifier_data)
+        X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, j, classifier_data)
         propperly_classified, all_classified = 0, 0
         for k in range(len(X_part)):
             if (a * X_part[k][0] + b > X_part[k][1]) ^ (y_part[k] == 1):
@@ -1281,7 +1280,8 @@ def compute_mcc(prop_0_pred_0: int, prop_0_pred_1: int, prop_1_pred_0: int, prop
     return mcc_score
 
 
-def prepare_composite_mean_classifier(X_test: [], y_test: [], X: [], coefficients: [], scores: [], number_of_subplots: int,
+def prepare_composite_mean_classifier(X_test: [], y_test: [], X: [], coefficients: [], scores: [],
+                                      number_of_subplots: int,
                                       classifier_data: ClassifierData = ClassifierData()):
     """Prepares composite classifiers using mean strategy
 
@@ -1315,9 +1315,9 @@ def prepare_composite_mean_classifier(X_test: [], y_test: [], X: [], coefficient
             y = a * x + b
             ax.plot(x, y)
 
-        X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data)
+        X_part, y_part = prepare_samples_for_subspace(X_test, y_test, j, classifier_data)
         all_classified, propperly_classified = 0, 0
-        if len(X_part) > 0 and not(math.isnan(a)) and not(math.isnan(b)):
+        if len(X_part) > 0 and not (math.isnan(a)) and not (math.isnan(b)):
             for k in range(len(X_part)):
                 all_classified += 1
                 if y_part[k] >= .5:
@@ -1354,8 +1354,9 @@ def prepare_composite_mean_classifier(X_test: [], y_test: [], X: [], coefficient
     return scores, cumulated_score, np.array(conf_mat)
 
 
-def prepare_composite_median_classifier(X_test: [], y_test: [], X: [], coefficients: [], scores: [], number_of_subplots: int,
-                                      classifier_data: ClassifierData = ClassifierData()):
+def prepare_composite_median_classifier(X_test: [], y_test: [], X: [], coefficients: [], scores: [],
+                                        number_of_subplots: int,
+                                        classifier_data: ClassifierData = ClassifierData()):
     """Prepares composite classifiers using median strategy
 
     :param X_test: np.array
@@ -1391,9 +1392,9 @@ def prepare_composite_median_classifier(X_test: [], y_test: [], X: [], coefficie
                 y[i] = get_decision_limit(x[i], filtered_coeffs)
             ax.plot(x, y)
 
-        X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data)
+        X_part, y_part = prepare_samples_for_subspace(X_test, y_test, j, classifier_data)
         all_classified, propperly_classified = 0, 0
-        if len(X_part) > 0 and not(is_nan):
+        if len(X_part) > 0 and not is_nan:
             for k in range(len(X_part)):
                 decision_limit = get_decision_limit(X_part[k][0], filtered_coeffs)
                 all_classified += 1
@@ -1447,7 +1448,8 @@ def get_decision_limit(sample: float, filtered_coeffs: []):
     return decision_limit
 
 
-def reduce_coefficients_in_subspace(coefficients: [], scores: [], j: int, classifier_data: ClassifierData = ClassifierData()):
+def reduce_coefficients_in_subspace(coefficients: [], scores: [], j: int,
+                                    classifier_data: ClassifierData = ClassifierData()):
     """Returns array of coefficients for classificator integration (only best)
 
     :param coefficients: []
@@ -1475,11 +1477,11 @@ def contain_nan(filtered_coeffs: []):
     :param filtered_coeffs: []
     :return:
     """
-    contain_nan = False
+    contains_nan = False
     for i in range(len(filtered_coeffs)):
         for j in range(len(filtered_coeffs[i])):
-            contain_nan = contain_nan or math.isnan(filtered_coeffs[i][j])
-    return contain_nan
+            contains_nan = contains_nan or math.isnan(filtered_coeffs[i][j])
+    return contains_nan
 
 
 def compose_conf_matrix(prop_0_pred_0: int, prop_0_pred_1: int, prop_1_pred_0: int, prop_1_pred_1: int):
@@ -1500,7 +1502,7 @@ def compose_conf_matrix(prop_0_pred_0: int, prop_0_pred_1: int, prop_1_pred_0: i
     return conf_mat
 
 
-def get_number_of_samples_in_subspace(X:[], j: int, classifier_data: ClassifierData = ClassifierData()):
+def get_number_of_samples_in_subspace(X: [], j: int, classifier_data: ClassifierData = ClassifierData()):
     """Returns number of samples in j-th subspace
 
     :param X: np.array

@@ -637,7 +637,7 @@ class MyLibraryTest(unittest.TestCase):
         X = np.array([[3, 3], [1, 1], [5, 5], [4, 4], [1, 1]])
         y = np.array([0, 1, 0, 1, 0])
         # when
-        X_sub, y_sub = ClassifLibrary.prepare_samples_for_subspace(X, y, X, 0)
+        X_sub, y_sub = ClassifLibrary.prepare_samples_for_subspace(X, y, 0)
         X_sort = ClassifLibrary.sort_attributes(X)
         treshold = X_sort[0][0] + (X_sort[-1][0] - X_sort[0][0]) / self.NUMBER_OF_SUBSPACES
         # then
