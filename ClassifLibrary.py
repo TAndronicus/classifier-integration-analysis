@@ -1,6 +1,7 @@
 import itertools
 import math
 import warnings
+from random import randint
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,7 +12,6 @@ from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import NearestCentroid
 from sklearn.svm import LinearSVC
-from random import randint
 
 from ClassifierData import ClassifierData
 from ClfType import ClfType
