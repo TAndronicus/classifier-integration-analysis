@@ -87,7 +87,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
             confusion_matrices = ClassifLibrary.compute_confusion_matrix(clfs, X_test, y_test)
 
-            mv_conf_mat, mv_score = ClassifLibrary.prepare_majority_voting(clfs, X_test, y_test, classif_data)
+            mv_conf_mat, mv_score = ClassifLibrary.prepare_majority_voting(clfs, X_test, y_test)
             confusion_matrices.append(mv_conf_mat)
             cumulated_scores.append(mv_score)
 

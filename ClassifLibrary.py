@@ -1111,7 +1111,6 @@ def evaluate_weighted_average_coefficients_from_n_best(coefficients: [], scores:
 def get_subspace_limits(j: int, classifier_data: ClassifierData = ClassifierData()):
     """Gets limits of j-th subspace
 
-    :param X: np.array
     :param j: int
     :param classifier_data: ClassifierData
     :return: x_subspace_max, x_subspace_min: float, float
@@ -1214,7 +1213,7 @@ def compute_confusion_matrix(clfs: [], X_test: [], y_test: []):
     return confusion_matrices
 
 
-def prepare_majority_voting(clfs: [], X_test: [], y_test: [], classifier_data: ClassifierData = ClassifierData()):
+def prepare_majority_voting(clfs: [], X_test: [], y_test: []):
     """Returns confusion matrix and score of majority voting of give classifiers
 
     :param clfs: []
