@@ -1155,12 +1155,12 @@ def test_classifiers(clfs: [], X_validation: [], y_validation: [], X: [], coeffi
         a, b = coefficients[i]
 
         if write_computed_scores:
-            compute_scores_manually(X, X_validation, y_validation, a, b, classifier_data)
+            compute_scores_manually(X_validation, y_validation, a, b, classifier_data)
         i += 1
     return scores, cumulated_scores
 
 
-def compute_scores_manually(X: [], X_validation: [], y_validation: [], a: float, b: float,
+def compute_scores_manually(X_validation: [], y_validation: [], a: float, b: float,
                             classifier_data: ClassifierData = ClassifierData()):
     """Computes and prints scores manually
 

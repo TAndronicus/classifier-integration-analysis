@@ -21,17 +21,17 @@ show_plots = False
 show_only_first_plot = False
 is_validation_hard = False
 generate_all_permutations = False
-bagging = False
+bagging = True
 number_of_bagging_repetitions = 3
-type_of_composition = CompositionType.MEAN
-space_division = [3, 5]
+type_of_composition = CompositionType.MEDIAN
+space_division = [4]
 
 results_directory_relative = 'results'
 logging_to_file = True
 logging_intermediate_results = False
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
-numbers_of_base_classifiers = [3]
+numbers_of_base_classifiers = [6]
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
 try:
