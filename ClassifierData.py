@@ -11,7 +11,7 @@ class ClassifierData:
 
     def __init__(self, type_of_classifier: ClfType = ClfType.LINEAR, are_samples_generated: bool = True,
                  number_of_samples_if_generated: int = 1000, number_of_dataset_if_not_generated: int = 0,
-                 switch_columns_while_loading: bool = False, number_of_space_parts: int = 5,
+                 switch_columns_while_loading: bool = False, space_division: [] = [5], number_of_space_parts: int = 5,
                  number_of_classifiers: int = 3, number_of_best_classifiers: int = 2, show_color_plot: bool = False,
                  write_computed_scores: bool = False, show_plots: bool = False, show_only_first_plot: bool = True,
                  columns: [] = [0, 1], is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx',
@@ -23,6 +23,7 @@ class ClassifierData:
         self.number_of_samples_if_generated = number_of_samples_if_generated
         self.number_of_dataset_if_not_generated = number_of_dataset_if_not_generated
         self.switch_columns_while_loading = switch_columns_while_loading
+        self.space_division = space_division
         self.number_of_space_parts = number_of_space_parts
         self.number_of_classifiers = number_of_classifiers
         self.number_of_best_classifiers = number_of_best_classifiers
@@ -48,6 +49,7 @@ class ClassifierData:
         self.validate_number_of_samples_if_generated()
         self.validate_number_of_dataset_if_not_generated()
         self.validate_switch_columns_while_loading()
+        self.validate_space_division()
         self.validate_number_of_space_parts()
         self.validate_number_of_classifiers()
         self.validate_number_of_best_classifiers()
@@ -89,10 +91,19 @@ class ClassifierData:
         if not type(self.switch_columns_while_loading) is bool:
             raise Exception('switch_columns_while_loading must be of type boolean')
 
+    def validate_space_division(self):
+        if len(self.space_division) == 0:
+            raise Exception('space_division must have elements')
+        for el in self.space_division:
+            if not type(el) is int:
+                raise Exception('space_division elements must be of type int')
+            if el <= 0:
+                raise Exception('space_division elements must be positive')
+
     def validate_number_of_space_parts(self):
         if not type(self.number_of_space_parts) is int:
             raise Exception('number_of_space_parts must be of type int')
-        if self.number_of_space_parts < 0:
+        if self.number_of_space_parts <= 0:
             raise Exception('number_of_space_parts must be positive')
 
     def validate_number_of_classifiers(self):

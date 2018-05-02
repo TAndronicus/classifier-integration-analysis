@@ -7,10 +7,10 @@ from ClfType import ClfType
 from CompositionType import CompositionType
 from datetime import datetime
 
-# filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
-#            'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
-#           'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
-filenames = ['cryotherapy.xlsx']
+#filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv']#,
+             #'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+             #'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+filenames = ['cryotherapy.xlsx', 'data_banknote_authentication.csv']
 type_of_classifier = ClfType.LINEAR
 are_samples_generated = False
 number_of_samples_if_generated = 1000
@@ -22,15 +22,15 @@ show_only_first_plot = True
 is_validation_hard = False
 generate_all_permutations = False
 bagging = True
-number_of_bagging_repetitions = 10
+number_of_bagging_repetitions = 3
 type_of_composition = CompositionType.MEAN
+space_division = [3, 5]
 
 results_directory_relative = 'results'
 logging_to_file = True
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
 numbers_of_base_classifiers = [3]
-space_division = [7]
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
 try:
@@ -58,55 +58,50 @@ results = []
 for number_of_base_classifiers in numbers_of_base_classifiers:
     print('Number of classifiers: ', number_of_base_classifiers)
     results_pro_classifier = []
-    for number_of_space_parts in space_division:
-        print('Number of space parts:', number_of_space_parts)
-        results_pro_division = []
-        for filename in filenames:
-            print('Analysing ' + filename)
-            if filename in files_to_switch:
-                switch_columns_while_loading = True
-                print('Switching columns')
-            else:
-                switch_columns_while_loading = False
-            classifier_data = \
-                ClassifLibrary.ClassifierData(type_of_classifier = type_of_classifier,
-                                              are_samples_generated = are_samples_generated,
-                                              number_of_samples_if_generated = number_of_samples_if_generated,
-                                              number_of_dataset_if_not_generated = number_of_dataset_if_not_generated,
-                                              switch_columns_while_loading = switch_columns_while_loading,
-                                              number_of_space_parts = number_of_space_parts,
-                                              number_of_classifiers = number_of_base_classifiers,
-                                              number_of_best_classifiers = number_of_base_classifiers - 1,
-                                              show_color_plot = draw_color_plot,
-                                              write_computed_scores = write_computed_scores,
-                                              show_plots = show_plots,
-                                              show_only_first_plot = show_only_first_plot,
-                                              is_validation_hard = is_validation_hard,
-                                              filename = 'datasets//' + filename,
-                                              generate_all_permutations = generate_all_permutations,
-                                              log_number = log_number,
-                                              bagging = bagging,
-                                              type_of_composition = type_of_composition,
-                                              logging_to_file = logging_to_file)
-            try:
-                if bagging == True:
-                    bagging_results = []
-                    for i in range(number_of_bagging_repetitions):
-                        print('{}. bagging iteration'.format(i))
-                        bagging_res = MergingAlgorithm.run(classifier_data)
-                        bagging_results.append(bagging_res)
-                    res = ClassifLibrary.get_mean_res(bagging_results)
+    for filename in filenames:
+        print('Analysing ' + filename)
+        if filename in files_to_switch:
+            switch_columns_while_loading = True
+            print('Switching columns')
+        else:
+            switch_columns_while_loading = False
+        classifier_data = \
+            ClassifLibrary.ClassifierData(type_of_classifier = type_of_classifier,
+                                          are_samples_generated = are_samples_generated,
+                                          number_of_samples_if_generated = number_of_samples_if_generated,
+                                          number_of_dataset_if_not_generated = number_of_dataset_if_not_generated,
+                                          switch_columns_while_loading = switch_columns_while_loading,
+                                          number_of_classifiers = number_of_base_classifiers,
+                                          number_of_best_classifiers = number_of_base_classifiers - 1,
+                                          show_color_plot = draw_color_plot,
+                                          write_computed_scores = write_computed_scores,
+                                          show_plots = show_plots,
+                                          show_only_first_plot = show_only_first_plot,
+                                          is_validation_hard = is_validation_hard,
+                                          filename = 'datasets//' + filename,
+                                          generate_all_permutations = generate_all_permutations,
+                                          log_number = log_number,
+                                          bagging = bagging,
+                                          type_of_composition = type_of_composition,
+                                          logging_to_file = logging_to_file,
+                                          space_division = space_division)
+        try:
+            if bagging == True:
+                bagging_results = []
+                for i in range(number_of_bagging_repetitions):
+                    print('{}. bagging iteration'.format(i + 1))
+                    bagging_res = MergingAlgorithm.run(classifier_data)
+                    bagging_results.append(bagging_res)
+                res = ClassifLibrary.get_mean_res(bagging_results)
 
-                else:
-                    res = MergingAlgorithm.run(classifier_data)
-                results_pro_division.append(res)
-            except NotEnoughSamplesError as e:
-                print(e.args[0])
-        results_pro_classifier.append(results_pro_division)
+            else:
+                res = MergingAlgorithm.run(classifier_data)
+        except NotEnoughSamplesError as e:
+            print(e.args[0])
+        results_pro_classifier.append(res)
     results.append(results_pro_classifier)
 FileHelper.save_res_objects_pro_space_division_pro_base_classif_with_classif_data(filenames, results,
                                                                                   numbers_of_base_classifiers,
-                                                                                  space_division,
                                                                                   result_filename = results_directory_relative +
                                                                                                     '//Results' +
                                                                                                     str(

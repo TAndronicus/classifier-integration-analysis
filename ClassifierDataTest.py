@@ -68,6 +68,33 @@ class ClassifierDataTest(unittest.TestCase):
         with self.assertRaisesRegex(Exception, 'switch_columns_while_loading must be of type boolean'):
             classifier_data.validate_switch_columns_while_loading()
 
+    def test_validate_space_division_empty(self):
+        # given
+        space_division = []
+        # when
+        classifier_data = ClassifierData(space_division = space_division)
+        # then
+        with self.assertRaisesRegex(Exception, 'space_division must have elements'):
+            classifier_data.validate_space_division()
+
+    def test_validate_space_division_non_int(self):
+        # given
+        space_division = [.5]
+        # when
+        classifier_data = ClassifierData(space_division = space_division)
+        # then
+        with self.assertRaisesRegex(Exception, 'space_division elements must be of type int'):
+            classifier_data.validate_space_division()
+
+    def test_validate_space_division_non_positive(self):
+        # given
+        space_division = [-1]
+        # when
+        classifier_data = ClassifierData(space_division = space_division)
+        # then
+        with self.assertRaisesRegex(Exception, 'space_division elements must be positive'):
+            classifier_data.validate_space_division()
+
     def test_validate_number_of_space_parts_non_int(self):
         # given
         number_of_space_parts = 'test'

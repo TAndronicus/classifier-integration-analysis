@@ -1606,6 +1606,15 @@ def print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores: [], cumulated_sc
             print(conf_mat[i][j])
 
 
+def initialize_list_of_lists(numel: int = 1):
+    """Creates list of independent lists
+
+    :param numel: int
+    :return: []
+    """
+    return [[] for _ in range(numel)]
+
+
 def generate_permutations(classifier_data: ClassifierData = ClassifierData()):
     """Generates permutations for datasets
 
@@ -1723,17 +1732,20 @@ def get_mean_res(partial_ress: []):
     :return: res: IntegrRes
     """
     mv_score, mv_mcc, i_score, i_mcc = [], [], [], []
-    for bagging_result in partial_ress:
-        mv_score.append(bagging_result.mv_score)
-        mv_mcc.append(bagging_result.mv_mcc)
-        i_score.append(bagging_result.i_score)
-        i_mcc.append(bagging_result.i_mcc)
-    res = IntegrRes(mv_score = np.mean(mv_score, axis = 0),
-                    mv_score_std = np.std(mv_score, axis = 0),
-                    mv_mcc = np.mean(mv_mcc, axis = 0),
-                    mv_mcc_std = np.std(mv_mcc, axis = 0),
-                    i_score = np.mean(i_score, axis = 0),
-                    i_score_std = np.std(i_score, axis = 0),
-                    i_mcc = np.mean(i_mcc, axis = 0),
-                    i_mcc_std = np.std(i_mcc, axis = 0))
-    return res
+    list_of_results = []
+    for i in range(len(partial_ress[0])):
+        for bagging_result in partial_ress:
+            mv_score.append(bagging_result[i].mv_score)
+            mv_mcc.append(bagging_result[i].mv_mcc)
+            i_score.append(bagging_result[i].i_score)
+            i_mcc.append(bagging_result[i].i_mcc)
+        res = IntegrRes(mv_score = np.mean(mv_score, axis = 0),
+                        mv_score_std = np.std(mv_score, axis = 0),
+                        mv_mcc = np.mean(mv_mcc, axis = 0),
+                        mv_mcc_std = np.std(mv_mcc, axis = 0),
+                        i_score = np.mean(i_score, axis = 0),
+                        i_score_std = np.std(i_score, axis = 0),
+                        i_mcc = np.mean(i_mcc, axis = 0),
+                        i_mcc_std = np.std(i_mcc, axis = 0))
+        list_of_results.append(res)
+    return list_of_results

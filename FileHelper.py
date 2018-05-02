@@ -161,7 +161,6 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data(filen
                                                                            results_pro_space_division_pro_base_classif:
                                                                            [],
                                                                            numbers_of_base_classifiers: [],
-                                                                           space_division: [],
                                                                            result_filename: str =
                                                                            'results//Results.xls',
                                                                            sheetname: str = 'Result',
@@ -172,12 +171,12 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data(filen
     :param filenames: names of files being analysed
     :param results_pro_space_division_pro_base_classif: result objects pro base classifiers pro space division pro file
     :param numbers_of_base_classifiers: array of numbers of base classifiers
-    :param space_division: array of space divisions
     :param result_filename: filename to write results to
     :param sheetname: sheetname to write results to
     :param classifier_data: parameter object
     :return:
     """
+    space_division = classifier_data.space_division
     workbook = xlwt.Workbook()
     workbook.add_sheet(sheetname)
     sheet = workbook.get_sheet(sheetname)
@@ -200,22 +199,21 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data(filen
         for j in range(len(filenames)):
             sheet.write(i * len(filenames) + j + 2, 1, filenames[j])
             for k in range(len(space_division)):
-                res = results_pro_space_division_pro_base_classif[i][k][j]
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 2, str(res.mv_score))
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 3, str(res.mv_score_std))
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 4, str(res.mv_mcc))
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 5, str(res.mv_mcc_std))
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 6, str(res.i_score))
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 7, str(res.i_score_std))
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 8, str(res.i_mcc))
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 9, str(res.i_mcc_std))
+                res = results_pro_space_division_pro_base_classif[i][j][k]
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 2, res.mv_score)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 3, res.mv_score_std)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 4, res.mv_mcc)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 5, res.mv_mcc_std)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 6, res.i_score)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 7, res.i_score_std)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 8, res.i_mcc)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 9, res.i_mcc_std)
     output_data = {'type_of_classifier': classifier_data.type_of_classifier.value,
                    'are_samples_generated': str(classifier_data.are_samples_generated),
                    'number_of_samples_if_generated': classifier_data.number_of_samples_if_generated,
                    'number_of_dataset_if_not_generated': classifier_data.number_of_dataset_if_not_generated,
                    'switch_columns_while_loading': str(classifier_data.switch_columns_while_loading),
                    'number_of_best_classifiers': classifier_data.number_of_best_classifiers,
-                   'columns': str(classifier_data.columns),
                    'is_validation_hard': str(classifier_data.is_validation_hard),
                    'generate_all_permutations': str(classifier_data.generate_all_permutations),
                    'bagging': str(classifier_data.bagging),
