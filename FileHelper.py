@@ -1,5 +1,6 @@
 import xlwt
 from ClassifierData import ClassifierData
+import os
 
 
 def save_merging_results_one_space_division(filenames: [], results: [], result_filename: str = 'results//Results.xls',
@@ -243,3 +244,38 @@ def generate_partial_result_matrix(res):
             mats_pro_classifier.append(mats_pro_space_division)
         overall_results.append(mats_pro_classifier)
     return overall_results
+
+
+def save_intermediate_results(score: [], mcc: [], i: int, classifier_data: ClassifierData = ClassifierData()):
+    """Saves intermediate results
+
+    :param score: []
+    :param mcc: []
+    :param i: int
+    :param classifier_data: ClassifierData
+    :return:
+    """
+    filename = classifier_data.filename
+    number_of_classifiers = classifier_data.number_of_classifiers
+    space_division = classifier_data.space_division
+    data_to_save = {
+        'score': score,
+        'mcc': mcc
+    }
+    results_directory_relative = 'intermediate_results'
+
+    results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
+    try:
+        os.makedirs(results_directory_absolute)
+        print('Created results directory: ', results_directory_absolute)
+    except FileExistsError:
+        pass
+
+    workbook = xlwt.Workbook()
+    for key, value in data_to_save.items():
+        workbook.add_sheet(key)
+        sheet = workbook.get_sheet(key)
+        for row in range(len(value)):
+            for col in range(len(value[row])):
+                sheet.write(row, col, value[row][col])
+    workbook.save(results_directory_relative + '//' + filename.split('.')[0].split('//')[1] + '_c_' + str(number_of_classifiers) + '_s_' + str(space_division[i]) + '.xls')

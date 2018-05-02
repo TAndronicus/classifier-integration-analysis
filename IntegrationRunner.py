@@ -18,16 +18,17 @@ number_of_dataset_if_not_generated = 0
 draw_color_plot = False
 write_computed_scores = False
 show_plots = False
-show_only_first_plot = True
+show_only_first_plot = False
 is_validation_hard = False
 generate_all_permutations = False
-bagging = True
+bagging = False
 number_of_bagging_repetitions = 3
 type_of_composition = CompositionType.MEAN
 space_division = [3, 5]
 
 results_directory_relative = 'results'
 logging_to_file = True
+logging_intermediate_results = False
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
 numbers_of_base_classifiers = [3]
@@ -84,6 +85,7 @@ for number_of_base_classifiers in numbers_of_base_classifiers:
                                           bagging = bagging,
                                           type_of_composition = type_of_composition,
                                           logging_to_file = logging_to_file,
+                                          logging_intermediate_results = logging_intermediate_results,
                                           space_division = space_division)
         try:
             if bagging == True:
@@ -104,8 +106,7 @@ FileHelper.save_res_objects_pro_space_division_pro_base_classif_with_classif_dat
                                                                                   numbers_of_base_classifiers,
                                                                                   result_filename = results_directory_relative +
                                                                                                     '//Results' +
-                                                                                                    str(
-                                                                                                        result_file_number) + '.xls',
+                                                                                                    str(result_file_number) + '.xls',
                                                                                   classifier_data = classifier_data)
 
 log = open(results_directory_relative + '//integration' + str(log_number) + '.log', 'a')

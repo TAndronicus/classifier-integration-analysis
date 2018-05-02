@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import ClassifLibrary
+import FileHelper
 from CompositionType import CompositionType
-from IntegrRes import IntegrRes
 from NotEnoughSamplesError import NotEnoughSamplesError
 import sys
 
@@ -33,6 +33,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     """
     log_number = classif_data.log_number
     logging_to_file = classif_data.logging_to_file
+    logging_intermediate_results = classif_data.logging_intermediate_results
 
     bagging = classif_data.bagging
     type_of_composition = classif_data.type_of_composition
@@ -92,12 +93,10 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
             if type_of_composition == CompositionType.MEAN:
                 scores, i_score, i_conf_mat = \
-                    ClassifLibrary.prepare_composite_mean_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
-                                                                 classif_data)
+                    ClassifLibrary.prepare_composite_mean_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots, classif_data)
             elif type_of_composition == CompositionType.MEDIAN:
                 scores, i_score, i_conf_mat = \
-                    ClassifLibrary.prepare_composite_median_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
-                                                                 classif_data)
+                    ClassifLibrary.prepare_composite_median_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots, classif_data)
 
             confusion_matrices.append(i_conf_mat)
             cumulated_scores.append(i_score)
@@ -105,8 +104,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
             score_pro_space_division_pro_permutation[i].append(cumulated_scores)
             mccs_pro_space_division_pro_permutation[i].append(mccs)
 
-            ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores, cumulated_scores,
-                                                                               confusion_matrices, mccs)
+            ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores, cumulated_scores, confusion_matrices, mccs)
 
         number_of_permutations += 1
 
@@ -132,6 +130,8 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
         ClassifLibrary.print_permutation_results(overall_scores, overall_mccs)
         print('\n#####\n')
         res = ClassifLibrary.prepare_result_object(overall_scores, overall_mccs, overall_mccs_std, overall_mccs_std)
+        if logging_intermediate_results and not(bagging):
+            FileHelper.save_intermediate_results(score_pro_permutation, mcc_pro_permutation, i, classif_data)
         list_of_results.append(res)
         i += 1
     if logging_to_file:

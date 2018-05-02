@@ -9,15 +9,31 @@ class ClassifierData:
 
     MINIMAL_NUMBER_OF_SAMPLES = 10
 
-    def __init__(self, type_of_classifier: ClfType = ClfType.LINEAR, are_samples_generated: bool = True,
-                 number_of_samples_if_generated: int = 1000, number_of_dataset_if_not_generated: int = 0,
-                 switch_columns_while_loading: bool = False, space_division: [] = [5], number_of_space_parts: int = 5,
-                 number_of_classifiers: int = 3, number_of_best_classifiers: int = 2, show_color_plot: bool = False,
-                 write_computed_scores: bool = False, show_plots: bool = False, show_only_first_plot: bool = True,
-                 columns: [] = [0, 1], is_validation_hard: bool = False, filename: str = 'new-datasets.xlsx',
-                 generate_all_permutations: bool = True, log_number: int = 0, bagging: bool = False,
-                 logging_to_file: bool = True, type_of_composition: CompositionType = CompositionType.MEAN,
-                 minimum: float = 0, maximum: float = 0):
+    def __init__(self,
+                 type_of_classifier: ClfType = ClfType.LINEAR,
+                 are_samples_generated: bool = True,
+                 number_of_samples_if_generated: int = 1000,
+                 number_of_dataset_if_not_generated: int = 0,
+                 switch_columns_while_loading: bool = False,
+                 space_division: [] = [5],
+                 number_of_space_parts: int = 5,
+                 number_of_classifiers: int = 3,
+                 number_of_best_classifiers: int = 2,
+                 show_color_plot: bool = False,
+                 write_computed_scores: bool = False,
+                 show_plots: bool = False,
+                 show_only_first_plot: bool = True,
+                 columns: [] = [0, 1],
+                 is_validation_hard: bool = False,
+                 filename: str = 'new-datasets.xlsx',
+                 generate_all_permutations: bool = True,
+                 log_number: int = 0,
+                 bagging: bool = False,
+                 logging_to_file: bool = True,
+                 logging_intermediate_results: bool = False,
+                 type_of_composition: CompositionType = CompositionType.MEAN,
+                 minimum: float = 0,
+                 maximum: float = 0):
         self.type_of_classifier = type_of_classifier
         self.are_samples_generated = are_samples_generated
         self.number_of_samples_if_generated = number_of_samples_if_generated
@@ -38,6 +54,7 @@ class ClassifierData:
         self.log_number = log_number
         self.bagging = bagging
         self.logging_to_file = logging_to_file
+        self.logging_intermediate_results = logging_intermediate_results
         self.type_of_composition = type_of_composition
         self.minimum = minimum
         self.maximum = maximum
@@ -64,7 +81,9 @@ class ClassifierData:
         self.validate_log_number()
         self.validate_bagging()
         self.validate_logging_to_file()
+        self.validate_logging_intermediate_results()
         self.validate_type_of_composition()
+        self.cross_validate()
         print('Parameters valid\n')
 
     def validate_type_of_classifier(self):
@@ -171,6 +190,10 @@ class ClassifierData:
         if not type(self.logging_to_file) is bool:
             raise Exception('logging_to_file must be of type bool')
 
+    def validate_logging_intermediate_results(self):
+        if not type(self.logging_intermediate_results) is bool:
+            raise Exception('logging_intermediate_results must be of type bool')
+
     def validate_minimum(self):
         if not type(self.minimum) is float:
             raise Exception('minimum must be of type float')
@@ -182,3 +205,10 @@ class ClassifierData:
     def validate_type_of_composition(self):
         if not type(self.type_of_composition) is CompositionType:
             raise Exception('type_of_composition must be of type CompositionType')
+
+    def cross_validate(self):
+        if self.bagging and self.generate_all_permutations:
+            print('self.bagging == True and self.generate_all_permutations == True')
+            print('No need to generate all permutations when bagging - no control over number of permutations')
+            self.generate_all_permutations = False
+            print('generate_all_permutations was set to False')
