@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import unittest
 import math
@@ -64,7 +66,6 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_for_mean_classifier_showing_plot(self):
         # given
-        plt.ioff()
         type_of_classifier = ClfType.MEAN
         show_plots = True
         logging_to_file = False
