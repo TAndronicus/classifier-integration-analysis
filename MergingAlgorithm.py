@@ -82,7 +82,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
         for i in range(len(space_division)):
             print('{}. space division: {}'.format(i, space_division[i]))
             classif_data.number_of_space_parts = space_division[i]
-            scores, cumulated_scores = ClassifLibrary.test_classifiers(clfs, X_validation, y_validation, X, coefficients,
+            scores, cumulated_scores = ClassifLibrary.test_classifiers(clfs, X_validation, y_validation, coefficients,
                                                                    classif_data)
 
             confusion_matrices = ClassifLibrary.compute_confusion_matrix(clfs, X_test, y_test)
@@ -93,10 +93,10 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
             if type_of_composition == CompositionType.MEAN:
                 scores, i_score, i_conf_mat = \
-                    ClassifLibrary.prepare_composite_mean_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots, classif_data)
+                    ClassifLibrary.prepare_composite_mean_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots, i, classif_data)
             elif type_of_composition == CompositionType.MEDIAN:
                 scores, i_score, i_conf_mat = \
-                    ClassifLibrary.prepare_composite_median_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots, classif_data)
+                    ClassifLibrary.prepare_composite_median_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots, i, classif_data)
 
             confusion_matrices.append(i_conf_mat)
             cumulated_scores.append(i_score)

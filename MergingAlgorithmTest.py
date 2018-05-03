@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import unittest
 import math
 from ClassifierData import ClassifierData
@@ -63,12 +64,14 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_for_mean_classifier_showing_plot(self):
         # given
+        plt.ioff()
         type_of_classifier = ClfType.MEAN
         show_plots = True
         logging_to_file = False
         classifier_data = ClassifierData(type_of_classifier = type_of_classifier,
                                          show_plots = show_plots,
-                                         logging_to_file = logging_to_file)
+                                         logging_to_file = logging_to_file,
+                                         generate_all_permutations = False)
         # when
         res = run(classifier_data)
         mv_score = res[0].mv_score

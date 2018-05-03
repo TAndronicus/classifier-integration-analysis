@@ -17,21 +17,21 @@ number_of_samples_if_generated = 1000
 number_of_dataset_if_not_generated = 0
 draw_color_plot = False
 write_computed_scores = False
-show_plots = False
+show_plots = True
 show_only_first_plot = False
 is_validation_hard = False
 generate_all_permutations = False
-bagging = True
+bagging = False
 number_of_bagging_repetitions = 3
 type_of_composition = CompositionType.MEDIAN
-space_division = [4]
+space_division = [3, 4]
 
 results_directory_relative = 'results'
 logging_to_file = True
 logging_intermediate_results = False
 
 files_to_switch = ['haberman.dat', 'sonar.dat']
-numbers_of_base_classifiers = [6]
+numbers_of_base_classifiers = [3]
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
 try:
