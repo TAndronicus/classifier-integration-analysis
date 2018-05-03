@@ -1,4 +1,5 @@
 import math
+import random
 import unittest
 
 import numpy as np
@@ -869,6 +870,90 @@ class MyLibraryTest(unittest.TestCase):
         self.assertEqual(np.std([i_score1, i_score2]), result[0].i_score_std)
         self.assertEqual(np.mean([i_mcc1, i_mcc2]), result[0].i_mcc)
         self.assertEqual(np.std([i_mcc1, i_mcc2]), result[0].i_mcc_std)
+
+    def test_should_return_right_decision_limit_for_odd_coef_num_for_0(self):
+        # given
+        x = 0
+        num_of_coeffs = 9
+        coeffs = [[random.random(), i] for i in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual((num_of_coeffs - 1) / 2, y)
+
+    def test_should_return_right_decision_limit_for_odd_coef_num_for_10(self):
+        # given
+        x = 10
+        num_of_coeffs = 9
+        coeffs = [[i, 5 * i] for i in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(15 * (num_of_coeffs - 1) / 2, y)
+
+    def test_should_return_right_decision_limit_for_odd_coef_num_for_0_random(self):
+        # given
+        x = 0
+        num_of_coeffs = 9
+        coeffs = [[random.random(), random.random()] for _ in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2)][1], y)
+
+    def test_should_return_right_decision_limit_for_odd_coef_num_for_100_random(self):
+        # given
+        x = 100
+        num_of_coeffs = 9
+        coeffs = [[random.random(), 0] for _ in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(100 * np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2)][0], y)
+
+    def test_should_return_right_decision_limit_for_even_coef_num_for_0(self):
+        # given
+        x = 0
+        num_of_coeffs = 10
+        coeffs = [[random.random(), i] for i in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual((num_of_coeffs - 1) / 2, y)
+
+    def test_should_return_right_decision_limit_for_even_coef_num_for_10(self):
+        # given
+        x = 10
+        num_of_coeffs = 10
+        coeffs = [[i, 5 * i] for i in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(15 * (num_of_coeffs - 1) / 2, y)
+
+    def test_should_return_right_decision_limit_for_even_coef_num_for_0_random(self):
+        # given
+        x = 0
+        num_of_coeffs = 10
+        coeffs = [[random.random(), random.random()] for _ in range(num_of_coeffs)]
+        expected_y = (np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2)][1] +
+                      np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2) + 1][1]) / 2
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(expected_y, y)
+
+    def test_should_return_right_decision_limit_for_even_coef_num_for_100_random(self):
+        # given
+        x = 100
+        num_of_coeffs = 10
+        coeffs = [[random.random(), 0] for _ in range(num_of_coeffs)]
+        expected_y = x * (np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2)][0] +
+                          np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2) + 1][0]) / 2
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(expected_y, y)
 
 
 if __name__ == '__main__':
