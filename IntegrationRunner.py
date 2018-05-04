@@ -7,31 +7,38 @@ from ClfType import ClfType
 from CompositionType import CompositionType
 from datetime import datetime
 
-#filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv']#,
-             #'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
-             #'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
-filenames = ['cryotherapy.xlsx', 'data_banknote_authentication.csv']
+### Dataset ###
+filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+             'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+files_to_switch = ['haberman.dat', 'sonar.dat']
+number_of_dataset_if_not_generated = 0
+
+### Classification strategy ###
 type_of_classifier = ClfType.LINEAR
+type_of_composition = CompositionType.MEAN
+is_validation_hard = False
+generate_all_permutations = True
+bagging = False
+number_of_bagging_repetitions = 10
+space_division = list(range(3, 11))
+numbers_of_base_classifiers = [9]
+
+### Samples generation ###
 are_samples_generated = False
 number_of_samples_if_generated = 1000
-number_of_dataset_if_not_generated = 0
+
+### Plotting + builtin
 draw_color_plot = False
 write_computed_scores = False
-show_plots = True
-show_only_first_plot = False
-is_validation_hard = False
-generate_all_permutations = False
-bagging = False
-number_of_bagging_repetitions = 3
-type_of_composition = CompositionType.MEDIAN
-space_division = [3, 4]
+show_plots = False
+show_only_first_plot = True
 
+### Logging ###
 results_directory_relative = 'results'
 logging_to_file = True
 logging_intermediate_results = False
 
-files_to_switch = ['haberman.dat', 'sonar.dat']
-numbers_of_base_classifiers = [3]
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
 try:

@@ -213,7 +213,6 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data(filen
                    'are_samples_generated': str(classifier_data.are_samples_generated),
                    'number_of_samples_if_generated': classifier_data.number_of_samples_if_generated,
                    'number_of_dataset_if_not_generated': classifier_data.number_of_dataset_if_not_generated,
-                   'switch_columns_while_loading': str(classifier_data.switch_columns_while_loading),
                    'number_of_best_classifiers': classifier_data.number_of_best_classifiers,
                    'is_validation_hard': str(classifier_data.is_validation_hard),
                    'generate_all_permutations': str(classifier_data.generate_all_permutations),
