@@ -68,6 +68,33 @@ class ClassifierDataTest(unittest.TestCase):
         with self.assertRaisesRegex(Exception, 'switch_columns_while_loading must be of type boolean'):
             classifier_data.validate_switch_columns_while_loading()
 
+    def test_validate_space_division_empty(self):
+        # given
+        space_division = []
+        # when
+        classifier_data = ClassifierData(space_division = space_division)
+        # then
+        with self.assertRaisesRegex(Exception, 'space_division must have elements'):
+            classifier_data.validate_space_division()
+
+    def test_validate_space_division_non_int(self):
+        # given
+        space_division = [.5]
+        # when
+        classifier_data = ClassifierData(space_division = space_division)
+        # then
+        with self.assertRaisesRegex(Exception, 'space_division elements must be of type int'):
+            classifier_data.validate_space_division()
+
+    def test_validate_space_division_non_positive(self):
+        # given
+        space_division = [-1]
+        # when
+        classifier_data = ClassifierData(space_division = space_division)
+        # then
+        with self.assertRaisesRegex(Exception, 'space_division elements must be positive'):
+            classifier_data.validate_space_division()
+
     def test_validate_number_of_space_parts_non_int(self):
         # given
         number_of_space_parts = 'test'
@@ -248,6 +275,15 @@ class ClassifierDataTest(unittest.TestCase):
         with self.assertRaisesRegex(Exception, 'logging_to_file must be of type bool'):
             classifier_data.validate_logging_to_file()
 
+    def test_validate_logging_intermediate_results(self):
+        # given
+        logging_intermediate_results = 'test'
+        # when
+        classifier_data = ClassifierData(logging_intermediate_results = logging_intermediate_results)
+        # then
+        with self.assertRaisesRegex(Exception, 'logging_intermediate_results must be of type bool'):
+            classifier_data.validate_logging_intermediate_results()
+
     def test_validate_minimum(self):
         # given
         minimum = 'test'
@@ -275,6 +311,17 @@ class ClassifierDataTest(unittest.TestCase):
         # then
         with self.assertRaisesRegex(Exception, 'type_of_composition must be of type CompositionType'):
             classifier_data.validate_type_of_composition()
+
+    def test_cross_validate_bagging_generate_all_permutations(self):
+        # given
+        generate_all_permutations = True
+        bagging = True
+        classifier_data = ClassifierData(generate_all_permutations = generate_all_permutations,
+                                         bagging = bagging)
+        # when
+        classifier_data.cross_validate()
+        # then
+        self.assertFalse(classifier_data.generate_all_permutations)
 
 
 if __name__ == '__main__':

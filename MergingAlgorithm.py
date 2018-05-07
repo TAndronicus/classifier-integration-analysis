@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import ClassifLibrary
+import FileHelper
 from CompositionType import CompositionType
 from NotEnoughSamplesError import NotEnoughSamplesError
 import sys
@@ -32,9 +33,11 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     """
     log_number = classif_data.log_number
     logging_to_file = classif_data.logging_to_file
+    logging_intermediate_results = classif_data.logging_intermediate_results
 
     bagging = classif_data.bagging
     type_of_composition = classif_data.type_of_composition
+    space_division = classif_data.space_division
 
     if logging_to_file:
         enable_logging_to_file(log_number)
@@ -62,7 +65,9 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
     number_of_permutations = 1
 
-    score_pro_permutation, mccs_pro_permutation = [], []
+    score_pro_space_division_pro_permutation, mccs_pro_space_division_pro_permutation = \
+        ClassifLibrary.initialize_list_of_lists(len(classif_data.space_division)), \
+        ClassifLibrary.initialize_list_of_lists(len(classif_data.space_division))
     permutations = ClassifLibrary.generate_permutations(classif_data)
     for tup in permutations:
 
@@ -74,32 +79,32 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
         clfs, coefficients = \
             ClassifLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots, classif_data)
 
-        scores, cumulated_scores = ClassifLibrary.test_classifiers(clfs, X_validation, y_validation, X, coefficients,
+        for i in range(len(space_division)):
+            print('{}. space division: {}'.format(i, space_division[i]))
+            classif_data.number_of_space_parts = space_division[i]
+            scores, cumulated_scores = ClassifLibrary.test_classifiers(clfs, X_validation, y_validation, coefficients,
                                                                    classif_data)
 
-        confusion_matrices = ClassifLibrary.compute_confusion_matrix(clfs, X_test, y_test)
+            confusion_matrices = ClassifLibrary.compute_confusion_matrix(clfs, X_test, y_test)
 
-        mv_conf_mat, mv_score = ClassifLibrary.prepare_majority_voting(clfs, X_test, y_test, classif_data)
-        confusion_matrices.append(mv_conf_mat)
-        cumulated_scores.append(mv_score)
+            mv_conf_mat, mv_score = ClassifLibrary.prepare_majority_voting(clfs, X_test, y_test)
+            confusion_matrices.append(mv_conf_mat)
+            cumulated_scores.append(mv_score)
 
-        if type_of_composition == CompositionType.MEAN:
-            scores, cumulated_score, conf_mat = \
-                ClassifLibrary.prepare_composite_mean_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
-                                                                 classif_data)
-        elif type_of_composition == CompositionType.MEDIAN:
-            scores, cumulated_score, conf_mat = \
-                ClassifLibrary.prepare_composite_median_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots,
-                                                                 classif_data)
+            if type_of_composition == CompositionType.MEAN:
+                scores, i_score, i_conf_mat = \
+                    ClassifLibrary.prepare_composite_mean_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots, i, classif_data)
+            elif type_of_composition == CompositionType.MEDIAN:
+                scores, i_score, i_conf_mat = \
+                    ClassifLibrary.prepare_composite_median_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots, i, classif_data)
 
-        confusion_matrices.append(conf_mat)
-        cumulated_scores.append(cumulated_score)
-        mccs = ClassifLibrary.compute_mccs(confusion_matrices)
-        score_pro_permutation.append(cumulated_scores)
-        mccs_pro_permutation.append(mccs)
+            confusion_matrices.append(i_conf_mat)
+            cumulated_scores.append(i_score)
+            mccs = ClassifLibrary.compute_mccs(confusion_matrices)
+            score_pro_space_division_pro_permutation[i].append(cumulated_scores)
+            mccs_pro_space_division_pro_permutation[i].append(mccs)
 
-        ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores, cumulated_scores,
-                                                                           confusion_matrices, mccs)
+            ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores, cumulated_scores, confusion_matrices, mccs)
 
         number_of_permutations += 1
 
@@ -116,9 +121,19 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     number_of_permutations -= 1
 
     print('\n#####\nOverall results_pro_division after {} iterations:'.format(number_of_permutations))
-    overall_scores, overall_mcc = ClassifLibrary.get_permutation_results(score_pro_permutation, mccs_pro_permutation)
-    ClassifLibrary.print_permutation_results(overall_scores, overall_mcc)
-    print('\n#####\n')
+    i = 0
+    list_of_results = []
+    for score_pro_permutation, mcc_pro_permutation in zip(score_pro_space_division_pro_permutation, mccs_pro_space_division_pro_permutation):
+        print('Number of space divisions: ', space_division[i])
+        overall_scores, overall_mccs = ClassifLibrary.get_permutation_results(score_pro_permutation, mcc_pro_permutation)
+        overall_scores_std, overall_mccs_std = ClassifLibrary.get_permutation_stds(score_pro_permutation, mcc_pro_permutation)
+        ClassifLibrary.print_permutation_results(overall_scores, overall_mccs)
+        print('\n#####\n')
+        res = ClassifLibrary.prepare_result_object(overall_scores, overall_mccs, overall_mccs_std, overall_mccs_std)
+        if logging_intermediate_results and not(bagging):
+            FileHelper.save_intermediate_results(score_pro_permutation, mcc_pro_permutation, i, classif_data)
+        list_of_results.append(res)
+        i += 1
     if logging_to_file:
         disable_logging_to_file()
-    return overall_scores[-2], overall_scores[-1], overall_mcc[-2], overall_mcc[-1]
+    return list_of_results
