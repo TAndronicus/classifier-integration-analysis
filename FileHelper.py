@@ -1,5 +1,6 @@
 import xlwt
 from ClassifierData import ClassifierData
+from CompositionType import CompositionType
 import os
 
 
@@ -226,6 +227,97 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data(filen
     workbook.save(result_filename)
 
 
+def save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(filenames: [],
+                                                                                results_pro_space_division_pro_base_classif:
+                                                                                [],
+                                                                                numbers_of_base_classifiers: [],
+                                                                                results_directory_relative: str = 'results',
+                                                                                sheetname: str = 'Result',
+                                                                                classifier_data: ClassifierData =
+                                                                                ClassifierData()):
+    """Saves results of merging algorithm
+
+    :param filenames: names of files being analysed
+    :param results_pro_space_division_pro_base_classif: result objects pro base classifiers pro space division pro file
+    :param numbers_of_base_classifiers: array of numbers of base classifiers
+    :param result_filename: filename to write results to
+    :param sheetname: sheetname to write results to
+    :param classifier_data: parameter object
+    :return:
+    """
+    space_division = classifier_data.space_division
+    workbook = xlwt.Workbook()
+    workbook.add_sheet(sheetname)
+    sheet = workbook.get_sheet(sheetname)
+    sheet.write(0, 1, "subspaces")
+    sheet.write(1, 0, "classifiers")
+    sheet.write(1, 1, "filename")
+    for j in range(len(space_division)):
+        sheet.write(0, 8 * j + 2, str(space_division[j]))
+        sheet.write(1, 8 * j + 2, "mv_score")
+        sheet.write(1, 8 * j + 3, "mv_score_std")
+        sheet.write(1, 8 * j + 4, "mv_mcc")
+        sheet.write(1, 8 * j + 5, "mv_mcc_std")
+        sheet.write(1, 8 * j + 6, "i_score")
+        sheet.write(1, 8 * j + 7, "i_score_std")
+        sheet.write(1, 8 * j + 8, "i_mcc")
+        sheet.write(1, 8 * j + 9, "i_mcc_std")
+    for j in range(len(numbers_of_base_classifiers)):
+        sheet.write(len(filenames) * j + 2, 0, str(numbers_of_base_classifiers[j]))
+    for i in range(len(numbers_of_base_classifiers)):
+        for j in range(len(filenames)):
+            sheet.write(i * len(filenames) + j + 2, 1, filenames[j])
+            for k in range(len(space_division)):
+                res = results_pro_space_division_pro_base_classif[i][j][k]
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 2, res.mv_score)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 3, res.mv_score_std)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 4, res.mv_mcc)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 5, res.mv_mcc_std)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 6, res.i_score)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 7, res.i_score_std)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 8, res.i_mcc)
+                sheet.write(i * len(filenames) + j + 2, 8 * k + 9, res.i_mcc_std)
+    output_data = {'type_of_classifier': classifier_data.type_of_classifier.value,
+                   'are_samples_generated': str(classifier_data.are_samples_generated),
+                   'number_of_samples_if_generated': classifier_data.number_of_samples_if_generated,
+                   'number_of_dataset_if_not_generated': classifier_data.number_of_dataset_if_not_generated,
+                   'number_of_best_classifiers': classifier_data.number_of_best_classifiers,
+                   'is_validation_hard': str(classifier_data.is_validation_hard),
+                   'generate_all_permutations': str(classifier_data.generate_all_permutations),
+                   'bagging': str(classifier_data.bagging),
+                   'type_of_composition': classifier_data.type_of_composition.value}
+    last_row = 1 + len(filenames) * len(numbers_of_base_classifiers)
+    for entry_name in output_data:
+        last_row += 1
+        sheet.write(last_row, 0, entry_name)
+        sheet.write(last_row, 1, output_data.get(entry_name))
+    result_filename = determine_filename(results_directory_relative, classifier_data)
+    workbook.save(result_filename)
+
+
+def determine_filename(results_directory_relative: str = 'results', classifier_data: ClassifierData = ClassifierData()):
+    if classifier_data.bagging:
+        bagging_indicator = str(1)
+    else:
+        bagging_indicator = str(0)
+    if classifier_data.type_of_composition == CompositionType.MEAN:
+        integration_indicator = str(0)
+    else:
+        integration_indicator = str(1)
+    filename = 'n_' + str(classifier_data.number_of_classifiers) + \
+               '_nb_' + str(classifier_data.number_of_best_classifiers) + \
+               '_b_' + bagging_indicator + \
+               '_i_' + integration_indicator
+    if os.path.isfile(results_directory_relative + '//' + filename + '.xls'):
+        log_number = 0
+        while True:
+            if not os.path.isfile(results_directory_relative + '//' + filename + '_v_' + str(log_number) + '.xls'):
+                break
+            log_number += 1
+        filename = filename + '_v_' + str(log_number)
+    return results_directory_relative + '//' + filename + '.xls'
+
+
 def generate_partial_result_matrix(res):
     """Converts result object into partial matrix
 
@@ -277,4 +369,5 @@ def save_intermediate_results(score: [], mcc: [], i: int, classifier_data: Class
         for row in range(len(value)):
             for col in range(len(value[row])):
                 sheet.write(row, col, value[row][col])
-    workbook.save(results_directory_relative + '//' + filename.split('.')[0].split('//')[1] + '_c_' + str(number_of_classifiers) + '_s_' + str(space_division[i]) + '.xls')
+    workbook.save(results_directory_relative + '//' + filename.split('.')[0].split('//')[1] + '_c_' + str(
+        number_of_classifiers) + '_s_' + str(space_division[i]) + '.xls')

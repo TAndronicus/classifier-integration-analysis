@@ -16,13 +16,13 @@ number_of_dataset_if_not_generated = 0
 
 ### Classification strategy ###
 type_of_classifier = ClfType.LINEAR
-type_of_composition = CompositionType.MEAN
+type_of_composition = CompositionType.MEDIAN
 is_validation_hard = False
-generate_all_permutations = True
+generate_all_permutations = False
 bagging = False
 number_of_bagging_repetitions = 10
 space_division = list(range(3, 11))
-numbers_of_base_classifiers = [9]
+numbers_of_base_classifiers = [7]
 
 ### Samples generation ###
 are_samples_generated = False
@@ -109,11 +109,9 @@ for number_of_base_classifiers in numbers_of_base_classifiers:
             print(e.args[0])
         results_pro_classifier.append(res)
     results.append(results_pro_classifier)
-FileHelper.save_res_objects_pro_space_division_pro_base_classif_with_classif_data(filenames, results,
+FileHelper.save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(filenames, results,
                                                                                   numbers_of_base_classifiers,
-                                                                                  result_filename = results_directory_relative +
-                                                                                                    '//Results' +
-                                                                                                    str(result_file_number) + '.xls',
+                                                                                  results_directory_relative = results_directory_relative,
                                                                                   classifier_data = classifier_data)
 
 log = open(results_directory_relative + '//integration' + str(log_number) + '.log', 'a')
