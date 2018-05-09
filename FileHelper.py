@@ -250,7 +250,7 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(
     workbook.add_sheet(sheetname)
     sheet = workbook.get_sheet(sheetname)
     sheet.write(0, 1, "subspaces")
-    sheet.write(1, 0, "classifiers")
+    sheet.write(1, 0, "selected classifiers")
     sheet.write(1, 1, "filename")
     for j in range(len(space_division)):
         sheet.write(0, 8 * j + 2, str(space_division[j]))
@@ -262,31 +262,30 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(
         sheet.write(1, 8 * j + 7, "i_score_std")
         sheet.write(1, 8 * j + 8, "i_mcc")
         sheet.write(1, 8 * j + 9, "i_mcc_std")
-    for j in range(len(numbers_of_base_classifiers)):
-        sheet.write(len(filenames) * j + 2, 0, str(numbers_of_base_classifiers[j]))
-    for i in range(len(numbers_of_base_classifiers)):
-        for j in range(len(filenames)):
-            sheet.write(i * len(filenames) + j + 2, 1, filenames[j])
+    for j in range(2, numbers_of_base_classifiers):
+        sheet.write(len(filenames) * (j - 2) + 2, 0, str(j))
+    for i in range(len(filenames)):
+        for j in range(numbers_of_base_classifiers - 2):
+            sheet.write(j * len(filenames) + i + 2, 1, filenames[i])
             for k in range(len(space_division)):
                 res = results_pro_space_division_pro_base_classif[i][j][k]
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 2, res.mv_score)
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 3, res.mv_score_std)
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 4, res.mv_mcc)
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 5, res.mv_mcc_std)
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 6, res.i_score)
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 7, res.i_score_std)
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 8, res.i_mcc)
-                sheet.write(i * len(filenames) + j + 2, 8 * k + 9, res.i_mcc_std)
+                sheet.write(j * len(filenames) + i + 2, 8 * k + 2, res.mv_score)
+                sheet.write(j * len(filenames) + i + 2, 8 * k + 3, res.mv_score_std)
+                sheet.write(j * len(filenames) + i + 2, 8 * k + 4, res.mv_mcc)
+                sheet.write(j * len(filenames) + i + 2, 8 * k + 5, res.mv_mcc_std)
+                sheet.write(j * len(filenames) + i + 2, 8 * k + 6, res.i_score)
+                sheet.write(j * len(filenames) + i + 2, 8 * k + 7, res.i_score_std)
+                sheet.write(j * len(filenames) + i + 2, 8 * k + 8, res.i_mcc)
+                sheet.write(j * len(filenames) + i + 2, 8 * k + 9, res.i_mcc_std)
     output_data = {'type_of_classifier': classifier_data.type_of_classifier.value,
                    'are_samples_generated': str(classifier_data.are_samples_generated),
                    'number_of_samples_if_generated': classifier_data.number_of_samples_if_generated,
                    'number_of_dataset_if_not_generated': classifier_data.number_of_dataset_if_not_generated,
-                   'number_of_best_classifiers': classifier_data.number_of_best_classifiers,
                    'is_validation_hard': str(classifier_data.is_validation_hard),
                    'generate_all_permutations': str(classifier_data.generate_all_permutations),
                    'bagging': str(classifier_data.bagging),
                    'type_of_composition': classifier_data.type_of_composition.value}
-    last_row = 1 + len(filenames) * len(numbers_of_base_classifiers)
+    last_row = 1 + len(filenames) * (numbers_of_base_classifiers - 2)
     for entry_name in output_data:
         last_row += 1
         sheet.write(last_row, 0, entry_name)
