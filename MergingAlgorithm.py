@@ -66,7 +66,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
     number_of_permutations = 1
 
-    score_pro_space_division_pro_permutation, mccs_pro_space_division_pro_permutation = \
+    score_pro_space_division, mccs_pro_space_division = \
         ClassifLibrary.initialize_list_of_lists(len(classif_data.space_division)), \
         ClassifLibrary.initialize_list_of_lists(len(classif_data.space_division))
     score_pro_space_division_pro_permutation_pro_nbest, mccs_pro_space_division_pro_permutation_pro_nbest = [], []
@@ -107,8 +107,8 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
                 confusion_matrices.append(i_conf_mat)
                 cumulated_scores.append(i_score)
                 mccs = ClassifLibrary.compute_mccs(confusion_matrices)
-                score_pro_space_division_pro_permutation[i].append(cumulated_scores)
-                mccs_pro_space_division_pro_permutation[i].append(mccs)
+                score_pro_space_division[i].append(cumulated_scores)
+                mccs_pro_space_division[i].append(mccs)
 
                 ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores, cumulated_scores, confusion_matrices, mccs)
 
@@ -125,8 +125,8 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
                 classif_data.show_plots = False
                 classif_data.draw_color_plot = False
 
-            score_pro_space_division_pro_permutation_pro_nbest.append(score_pro_space_division_pro_permutation)
-            mccs_pro_space_division_pro_permutation_pro_nbest.append(mccs_pro_space_division_pro_permutation)
+            score_pro_space_division_pro_permutation_pro_nbest.append(score_pro_space_division)
+            mccs_pro_space_division_pro_permutation_pro_nbest.append(mccs_pro_space_division)
 
     number_of_permutations -= 1
 
