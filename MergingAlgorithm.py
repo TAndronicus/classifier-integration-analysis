@@ -80,9 +80,9 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
         clfs, coefficients = \
             ClassifLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots, classif_data)
 
-        scores_pro_space_division, mccs_pro_space_division = [], []
 
         for n_best in range(2, number_of_classifiers):
+            scores_pro_space_division, mccs_pro_space_division = [], []
             classif_data.number_of_best_classifiers = n_best
             for i in range(len(space_division)):
                 print('{}. space division: {}'.format(i, space_division[i]))

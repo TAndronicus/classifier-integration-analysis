@@ -11,7 +11,7 @@ from datetime import datetime
 #filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
  #            'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
   #           'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
-filenames = ['ionosphere.dat']
+filenames = ['c.xlsx']
 files_to_switch = ['haberman.dat', 'sonar.dat']
 number_of_dataset_if_not_generated = 0
 
@@ -21,9 +21,9 @@ type_of_composition = CompositionType.MEAN
 is_validation_hard = False
 generate_all_permutations = True
 bagging = False
-number_of_bagging_repetitions = 1
+number_of_bagging_repetitions = 2
 space_division = list(range(3, 7))
-number_of_classifiers = 7
+number_of_classifiers = 9
 
 ### Samples generation ###
 are_samples_generated = False
@@ -33,7 +33,7 @@ number_of_samples_if_generated = 1000
 draw_color_plot = False
 write_computed_scores = False
 show_plots = False
-show_only_first_plot = False
+show_only_first_plot = True
 
 ### Logging ###
 results_directory_relative = 'results'
