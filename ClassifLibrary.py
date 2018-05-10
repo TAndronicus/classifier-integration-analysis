@@ -1627,7 +1627,7 @@ def generate_permutations(classifier_data: ClassifierData = ClassifierData()):
     number_of_classifiers = classifier_data.number_of_classifiers
     generate_all_permutations = classifier_data.generate_all_permutations
     if generate_all_permutations:
-        return itertools.permutations(range(number_of_classifiers + 2), 2)
+        return list(itertools.permutations(range(number_of_classifiers + 2), 2))
     else:
         return [(0, 1)]
 
@@ -1658,13 +1658,14 @@ def get_permutation(X_splitted: [], y_splitted: [], tup: tuple,
     return X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test
 
 
-def get_permutation_results(score_pro_permutation: [], mccs_pro_permutation: []):
+def get_permutation_means(score_pro_permutation: [], mccs_pro_permutation: []):
     """Returns scores and Matthews correlation coefficients after all permutations
 
     :param score_pro_permutation: []
     :param mccs_pro_permutation: []
     :return: classifier_scores, classifier_mcc: [], []
     """
+    #TODO: tests
     classifier_scores = np.mean(score_pro_permutation, axis = 0)
     classifier_mcc = np.mean(mccs_pro_permutation, axis = 0)
     return classifier_scores, classifier_mcc
@@ -1677,6 +1678,7 @@ def get_permutation_stds(score_pro_permutation: [], mccs_pro_permutation: []):
     :param mccs_pro_permutation: []
     :return: void
     """
+    #TODO: tests
     score_stds = np.std(score_pro_permutation, axis = 0)
     mcc_stds = np.std(mccs_pro_permutation, axis = 0)
     return score_stds, mcc_stds

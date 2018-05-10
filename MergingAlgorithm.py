@@ -64,27 +64,26 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     else:
         number_of_subplots = 0
 
-    number_of_permutations = 1
-
-    score_pro_space_division, mccs_pro_space_division = \
-        ClassifLibrary.initialize_list_of_lists(len(classif_data.space_division)), \
-        ClassifLibrary.initialize_list_of_lists(len(classif_data.space_division))
-    score_pro_space_division_pro_permutation_pro_nbest, mccs_pro_space_division_pro_permutation_pro_nbest = [], []
-
     permutations = ClassifLibrary.generate_permutations(classif_data)
 
-    for tup in permutations:
+    scores_pro_space_division_pro_nbest, mccs_pro_space_division_pro_nbest = \
+        ClassifLibrary.initialize_list_of_lists(number_of_classifiers - 2), \
+        ClassifLibrary.initialize_list_of_lists(number_of_classifiers - 2)
 
-        print('\n{}. iteration\n'.format(number_of_permutations))
+    for n_perm in range(len(permutations)):
+
+        print('\n{}. iteration\n'.format(n_perm + 1))
 
         X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
-            ClassifLibrary.get_permutation(X_splitted, y_splitted, tup, classif_data)
+            ClassifLibrary.get_permutation(X_splitted, y_splitted, permutations[n_perm], classif_data)
 
         clfs, coefficients = \
             ClassifLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots, classif_data)
 
-        for nbest in range(2, number_of_classifiers):
-            classif_data.number_of_best_classifiers = nbest
+        scores_pro_space_division, mccs_pro_space_division = [], []
+
+        for n_best in range(2, number_of_classifiers):
+            classif_data.number_of_best_classifiers = n_best
             for i in range(len(space_division)):
                 print('{}. space division: {}'.format(i, space_division[i]))
                 classif_data.number_of_space_parts = space_division[i]
@@ -107,12 +106,10 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
                 confusion_matrices.append(i_conf_mat)
                 cumulated_scores.append(i_score)
                 mccs = ClassifLibrary.compute_mccs(confusion_matrices)
-                score_pro_space_division[i].append(cumulated_scores)
-                mccs_pro_space_division[i].append(mccs)
+                scores_pro_space_division.append(cumulated_scores)
+                mccs_pro_space_division.append(mccs)
 
                 ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores, cumulated_scores, confusion_matrices, mccs)
-
-            number_of_permutations += 1
 
             if show_plots:
                 try:
@@ -125,30 +122,26 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
                 classif_data.show_plots = False
                 classif_data.draw_color_plot = False
 
-            score_pro_space_division_pro_permutation_pro_nbest.append(score_pro_space_division)
-            mccs_pro_space_division_pro_permutation_pro_nbest.append(mccs_pro_space_division)
+            scores_pro_space_division_pro_nbest[n_best - 2].append(scores_pro_space_division)
+            mccs_pro_space_division_pro_nbest[n_best - 2].append(mccs_pro_space_division)
 
-    number_of_permutations -= 1
-
-    print('\n#####\nOverall results_pro_division after {} iterations:'.format(number_of_permutations))
+    print('\n#####\nOverall results_pro_division after {} iterations:'.format(len(permutations)))
     k = 0
     list_of_results_pro_selection = []
-    for i in range(len(score_pro_space_division_pro_permutation_pro_nbest)):
-        score_pro_selection = score_pro_space_division_pro_permutation_pro_nbest[i]
-        mcc_pro_selection = mccs_pro_space_division_pro_permutation_pro_nbest[i]
+    for i in range(len(scores_pro_space_division_pro_nbest)):
+        score_pro_selection = scores_pro_space_division_pro_nbest[i]
+        mcc_pro_selection = mccs_pro_space_division_pro_nbest[i]
         list_of_results_pro_space_division = []
-        n_div = 0
-        for score_pro_permutation, mcc_pro_permutation in zip(score_pro_selection, mcc_pro_selection):
-            print('Number of space divisions: ', space_division[n_div])
-            overall_scores, overall_mccs = ClassifLibrary.get_permutation_results(score_pro_permutation, mcc_pro_permutation)
-            overall_scores_std, overall_mccs_std = ClassifLibrary.get_permutation_stds(score_pro_permutation, mcc_pro_permutation)
+        for score_pro_space_division, mcc_pro_space_division in zip(score_pro_selection, mcc_pro_selection):
+            overall_scores, overall_mccs = ClassifLibrary.get_permutation_means(score_pro_space_division,
+                                                                                mcc_pro_space_division)
+            overall_scores_std, overall_mccs_std = ClassifLibrary.get_permutation_stds(score_pro_space_division, mcc_pro_space_division)
             ClassifLibrary.print_permutation_results(overall_scores, overall_mccs)
             print('\n#####\n')
             res = ClassifLibrary.prepare_result_object(overall_scores, overall_mccs, overall_mccs_std, overall_mccs_std)
             if logging_intermediate_results and not(bagging):
-                FileHelper.save_intermediate_results(score_pro_permutation, mcc_pro_permutation, k, classif_data)
+                FileHelper.save_intermediate_results(score_pro_space_division, mcc_pro_space_division, k, classif_data)
             list_of_results_pro_space_division.append(res)
-            n_div += 1
             k += 1
         list_of_results_pro_selection.append(list_of_results_pro_space_division)
 
