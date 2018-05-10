@@ -72,7 +72,6 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     score_pro_space_division_pro_permutation_pro_nbest, mccs_pro_space_division_pro_permutation_pro_nbest = [], []
 
     permutations = ClassifLibrary.generate_permutations(classif_data)
-    nbest = list(range(2, number_of_classifiers))
 
     for tup in permutations:
 

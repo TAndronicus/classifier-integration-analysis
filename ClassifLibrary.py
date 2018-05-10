@@ -1732,23 +1732,26 @@ def get_mean_res(partial_ress: []):
     """Prepares mean result object from partials
 
     :param partial_ress: []
-    :return: res: IntegrRes
+    :return: res: []
     """
-    mv_score, mv_mcc, i_score, i_mcc = [], [], [], []
-    list_of_results = []
+    results_pro_selection = []
     for i in range(len(partial_ress[0])):
-        for bagging_result in partial_ress:
-            mv_score.append(bagging_result[i].mv_score)
-            mv_mcc.append(bagging_result[i].mv_mcc)
-            i_score.append(bagging_result[i].i_score)
-            i_mcc.append(bagging_result[i].i_mcc)
-        res = IntegrRes(mv_score = np.mean(mv_score, axis = 0),
-                        mv_score_std = np.std(mv_score, axis = 0),
-                        mv_mcc = np.mean(mv_mcc, axis = 0),
-                        mv_mcc_std = np.std(mv_mcc, axis = 0),
-                        i_score = np.mean(i_score, axis = 0),
-                        i_score_std = np.std(i_score, axis = 0),
-                        i_mcc = np.mean(i_mcc, axis = 0),
-                        i_mcc_std = np.std(i_mcc, axis = 0))
-        list_of_results.append(res)
-    return list_of_results
+        results_pro_space_division = []
+        for j in range(len(partial_ress[0][0])):
+            mv_score, mv_mcc, i_score, i_mcc = [], [], [], []
+            for result_pro_iteration in partial_ress:
+                mv_score.append(result_pro_iteration[i][j].mv_score)
+                mv_mcc.append(result_pro_iteration[i][j].mv_mcc)
+                i_score.append(result_pro_iteration[i][j].i_score)
+                i_mcc.append(result_pro_iteration[i][j].i_mcc)
+            res = IntegrRes(mv_score = np.mean(mv_score, axis = 0),
+                            mv_score_std = np.std(mv_score, axis = 0),
+                            mv_mcc = np.mean(mv_mcc, axis = 0),
+                            mv_mcc_std = np.std(mv_mcc, axis = 0),
+                            i_score = np.mean(i_score, axis = 0),
+                            i_score_std = np.std(i_score, axis = 0),
+                            i_mcc = np.mean(i_mcc, axis = 0),
+                            i_mcc_std = np.std(i_mcc, axis = 0))
+            results_pro_space_division.append(res)
+        results_pro_selection.append(results_pro_space_division)
+    return results_pro_selection
