@@ -3,10 +3,8 @@ import ClassifLibrary
 import FileHelper
 from CompositionType import CompositionType
 from NotEnoughSamplesError import NotEnoughSamplesError
-import sys
-
 import numpy as np
-
+import sys
 
 def enable_logging_to_file(log_number):
     sys.stdout = open('results//integration' + str(log_number) + '.log', 'a')
@@ -132,17 +130,22 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     std_scores, std_mccs = np.std(scores_pro_space_division_pro_nbest, 1), np.std(mccs_pro_space_division_pro_nbest, 1)
 
     k = 0
+    classif_iter = 2
     list_of_results_pro_selection = []
     for mean_score_pro_selection, mean_mcc_pro_selection, std_score_pro_selection, std_mcc_pro_selection in zip(mean_scores, mean_mccs, std_scores, std_mccs):
-        list_of_results_pro_space_division = []
+        print('###  {} best classifiers  ###'.format(classif_iter))
+        list_of_results_pro_space_division, space_iter = [], 0
         for mean_score_pro_space_division, mean_mcc_pro_space_division, std_score_pro_space_division, std_mcc_pro_space_division in zip(mean_score_pro_selection, mean_mcc_pro_selection, std_score_pro_selection, std_mcc_pro_selection):
+            print('###  {} subspaces  ###'.format(space_division[space_iter]))
             ClassifLibrary.print_permutation_results(mean_score_pro_space_division, mean_mcc_pro_space_division)
             res = ClassifLibrary.prepare_result_object(mean_score_pro_space_division, mean_mcc_pro_space_division, std_score_pro_space_division, std_mcc_pro_space_division)
             if logging_intermediate_results and not(bagging):
                 FileHelper.save_intermediate_results(mean_score_pro_space_division, mean_mcc_pro_space_division, k, classif_data)
             list_of_results_pro_space_division.append(res)
             k += 1
+            space_iter += 1
         list_of_results_pro_selection.append(list_of_results_pro_space_division)
+        classif_iter += 1
 
     if logging_to_file:
         disable_logging_to_file()
