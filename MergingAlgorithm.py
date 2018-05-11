@@ -5,6 +5,8 @@ from CompositionType import CompositionType
 from NotEnoughSamplesError import NotEnoughSamplesError
 import sys
 
+import numpy as np
+
 
 def enable_logging_to_file(log_number):
     sys.stdout = open('results//integration' + str(log_number) + '.log', 'a')
@@ -126,21 +128,18 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
             mccs_pro_space_division_pro_nbest[n_best - 2].append(mccs_pro_space_division)
 
     print('\n#####\nOverall results_pro_division after {} iterations:'.format(len(permutations)))
+    mean_scores, mean_mccs = np.mean(scores_pro_space_division_pro_nbest, 1), np.mean(mccs_pro_space_division_pro_nbest, 1)
+    std_scores, std_mccs = np.std(scores_pro_space_division_pro_nbest, 1), np.std(mccs_pro_space_division_pro_nbest, 1)
+
     k = 0
     list_of_results_pro_selection = []
-    for i in range(len(scores_pro_space_division_pro_nbest)):
-        score_pro_selection = scores_pro_space_division_pro_nbest[i]
-        mcc_pro_selection = mccs_pro_space_division_pro_nbest[i]
+    for mean_score_pro_selection, mean_mcc_pro_selection, std_score_pro_selection, std_mcc_pro_selection in zip(mean_scores, mean_mccs, std_scores, std_mccs):
         list_of_results_pro_space_division = []
-        for score_pro_space_division, mcc_pro_space_division in zip(score_pro_selection, mcc_pro_selection):
-            overall_scores, overall_mccs = ClassifLibrary.get_permutation_means(score_pro_space_division,
-                                                                                mcc_pro_space_division)
-            overall_scores_std, overall_mccs_std = ClassifLibrary.get_permutation_stds(score_pro_space_division, mcc_pro_space_division)
-            ClassifLibrary.print_permutation_results(overall_scores, overall_mccs)
-            print('\n#####\n')
-            res = ClassifLibrary.prepare_result_object(overall_scores, overall_mccs, overall_mccs_std, overall_mccs_std)
+        for mean_score_pro_space_division, mean_mcc_pro_space_division, std_score_pro_space_division, std_mcc_pro_space_division in zip(mean_score_pro_selection, mean_mcc_pro_selection, std_score_pro_selection, std_mcc_pro_selection):
+            ClassifLibrary.print_permutation_results(mean_score_pro_space_division, mean_mcc_pro_space_division)
+            res = ClassifLibrary.prepare_result_object(mean_score_pro_space_division, mean_mcc_pro_space_division, std_score_pro_space_division, std_mcc_pro_space_division)
             if logging_intermediate_results and not(bagging):
-                FileHelper.save_intermediate_results(score_pro_space_division, mcc_pro_space_division, k, classif_data)
+                FileHelper.save_intermediate_results(mean_score_pro_space_division, mean_mcc_pro_space_division, k, classif_data)
             list_of_results_pro_space_division.append(res)
             k += 1
         list_of_results_pro_selection.append(list_of_results_pro_space_division)

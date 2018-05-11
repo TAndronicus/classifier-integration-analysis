@@ -11,7 +11,7 @@ from datetime import datetime
 #filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
  #            'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
   #           'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
-filenames = ['c.xlsx']
+filenames = ['ionosphere.dat', 'meter_a.tsv']
 files_to_switch = ['haberman.dat', 'sonar.dat']
 number_of_dataset_if_not_generated = 0
 
@@ -23,7 +23,7 @@ generate_all_permutations = True
 bagging = False
 number_of_bagging_repetitions = 2
 space_division = list(range(3, 7))
-number_of_classifiers = 9
+number_of_classifiers = 5
 
 ### Samples generation ###
 are_samples_generated = False
