@@ -1132,7 +1132,6 @@ def test_classifiers(clfs: [], X_validation: [], y_validation: [], coefficients:
     :param clfs: clfs: [], scikit classifiers
     :param X_validation: np.array
     :param y_validation: np.array
-    :param X: np.array
     :param coefficients: []
     :param classifier_data: ClassifierData
     :return: scores, cumulated_scores: [], []
@@ -1164,7 +1163,6 @@ def compute_scores_manually(X_validation: [], y_validation: [], a: float, b: flo
                             classifier_data: ClassifierData = ClassifierData()):
     """Computes and prints scores manually
 
-    :param X: []
     :param X_validation: []
     :param y_validation: []
     :param a: float
@@ -1220,7 +1218,6 @@ def prepare_majority_voting(clfs: [], X_test: [], y_test: []):
     :param clfs: []
     :param X_test: np.array
     :param y_test: np.array
-    :param classifier_data: ClassifierData
     :return: conf_mat, score: [], float
     """
     y_predicted = np.empty(len(X_test), dtype = float)
@@ -1291,6 +1288,7 @@ def prepare_composite_mean_classifier(X_test: [], y_test: [], X: [], coefficient
     :param coefficients: []
     :param scores: []
     :param number_of_subplots: int
+    :param i: int
     :param classifier_data: ClassifierData
     :return: scores: []
     """
@@ -1366,6 +1364,7 @@ def prepare_composite_median_classifier(X_test: [], y_test: [], X: [], coefficie
     :param coefficients: []
     :param scores: []
     :param number_of_subplots: int
+    :param i: int
     :param classifier_data: ClassifierData
     :return: scores: []
     """

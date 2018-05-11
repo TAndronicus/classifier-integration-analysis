@@ -80,15 +80,14 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
         clfs, coefficients = \
             ClassifLibrary.train_classifiers(clfs, X_whole_train, y_whole_train, X, number_of_subplots, classif_data)
 
-
         for n_best in range(2, number_of_classifiers):
             scores_pro_space_division, mccs_pro_space_division = [], []
             classif_data.number_of_best_classifiers = n_best
             for i in range(len(space_division)):
                 print('{}. space division: {}'.format(i, space_division[i]))
                 classif_data.number_of_space_parts = space_division[i]
-                scores, cumulated_scores = ClassifLibrary.test_classifiers(clfs, X_validation, y_validation, coefficients,
-                                                                       classif_data)
+                scores, cumulated_scores = \
+                    ClassifLibrary.test_classifiers(clfs, X_validation, y_validation, coefficients, classif_data)
 
                 confusion_matrices = ClassifLibrary.compute_confusion_matrix(clfs, X_test, y_test)
 
@@ -98,10 +97,24 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
 
                 if type_of_composition == CompositionType.MEAN:
                     scores, i_score, i_conf_mat = \
-                        ClassifLibrary.prepare_composite_mean_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots, i, classif_data)
+                        ClassifLibrary.prepare_composite_mean_classifier(X_test,
+                                                                         y_test,
+                                                                         X,
+                                                                         coefficients,
+                                                                         scores,
+                                                                         number_of_subplots,
+                                                                         i,
+                                                                         classif_data)
                 elif type_of_composition == CompositionType.MEDIAN:
                     scores, i_score, i_conf_mat = \
-                        ClassifLibrary.prepare_composite_median_classifier(X_test, y_test, X, coefficients, scores, number_of_subplots, i, classif_data)
+                        ClassifLibrary.prepare_composite_median_classifier(X_test,
+                                                                           y_test,
+                                                                           X,
+                                                                           coefficients,
+                                                                           scores,
+                                                                           number_of_subplots,
+                                                                           i,
+                                                                           classif_data)
 
                 confusion_matrices.append(i_conf_mat)
                 cumulated_scores.append(i_score)
@@ -109,7 +122,10 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
                 scores_pro_space_division.append(cumulated_scores)
                 mccs_pro_space_division.append(mccs)
 
-                ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores, cumulated_scores, confusion_matrices, mccs)
+                ClassifLibrary.print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores,
+                                                                                   cumulated_scores,
+                                                                                   confusion_matrices,
+                                                                                   mccs)
 
             if show_plots:
                 try:
@@ -126,21 +142,32 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
             mccs_pro_space_division_pro_nbest[n_best - 2].append(mccs_pro_space_division)
 
     print('\n#####\nOverall results_pro_division after {} iterations:'.format(len(permutations)))
-    mean_scores, mean_mccs = np.mean(scores_pro_space_division_pro_nbest, 1), np.mean(mccs_pro_space_division_pro_nbest, 1)
+    mean_scores, mean_mccs = \
+        np.mean(scores_pro_space_division_pro_nbest, 1), np.mean(mccs_pro_space_division_pro_nbest, 1)
     std_scores, std_mccs = np.std(scores_pro_space_division_pro_nbest, 1), np.std(mccs_pro_space_division_pro_nbest, 1)
 
     k = 0
     classif_iter = 2
     list_of_results_pro_selection = []
-    for mean_score_pro_selection, mean_mcc_pro_selection, std_score_pro_selection, std_mcc_pro_selection in zip(mean_scores, mean_mccs, std_scores, std_mccs):
+    for mean_score_pro_selection, mean_mcc_pro_selection, std_score_pro_selection, std_mcc_pro_selection \
+            in zip(mean_scores, mean_mccs, std_scores, std_mccs):
         print('###  {} best classifiers  ###'.format(classif_iter))
         list_of_results_pro_space_division, space_iter = [], 0
-        for mean_score_pro_space_division, mean_mcc_pro_space_division, std_score_pro_space_division, std_mcc_pro_space_division in zip(mean_score_pro_selection, mean_mcc_pro_selection, std_score_pro_selection, std_mcc_pro_selection):
+        for mean_score_pro_space_division, mean_mcc_pro_space_division, \
+            std_score_pro_space_division, std_mcc_pro_space_division \
+                in zip(mean_score_pro_selection, mean_mcc_pro_selection,
+                       std_score_pro_selection, std_mcc_pro_selection):
             print('###  {} subspaces  ###'.format(space_division[space_iter]))
             ClassifLibrary.print_permutation_results(mean_score_pro_space_division, mean_mcc_pro_space_division)
-            res = ClassifLibrary.prepare_result_object(mean_score_pro_space_division, mean_mcc_pro_space_division, std_score_pro_space_division, std_mcc_pro_space_division)
-            if logging_intermediate_results and not(bagging):
-                FileHelper.save_intermediate_results(mean_score_pro_space_division, mean_mcc_pro_space_division, k, classif_data)
+            res = ClassifLibrary.prepare_result_object(mean_score_pro_space_division,
+                                                       mean_mcc_pro_space_division,
+                                                       std_score_pro_space_division,
+                                                       std_mcc_pro_space_division)
+            if logging_intermediate_results and not bagging:
+                FileHelper.save_intermediate_results(mean_score_pro_space_division,
+                                                     mean_mcc_pro_space_division,
+                                                     k,
+                                                     classif_data)
             list_of_results_pro_space_division.append(res)
             k += 1
             space_iter += 1

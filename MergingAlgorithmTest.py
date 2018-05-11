@@ -1,6 +1,5 @@
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 import unittest
 import math
 from ClassifierData import ClassifierData
@@ -20,10 +19,10 @@ class MergingAlgorithmtest(unittest.TestCase):
         classifier_data = ClassifierData(logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -46,10 +45,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -75,10 +74,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          generate_all_permutations = False)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -101,10 +100,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -127,10 +126,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -155,10 +154,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -180,10 +179,10 @@ class MergingAlgorithmtest(unittest.TestCase):
         classifier_data = ClassifierData(filename = filename, logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -205,10 +204,10 @@ class MergingAlgorithmtest(unittest.TestCase):
         classifier_data = ClassifierData(filename = filename, logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -231,10 +230,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -252,13 +251,13 @@ class MergingAlgorithmtest(unittest.TestCase):
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file(self):
         # given
         logging_to_file = False
-        classifier_data = ClassifierData(filename = 'pop_failures[0].tsv', logging_to_file = logging_to_file)
+        classifier_data = ClassifierData(filename = 'pop_failures[0][0].tsv', logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -281,10 +280,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -309,10 +308,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -337,10 +336,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -365,10 +364,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -385,7 +384,7 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots(self):
         # given
-        filename = 'pop_failures[0].tsv'
+        filename = 'pop_failures[0][0].tsv'
         show_plots = True
         logging_to_file = False
         classifier_data = ClassifierData(filename = filename,
@@ -393,10 +392,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -421,10 +420,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -451,10 +450,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -481,10 +480,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -511,10 +510,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -531,7 +530,7 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots_builtin(self):
         # given
-        filename = 'pop_failures[0].tsv'
+        filename = 'pop_failures[0][0].tsv'
         show_plots = True
         show_color_plot = True
         logging_to_file = False
@@ -541,10 +540,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -571,10 +570,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -603,10 +602,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_too_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -635,10 +634,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -667,10 +666,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -687,7 +686,7 @@ class MergingAlgorithmtest(unittest.TestCase):
 
     def test_should_return_no_error_on_default_merging_algorithm_reading_tsv_file_plots_builtin_computed(self):
         # given
-        filename = 'pop_failures[0].tsv'
+        filename = 'pop_failures[0][0].tsv'
         show_plots = True
         show_color_plot = True
         write_computed_scores = True
@@ -699,10 +698,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -733,10 +732,10 @@ class MergingAlgorithmtest(unittest.TestCase):
         expected_mcc = (TP * TN - FP * FN) / math.sqrt((TP + FP) * (TP + FN) * (TN + FN) * (TN + FP))
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertAlmostEqual(expected_score, mv_score, delta = .01)
         self.assertAlmostEqual(expected_score, i_score, delta = .02)
@@ -761,10 +760,10 @@ class MergingAlgorithmtest(unittest.TestCase):
         expected_mcc = (TP * TN - FP * FN) / math.sqrt((TP + FP) * (TP + FN) * (TN + FN) * (TN + FP))
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertAlmostEqual(expected_score, mv_score, delta = .01)
         self.assertAlmostEqual(expected_score, i_score, delta = .03)
@@ -779,10 +778,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -809,10 +808,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -839,10 +838,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -865,10 +864,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -893,10 +892,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -921,10 +920,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)
@@ -947,10 +946,10 @@ class MergingAlgorithmtest(unittest.TestCase):
                                          logging_to_file = logging_to_file)
         # when
         res = run(classifier_data)
-        mv_score = res[0].mv_score
-        mv_mcc = res[0].mv_mcc
-        i_score = res[0].i_score
-        i_mcc = res[0].i_mcc
+        mv_score = res[0][0].mv_score
+        mv_mcc = res[0][0].mv_mcc
+        i_score = res[0][0].i_score
+        i_mcc = res[0][0].i_mcc
         # then
         self.assertIsNotNone(mv_score)
         self.assertIsNotNone(i_score)

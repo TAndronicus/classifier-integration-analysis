@@ -426,7 +426,8 @@ class MyLibraryTest(unittest.TestCase):
         X1_raw = np.array(
             [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0],
              [13, 0], [14, 0], [15, 0], [16, 0], [17, 0]])
-        counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), int(len(X1_raw) / 2), False, True
+        counter, remainder, index0, index1, is_first_bigger, is_last = \
+            2, 3, int(len(X0_raw) / 2), int(len(X1_raw) / 2), False, True
         # when
         X0, X1 = \
             ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
@@ -806,10 +807,10 @@ class MyLibraryTest(unittest.TestCase):
 
     def test_should_contain_nan(self):
         # given
-        l = [[i, i + 1] for i in range(5)]
-        l[2].append(float('nan'))
+        target = [[i, i + 1] for i in range(5)]
+        target[2].append(float('nan'))
         # when
-        contains_nan = ClassifLibrary.contain_nan(l)
+        contains_nan = ClassifLibrary.contain_nan(target)
         # then
         self.assertTrue(contains_nan)
 
@@ -857,19 +858,19 @@ class MyLibraryTest(unittest.TestCase):
                          i_score = i_score1, i_score_std = i_score_std1, i_mcc = i_mcc1, i_mcc_std = i_mcc_std1)
         res2 = IntegrRes(mv_score = mv_score2, mv_score_std = mv_score_std2, mv_mcc = mv_mcc2, mv_mcc_std = mv_mcc_std2,
                          i_score = i_score2, i_score_std = i_score_std2, i_mcc = i_mcc2, i_mcc_std = i_mcc_std2)
-        partial_ress = [[res1], [res2]]
+        partial_ress = [[[res1]], [[res2]]]
         # when
         result = ClassifLibrary.get_mean_res(partial_ress = partial_ress)
         # then
         self.assertEqual(1, len(result))
-        self.assertEqual(np.mean([mv_score1, mv_score2]), result[0].mv_score)
-        self.assertEqual(np.std([mv_score1, mv_score2]), result[0].mv_score_std)
-        self.assertEqual(np.mean([mv_mcc1, mv_mcc2]), result[0].mv_mcc)
-        self.assertEqual(np.std([mv_mcc1, mv_mcc2]), result[0].mv_mcc_std)
-        self.assertEqual(np.mean([i_score1, i_score2]), result[0].i_score)
-        self.assertEqual(np.std([i_score1, i_score2]), result[0].i_score_std)
-        self.assertEqual(np.mean([i_mcc1, i_mcc2]), result[0].i_mcc)
-        self.assertEqual(np.std([i_mcc1, i_mcc2]), result[0].i_mcc_std)
+        self.assertEqual(np.mean([mv_score1, mv_score2]), result[0][0].mv_score)
+        self.assertEqual(np.std([mv_score1, mv_score2]), result[0][0].mv_score_std)
+        self.assertEqual(np.mean([mv_mcc1, mv_mcc2]), result[0][0].mv_mcc)
+        self.assertEqual(np.std([mv_mcc1, mv_mcc2]), result[0][0].mv_mcc_std)
+        self.assertEqual(np.mean([i_score1, i_score2]), result[0][0].i_score)
+        self.assertEqual(np.std([i_score1, i_score2]), result[0][0].i_score_std)
+        self.assertEqual(np.mean([i_mcc1, i_mcc2]), result[0][0].i_mcc)
+        self.assertEqual(np.std([i_mcc1, i_mcc2]), result[0][0].i_mcc_std)
 
     def test_should_return_right_decision_limit_for_odd_coef_num_for_0(self):
         # given
