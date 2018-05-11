@@ -6,5 +6,5 @@ class ClfType(Enum):
 
 
     """
-    LINEAR = 0
-    MEAN = 1
+    LINEAR = 'Linear'
+    MEAN = 'Mean'

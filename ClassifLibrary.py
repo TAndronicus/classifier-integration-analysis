@@ -1,6 +1,7 @@
 import itertools
 import math
 import warnings
+from random import randint
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,6 +15,7 @@ from sklearn.svm import LinearSVC
 
 from ClassifierData import ClassifierData
 from ClfType import ClfType
+from IntegrRes import IntegrRes
 from NotEnoughSamplesError import NotEnoughSamplesError
 
 
@@ -788,8 +790,8 @@ def split_sorted_samples(X: [], y: [], classifier_data: ClassifierData = Classif
     return X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test
 
 
-def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = ClassifierData()):
-    """
+def split_sorted_unitary_bagging(X: [], y: [], classifier_data: ClassifierData = ClassifierData()):
+    """Splits data into subsets for training, validating and testing using bagging
 
     :param X: []
     :param y: []
@@ -802,14 +804,53 @@ def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = Classif
     if len(X) < (number_of_classifiers + 2) * number_of_space_parts:
         raise NotEnoughSamplesError('Not enough samples found when sorting (len(X) = {})'.format(len(X)))
     X_splitted, y_splitted = [], []
-    length = int(len(X) / (number_of_classifiers + 2))
+    length = len(X)
     for i in range(number_of_classifiers + 2):
         X_temp, y_temp = np.zeros((length, 2)), np.zeros(length, dtype = np.int)
         for j in range(length):
+            rand = randint(0, length - 1)
+            X_temp[j, :] = X[rand, :]
+            try:
+                if X[rand, 0] < minimum:
+                    minimum = X[rand, 0]
+            except UnboundLocalError:
+                minimum = X[rand, 0]
+            try:
+                if X[rand, 0] > maximum:
+                    maximum = X[rand, 0]
+            except UnboundLocalError:
+                maximum = X[rand, 0]
+            y_temp[j] = y[rand]
+        X_splitted.append(X_temp)
+        y_splitted.append(y_temp)
+    classifier_data.minimum = minimum
+    classifier_data.maximum = maximum
+    return X_splitted, y_splitted
+
+
+def split_sorted_unitary(X: [], y: [], classifier_data: ClassifierData = ClassifierData()):
+    """Splits data into subsets for training, validating and testing
+
+    :param X: []
+    :param y: []
+    :param classifier_data: ClassifierData
+    :return: X_splitted, y_splitted: [], []
+    """
+    number_of_classifiers = classifier_data.number_of_classifiers
+    number_of_space_parts = classifier_data.number_of_space_parts
+    print('Splitting samples')
+    if len(X) < (number_of_classifiers + 2) * number_of_space_parts:
+        raise NotEnoughSamplesError('Not enough samples found when sorting (len(X) = {})'.format(len(X)))
+    X_splitted, y_splitted = [], []
+    length_of_subset = int(len(X) / (number_of_classifiers + 2))
+    for i in range(number_of_classifiers + 2):
+        X_temp, y_temp = np.zeros((length_of_subset, 2)), np.zeros(length_of_subset, dtype = np.int)
+        for j in range(length_of_subset):
             X_temp[j, :] = (X[j * (number_of_classifiers + 2) + i, :])
             y_temp[j] = (y[j * (number_of_classifiers + 2) + i])
         X_splitted.append(X_temp)
         y_splitted.append(y_temp)
+    classifier_data.minimum, classifier_data.maximum = min(X[:, 0]), max(X[:, 0])
     return X_splitted, y_splitted
 
 
@@ -841,18 +882,17 @@ def train_test_sorted_split(X_one: [], y_one: [], quotient: float = 2 / 3):
     return X_train, X_test, y_train, y_test
 
 
-def prepare_samples_for_subspace(X_test: [], y_test: [], X: [], j: int,
+def prepare_samples_for_subspace(X_test: [], y_test: [], j: int,
                                  classifier_data: ClassifierData = ClassifierData()):
     """Preparing sample for testing in j-th subspace
 
     :param X_test: np.array
     :param y_test: np.array
-    :param X: np.array
     :param j: int
     :param classifier_data: ClassifierData
     :return: X_part, y_part: [], []
     """
-    x_samp_max, x_samp_min = get_subspace_limits(X, j, classifier_data)
+    x_samp_min, x_samp_max = get_subspace_limits(j, classifier_data)
     X_part = [row for row in X_test if x_samp_min <= row[0] < x_samp_max]
     y_part = [y_test[k] for k in range(len(y_test)) if x_samp_min <= X_test[k][0] < x_samp_max]
     return X_part, y_part
@@ -906,9 +946,10 @@ def determine_number_of_subplots(classifier_data: ClassifierData = ClassifierDat
     """
     draw_color_plot = classifier_data.draw_color_plot
     number_of_classifiers = classifier_data.number_of_classifiers
+    space_division = classifier_data.space_division
     if draw_color_plot:
-        return number_of_classifiers * 2 + 1
-    return number_of_classifiers + 1
+        return number_of_classifiers * 2 + len(space_division)
+    return number_of_classifiers + len(space_division)
 
 
 def train_classifiers(clfs: [], X_whole_train: [], y_whole_train: [], X: [], number_of_subplots: int,
@@ -1054,42 +1095,43 @@ def evaluate_weighted_average_coefficients_from_n_best(coefficients: [], scores:
     """
     number_of_classifiers = classifier_data.number_of_classifiers
     number_of_best_classifiers = classifier_data.number_of_best_classifiers
-    a, b, params, scoreSum = 0, 0, [], 0
+    a, b, scoreSum, scores_in_subspace = 0, 0, 0, np.zeros(number_of_classifiers)
     for i in range(number_of_classifiers):
-        params.append([scores[i][j], coefficients[i]])
-    params.sort()
-    for i in range(number_of_best_classifiers):
-        scoreSum += params[number_of_classifiers - 1 - i][0]
-        a += params[number_of_classifiers - 1 - i][1][0] * params[number_of_classifiers - 1 - i][0]
-        b += params[number_of_classifiers - 1 - i][1][1] * params[number_of_classifiers - 1 - i][0]
+        scores_in_subspace[i] = scores[i][j]
+    indices = list(range(number_of_classifiers))
+    sorted_scores, indices = (list(t) for t in zip(*sorted(zip(scores_in_subspace, indices))))
+    for i in range(1, number_of_best_classifiers + 1):
+        scoreSum += sorted_scores[-i]
+        a += sorted_scores[-i] * coefficients[indices[-i]][0]
+        b += sorted_scores[-i] * coefficients[indices[-i]][1]
     a /= scoreSum
     b /= scoreSum
     return a, b
 
 
-def get_subspace_limits(X: [], j: int, classifier_data: ClassifierData = ClassifierData()):
+def get_subspace_limits(j: int, classifier_data: ClassifierData = ClassifierData()):
     """Gets limits of j-th subspace
 
-    :param X: np.array
     :param j: int
     :param classifier_data: ClassifierData
     :return: x_subspace_max, x_subspace_min: float, float
     """
     number_of_space_parts = classifier_data.number_of_space_parts
+    minimum = classifier_data.minimum
+    maximum = classifier_data.maximum
     x_subspace_min, x_subspace_max = \
-        X[:, 0].min() + j * (X[:, 0].max() - X[:, 0].min()) / number_of_space_parts, \
-        X[:, 0].min() + (j + 1) * (X[:, 0].max() - X[:, 0].min()) / number_of_space_parts
-    return x_subspace_max, x_subspace_min
+        minimum + j * (maximum - minimum) / number_of_space_parts, \
+        minimum + (j + 1) * (maximum - minimum) / number_of_space_parts
+    return x_subspace_min, x_subspace_max
 
 
-def test_classifiers(clfs: [], X_validation: [], y_validation: [], X: [], coefficients: [],
+def test_classifiers(clfs: [], X_validation: [], y_validation: [], coefficients: [],
                      classifier_data: ClassifierData = ClassifierData()):
     """Tests classifiers
 
     :param clfs: clfs: [], scikit classifiers
     :param X_validation: np.array
     :param y_validation: np.array
-    :param X: np.array
     :param coefficients: []
     :param classifier_data: ClassifierData
     :return: scores, cumulated_scores: [], []
@@ -1100,7 +1142,7 @@ def test_classifiers(clfs: [], X_validation: [], y_validation: [], X: [], coeffi
     for clf in clfs:
         score, cumulated_score = [], 0
         for j in range(number_of_space_parts):
-            X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, X, j, classifier_data)
+            X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, j, classifier_data)
             if len(X_part) > 0:
                 score.append(clf.score(X_part, y_part))
                 cumulated_score += clf.score(X_part, y_part) * len(X_part)
@@ -1112,16 +1154,15 @@ def test_classifiers(clfs: [], X_validation: [], y_validation: [], X: [], coeffi
         a, b = coefficients[i]
 
         if write_computed_scores:
-            compute_scores_manually(X, X_validation, y_validation, a, b, classifier_data)
+            compute_scores_manually(X_validation, y_validation, a, b, classifier_data)
         i += 1
     return scores, cumulated_scores
 
 
-def compute_scores_manually(X: [], X_validation: [], y_validation: [], a: float, b: float,
+def compute_scores_manually(X_validation: [], y_validation: [], a: float, b: float,
                             classifier_data: ClassifierData = ClassifierData()):
     """Computes and prints scores manually
 
-    :param X: []
     :param X_validation: []
     :param y_validation: []
     :param a: float
@@ -1133,7 +1174,7 @@ def compute_scores_manually(X: [], X_validation: [], y_validation: [], a: float,
     number_of_space_parts = classifier_data.number_of_space_parts
     manually_computed_scores, overall_absolute_score = [], 0
     for j in range(number_of_space_parts):
-        X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, X, j, classifier_data)
+        X_part, y_part = prepare_samples_for_subspace(X_validation, y_validation, j, classifier_data)
         propperly_classified, all_classified = 0, 0
         for k in range(len(X_part)):
             if (a * X_part[k][0] + b > X_part[k][1]) ^ (y_part[k] == 1):
@@ -1236,9 +1277,10 @@ def compute_mcc(prop_0_pred_0: int, prop_0_pred_1: int, prop_1_pred_0: int, prop
     return mcc_score
 
 
-def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: [], scores: [], number_of_subplots: int,
-                                 classifier_data: ClassifierData = ClassifierData()):
-    """Prepares composite classifiers
+def prepare_composite_mean_classifier(X_test: [], y_test: [], X: [], coefficients: [], scores: [],
+                                      number_of_subplots: int, i: int,
+                                      classifier_data: ClassifierData = ClassifierData()):
+    """Prepares composite classifiers using mean strategy
 
     :param X_test: np.array
     :param y_test: np.array
@@ -1246,16 +1288,19 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
     :param coefficients: []
     :param scores: []
     :param number_of_subplots: int
+    :param i: int
     :param classifier_data: ClassifierData
     :return: scores: []
     """
     number_of_space_parts = classifier_data.number_of_space_parts
+    space_division = classifier_data.space_division
     show_plots = classifier_data.show_plots
     print('Preparing composite classifier')
 
     if show_plots:
-        ax = plt.subplot(1, number_of_subplots, number_of_subplots)
+        ax = plt.subplot(1, number_of_subplots, number_of_subplots - len(space_division) + 1 + i)
         ax.scatter(X_test[:, 0], X_test[:, 1], c = y_test)
+
     score, part_lengths, flip_index = [], [], 0
     prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1 = 0, 0, 0, 0
     for j in range(number_of_space_parts):
@@ -1264,14 +1309,14 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
             a, b = evaluate_weighted_average_coefficients_from_n_best(coefficients, scores, j, classifier_data)
 
         if show_plots:
-            x_subspace_min, x_subspace_max = get_subspace_limits(X, j, classifier_data)
+            x_subspace_min, x_subspace_max = get_subspace_limits(j, classifier_data)
             x = np.linspace(x_subspace_min, x_subspace_max)
             y = a * x + b
             ax.plot(x, y)
 
-        X_part, y_part = prepare_samples_for_subspace(X_test, y_test, X, j, classifier_data)
+        X_part, y_part = prepare_samples_for_subspace(X_test, y_test, j, classifier_data)
         all_classified, propperly_classified = 0, 0
-        if len(X_part) > 0 and not(math.isnan(a)) and not(math.isnan(b)):
+        if len(X_part) > 0 and not (math.isnan(a)) and not (math.isnan(b)):
             for k in range(len(X_part)):
                 all_classified += 1
                 if y_part[k] >= .5:
@@ -1299,11 +1344,146 @@ def prepare_composite_classifier(X_test: [], y_test: [], X: [], coefficients: []
         prop_1_pred_0, prop_1_pred_1 = prop_1_pred_1, prop_1_pred_0
     scores.append(score)
     conf_mat = compose_conf_matrix(prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1)
+
+    if show_plots:
+        xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X)
+        ax.set_xlim(x_min_plot, x_max_plot)
+        ax.set_ylim(y_min_plot, y_max_plot)
+
+    return scores, cumulated_score, np.array(conf_mat)
+
+
+def prepare_composite_median_classifier(X_test: [], y_test: [], X: [], coefficients: [], scores: [],
+                                        number_of_subplots: int, i: int,
+                                        classifier_data: ClassifierData = ClassifierData()):
+    """Prepares composite classifiers using median strategy
+
+    :param X_test: np.array
+    :param y_test: np.array
+    :param X: np.array
+    :param coefficients: []
+    :param scores: []
+    :param number_of_subplots: int
+    :param i: int
+    :param classifier_data: ClassifierData
+    :return: scores: []
+    """
+    number_of_space_parts = classifier_data.number_of_space_parts
+    space_division = classifier_data.space_division
+    show_plots = classifier_data.show_plots
+    print('Preparing composite classifier')
+
+    if show_plots:
+        ax = plt.subplot(1, number_of_subplots, number_of_subplots - len(space_division) + 1 + i)
+        ax.scatter(X_test[:, 0], X_test[:, 1], c = y_test)
+
+    score, part_lengths, flip_index = [], [], 0
+    prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1 = 0, 0, 0, 0
+    for j in range(number_of_space_parts):
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            filtered_coeffs = reduce_coefficients_in_subspace(coefficients, scores, j, classifier_data)
+            is_nan = contain_nan(filtered_coeffs)
+
+        if show_plots:
+            x_subspace_min, x_subspace_max = get_subspace_limits(j, classifier_data)
+            x = np.linspace(x_subspace_min, x_subspace_max)
+            y = np.zeros(shape = (1, len(x)), dtype = float)[0]
+            for i in range(len(x)):
+                y[i] = get_decision_limit(x[i], filtered_coeffs)
+            ax.plot(x, y)
+
+        X_part, y_part = prepare_samples_for_subspace(X_test, y_test, j, classifier_data)
+        all_classified, propperly_classified = 0, 0
+        if len(X_part) > 0 and not is_nan:
+            for k in range(len(X_part)):
+                decision_limit = get_decision_limit(X_part[k][0], filtered_coeffs)
+                all_classified += 1
+                if y_part[k] >= .5:
+                    if decision_limit > X_part[k][1]:
+                        prop_1_pred_1 += 1
+                        propperly_classified += 1
+                    else:
+                        prop_1_pred_0 += 1
+                else:
+                    if decision_limit > X_part[k][1]:
+                        prop_0_pred_1 += 1
+                    else:
+                        prop_0_pred_0 += 1
+                        propperly_classified += 1
+            score.append(propperly_classified / all_classified)
+        else:
+            score.append(0)
+        part_lengths.append(len(X_part))
+    cumulated_score = (prop_0_pred_0 + prop_1_pred_1) / (prop_0_pred_0 + prop_0_pred_1 + prop_1_pred_0 + prop_1_pred_1)
+    if cumulated_score < 0.5:
+        cumulated_score = 1 - cumulated_score
+        for i in range(len(score)):
+            score[i] = 1 - score[i]
+        prop_0_pred_0, prop_0_pred_1 = prop_0_pred_1, prop_0_pred_0
+        prop_1_pred_0, prop_1_pred_1 = prop_1_pred_1, prop_1_pred_0
+    scores.append(score)
+    conf_mat = compose_conf_matrix(prop_0_pred_0, prop_0_pred_1, prop_1_pred_0, prop_1_pred_1)
     if show_plots:
         xx, yy, x_min_plot, x_max_plot, y_min_plot, y_max_plot = get_plot_data(X)
         ax.set_xlim(x_min_plot, x_max_plot)
         ax.set_ylim(y_min_plot, y_max_plot)
     return scores, cumulated_score, np.array(conf_mat)
+
+
+def get_decision_limit(sample: float, filtered_coeffs: []):
+    """Gets value of decision limit function for given attribute value
+
+    :param sample: float
+    :param filtered_coeffs: []
+    :return:
+    """
+    representations = []
+    for coeffs in filtered_coeffs:
+        representations.append(coeffs[0] * sample + coeffs[1])
+    representations = np.sort(representations)
+    if len(representations) % 2 == 1:
+        decision_limit = representations[int((len(representations) - 1) / 2)]
+    else:
+        decision_limit = (representations[int(len(representations) / 2)] +
+                          representations[int(len(representations) / 2) - 1]) / 2
+    return decision_limit
+
+
+def reduce_coefficients_in_subspace(coefficients: [], scores: [], j: int,
+                                    classifier_data: ClassifierData = ClassifierData()):
+    """Returns array of coefficients for classificator integration (only best)
+
+    :param coefficients: []
+    :param scores:[]
+    :param j: int
+    :param classifier_data: ClassifierData
+    :return:
+    """
+    number_of_best_classifiers = classifier_data.number_of_best_classifiers
+    number_of_classifiers = classifier_data.number_of_classifiers
+    scores_in_subspace = np.zeros(number_of_classifiers, dtype = float)
+    for i in range(len(scores)):
+        scores_in_subspace[i] = scores[i][j]
+    indices = list(range(number_of_classifiers))
+    sorted_scores, indices = (list(t) for t in zip(*sorted(zip(scores_in_subspace, indices))))
+    filtered_coeffs = []
+    for i in range(1, number_of_best_classifiers + 1):
+        filtered_coeffs.append(coefficients[indices[-i]])
+    return filtered_coeffs
+
+
+def contain_nan(filtered_coeffs: []):
+    """Checks if coefficient array contains nan
+
+    :param filtered_coeffs: []
+    :return:
+    """
+    contains_nan = False
+    for i in range(len(filtered_coeffs)):
+        for j in range(len(filtered_coeffs[i])):
+            contains_nan = contains_nan or math.isnan(filtered_coeffs[i][j])
+    return contains_nan
 
 
 def compose_conf_matrix(prop_0_pred_0: int, prop_0_pred_1: int, prop_1_pred_0: int, prop_1_pred_1: int):
@@ -1332,7 +1512,7 @@ def get_number_of_samples_in_subspace(X: [], j: int, classifier_data: Classifier
     :param classifier_data: ClassifierData
     :return: count: int
     """
-    x_subspace_max, x_subspace_min = get_subspace_limits(X, j, classifier_data)
+    x_subspace_min, x_subspace_max = get_subspace_limits(j, classifier_data)
     count = 0
     for i in range(len(X)):
         if x_subspace_min <= X[i][0] <= x_subspace_max:
@@ -1428,6 +1608,15 @@ def print_scores_conf_mats_mcc_pro_classif_pro_subspace(scores: [], cumulated_sc
             print(conf_mat[i][j])
 
 
+def initialize_list_of_lists(numel: int = 1):
+    """Creates list of independent lists
+
+    :param numel: int
+    :return: []
+    """
+    return [[] for _ in range(numel)]
+
+
 def generate_permutations(classifier_data: ClassifierData = ClassifierData()):
     """Generates permutations for datasets
 
@@ -1437,7 +1626,7 @@ def generate_permutations(classifier_data: ClassifierData = ClassifierData()):
     number_of_classifiers = classifier_data.number_of_classifiers
     generate_all_permutations = classifier_data.generate_all_permutations
     if generate_all_permutations:
-        return itertools.permutations(range(number_of_classifiers + 2), 2)
+        return list(itertools.permutations(range(number_of_classifiers + 2), 2))
     else:
         return [(0, 1)]
 
@@ -1468,24 +1657,30 @@ def get_permutation(X_splitted: [], y_splitted: [], tup: tuple,
     return X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test
 
 
-def get_permutation_results(score_pro_permutation: [], mccs_pro_permutation: []):
+def get_permutation_means(score_pro_permutation: [], mccs_pro_permutation: []):
     """Returns scores and Matthews correlation coefficients after all permutations
+
+    :param score_pro_permutation: []
+    :param mccs_pro_permutation: []
+    :return: classifier_scores, classifier_mcc: [], []
+    """
+    #TODO: tests
+    classifier_scores = np.mean(score_pro_permutation, axis = 0)
+    classifier_mcc = np.mean(mccs_pro_permutation, axis = 0)
+    return classifier_scores, classifier_mcc
+
+
+def get_permutation_stds(score_pro_permutation: [], mccs_pro_permutation: []):
+    """Returns scores and Matthews correlation coefficients standars deviations after all permutations
 
     :param score_pro_permutation: []
     :param mccs_pro_permutation: []
     :return: void
     """
-    print("\n")
-    classifier_scores = np.zeros(len(score_pro_permutation[0]))
-    classifier_mcc = np.zeros(len(mccs_pro_permutation[0]))
-    number_of_permutations = len(score_pro_permutation)
-    for i in range(number_of_permutations):
-        for j in range(len(score_pro_permutation[i])):
-            classifier_scores[j] += score_pro_permutation[i][j]
-            classifier_mcc[j] += mccs_pro_permutation[i][j]
-    classifier_scores /= number_of_permutations
-    classifier_mcc /= number_of_permutations
-    return classifier_scores, classifier_mcc
+    #TODO: tests
+    score_stds = np.std(score_pro_permutation, axis = 0)
+    mcc_stds = np.std(mccs_pro_permutation, axis = 0)
+    return score_stds, mcc_stds
 
 
 def print_permutation_results(classifier_scores: [], classifier_mcc: []):
@@ -1504,3 +1699,60 @@ def print_permutation_results(classifier_scores: [], classifier_mcc: []):
             print('{}. classifier'.format(i))
         print('Score: {}'.format(classifier_scores[i]))
         print('Matthews correlation coefficient: {}'.format(classifier_mcc[i]))
+
+
+def prepare_result_object(scores: [], mccs: [], scores_stds: [], mccs_stds: []):
+    """Prepares result object
+
+    :param scores: []
+    :param mccs: []
+    :param scores_stds: []
+    :param mccs_stds: []
+    :return: res: IntegrRes
+    """
+    mv_score = scores[-2]
+    mv_score_std = scores_stds[-2]
+    mv_mcc = mccs[-2]
+    mv_mcc_std = mccs_stds[-2]
+    i_score = scores[-1]
+    i_score_std = scores_stds[-1]
+    i_mcc = mccs[-1]
+    i_mcc_std = mccs_stds[-1]
+    res = IntegrRes(mv_score = mv_score,
+                    mv_score_std = mv_score_std,
+                    mv_mcc = mv_mcc,
+                    mv_mcc_std = mv_mcc_std,
+                    i_score = i_score,
+                    i_score_std = i_score_std,
+                    i_mcc = i_mcc,
+                    i_mcc_std = i_mcc_std)
+    return res
+
+
+def get_mean_res(partial_ress: []):
+    """Prepares mean result object from partials
+
+    :param partial_ress: []
+    :return: res: []
+    """
+    results_pro_selection = []
+    for i in range(len(partial_ress[0])):
+        results_pro_space_division = []
+        for j in range(len(partial_ress[0][0])):
+            mv_score, mv_mcc, i_score, i_mcc = [], [], [], []
+            for result_pro_iteration in partial_ress:
+                mv_score.append(result_pro_iteration[i][j].mv_score)
+                mv_mcc.append(result_pro_iteration[i][j].mv_mcc)
+                i_score.append(result_pro_iteration[i][j].i_score)
+                i_mcc.append(result_pro_iteration[i][j].i_mcc)
+            res = IntegrRes(mv_score = np.mean(mv_score, axis = 0),
+                            mv_score_std = np.std(mv_score, axis = 0),
+                            mv_mcc = np.mean(mv_mcc, axis = 0),
+                            mv_mcc_std = np.std(mv_mcc, axis = 0),
+                            i_score = np.mean(i_score, axis = 0),
+                            i_score_std = np.std(i_score, axis = 0),
+                            i_mcc = np.mean(i_mcc, axis = 0),
+                            i_mcc_std = np.std(i_mcc, axis = 0))
+            results_pro_space_division.append(res)
+        results_pro_selection.append(results_pro_space_division)
+    return results_pro_selection

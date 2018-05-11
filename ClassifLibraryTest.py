@@ -1,4 +1,5 @@
 import math
+import random
 import unittest
 
 import numpy as np
@@ -8,6 +9,7 @@ from sklearn.svm import LinearSVC
 
 import ClassifLibrary
 from ClassifLibrary import ClassifierData
+from IntegrRes import IntegrRes
 
 
 class MyLibraryTest(unittest.TestCase):
@@ -53,7 +55,7 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertRaises(Exception('Classifier not defined'))
 
-    def test_should_initialse_right_number_of_classifiers(self):
+    def test_should_initialize_right_number_of_classifiers(self):
         # given
         # when
         clfs = ClassifLibrary.initialize_classifiers()
@@ -424,8 +426,8 @@ class MyLibraryTest(unittest.TestCase):
         X1_raw = np.array(
             [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0],
              [13, 0], [14, 0], [15, 0], [16, 0], [17, 0]])
-        counter, remainder, index0, index1, is_first_bigger, is_last = 2, 3, int(len(X0_raw) / 2), \
-                                                                       int(len(X1_raw) / 2), False, True
+        counter, remainder, index0, index1, is_first_bigger, is_last = \
+            2, 3, int(len(X0_raw) / 2), int(len(X1_raw) / 2), False, True
         # when
         X0, X1 = \
             ClassifLibrary.limit_datasets(X0_raw, X1_raw, counter, remainder, index0, index1, is_first_bigger, is_last)
@@ -559,6 +561,72 @@ class MyLibraryTest(unittest.TestCase):
         # then
         self.assertEqual(len(X_whole_train), self.NUMBER_OF_CLASSIFIERS)
 
+    def test_should_return_same_division_every_time(self):
+        # given
+        X = np.array([[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0],
+                     [84, 0], [84, 0], [84, 0], [100, 0], [100, 0], [0, 0], [0, 0], [21, 0], [21, 0], [21, 0],
+                     [42, 0], [42, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0], [100, 0], [100, 0], [100, 0]])
+        y = np.array((1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0))
+        # when
+        X_1, y_1 = ClassifLibrary.split_sorted_unitary(X, y)
+        X_2, y_2 = ClassifLibrary.split_sorted_unitary(X, y)
+        # then
+        for i in range(len(X_1)):
+            self.assertEqual(len(X_1[i]), len(X_2[i]))
+            for j in range(len(X_1[i])):
+                self.assertTrue(X_1[i][j] in X_2[i])
+                self.assertTrue(X_2[i][j] in X_1[i])
+
+    def test_should_return_same_division_on_generated_data_every_time(self):
+        # given
+        ar, N = [], 10000
+        for _ in range(N):
+            ar.append(np.random.normal(size = (1, 2))[0])
+        X = np.array(ar)
+        y = np.ones(shape = (N, 1))
+        # when
+        X_1, y_1 = ClassifLibrary.split_sorted_unitary(X, y)
+        X_2, y_2 = ClassifLibrary.split_sorted_unitary(X, y)
+        # then
+        for i in range(len(X_1)):
+            self.assertEqual(len(X_1[i]), len(X_2[i]))
+            for j in range(len(X_1[i])):
+                self.assertTrue(X_1[i][j] in X_2[i])
+                self.assertTrue(X_2[i][j] in X_1[i])
+
+    def test_should_return_same_division_in_right_order_every_time(self):
+        # given
+        X = np.array([[0, 0], [0, 0], [0, 0], [21, 0], [21, 0], [42, 0], [42, 0], [42, 0], [63, 0], [63, 0],
+                     [84, 0], [84, 0], [84, 0], [100, 0], [100, 0], [0, 0], [0, 0], [21, 0], [21, 0], [21, 0],
+                     [42, 0], [42, 0], [63, 0], [63, 0], [63, 0], [84, 0], [84, 0], [100, 0], [100, 0], [100, 0]])
+        y = np.array((1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0))
+        # when
+        X_1, y_1 = ClassifLibrary.split_sorted_unitary(X, y)
+        X_2, y_2 = ClassifLibrary.split_sorted_unitary(X, y)
+        # then
+        for i in range(len(X_1)):
+            self.assertEqual(len(X_1[i]), len(X_2[i]))
+            for j in range(len(X_1[i])):
+                self.assertEqual(X_1[i][j][0], X_2[i][j][0])
+                self.assertEqual(X_1[i][j][1], X_2[i][j][1])
+
+    def test_should_return_same_division_in_right_order_on_generated_data_every_time(self):
+        # given
+        ar, N, mi = [], 10000, 30
+        for _ in range(N):
+            ar.append(np.random.normal(loc = mi, scale = 1, size = (1, 2))[0])
+        X = np.array(ar)
+        y = np.ones(shape = (N, 1))
+        # when
+        X_1, y_1 = ClassifLibrary.split_sorted_unitary(X, y)
+        X_2, y_2 = ClassifLibrary.split_sorted_unitary(X, y)
+        # then
+        for i in range(len(X_1)):
+            self.assertEqual(len(X_1[i]), len(X_2[i]))
+            for j in range(len(X_1[i])):
+                self.assertEqual(X_1[i][j][0], X_2[i][j][0])
+                self.assertEqual(X_1[i][j][1], X_2[i][j][1])
+
     def ignore_deprecated_test_train_test_sorted_split(self):
         # given
         # when
@@ -571,7 +639,7 @@ class MyLibraryTest(unittest.TestCase):
         X = np.array([[3, 3], [1, 1], [5, 5], [4, 4], [1, 1]])
         y = np.array([0, 1, 0, 1, 0])
         # when
-        X_sub, y_sub = ClassifLibrary.prepare_samples_for_subspace(X, y, X, 0)
+        X_sub, y_sub = ClassifLibrary.prepare_samples_for_subspace(X, y, 0)
         X_sort = ClassifLibrary.sort_attributes(X)
         treshold = X_sort[0][0] + (X_sort[-1][0] - X_sort[0][0]) / self.NUMBER_OF_SUBSPACES
         # then
@@ -641,7 +709,7 @@ class MyLibraryTest(unittest.TestCase):
         self.assertEqual((coefficients[2][1] * scores[2][0] + coefficients[3][1] * scores[3][0]) /
                          (scores[2][0] + scores[3][0]), b)
 
-    def test_should_return_subspace_limits(self):
+    def ignore_test_should_return_subspace_limits(self):
         # given
         X = np.array([[0.1, 0], [1.3, 1], [2.5, 2], [3.7, 3], [7.9, 7], [8.7, 8], [9.5, 9], [10.3, 10]])
         number_of_subspace = 2
@@ -705,9 +773,188 @@ class MyLibraryTest(unittest.TestCase):
         self.assertEqual(X[tup[1]], X_test)
         self.assertEqual(y[tup[1]], y_test)
         for i in range(len(X)):
-            if not i in tup:
+            if i not in tup:
                 self.assertTrue(X[i] in X_whole_train)
                 self.assertTrue(y[i] in y_whole_train)
+
+    def test_should_return_2_best_from_3_coefficients(self):
+        # given
+        coefficients = [[1, 2], [3, 4], [5, 6]]
+        scores = [[3], [1], [2]]
+        j = 0
+        classifier_data = ClassifierData()
+        # when
+        filtered_coefficients = ClassifLibrary.reduce_coefficients_in_subspace(coefficients, scores, j, classifier_data)
+        # then
+        self.assertTrue([1, 2] in filtered_coefficients)
+        self.assertTrue([5, 6] in filtered_coefficients)
+
+    def test_should_return_3_best_from_5_coefficients(self):
+        # given
+        coefficients = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]]
+        scores = [[3, 0], [1, 4], [2, 2], [4, 5], [5, 0]]
+        number_of_classifiers = 5
+        number_of_best_classifiers = 3
+        j = 1
+        classifier_data = ClassifierData(number_of_classifiers = number_of_classifiers,
+                                         number_of_best_classifiers = number_of_best_classifiers)
+        # when
+        filtered_coefficients = ClassifLibrary.reduce_coefficients_in_subspace(coefficients, scores, j, classifier_data)
+        # then
+        self.assertTrue([3, 4] in filtered_coefficients)
+        self.assertTrue([5, 6] in filtered_coefficients)
+        self.assertTrue([7, 8] in filtered_coefficients)
+
+    def test_should_contain_nan(self):
+        # given
+        target = [[i, i + 1] for i in range(5)]
+        target[2].append(float('nan'))
+        # when
+        contains_nan = ClassifLibrary.contain_nan(target)
+        # then
+        self.assertTrue(contains_nan)
+
+    def test_should_not_contain_nan(self):
+        # given
+        result = [[i, i / 2] for i in range(5)]
+        # when
+        contains_nan = ClassifLibrary.contain_nan(result)
+        # then
+        self.assertFalse(contains_nan)
+
+    def test_should_compose_right_conf_mat(self):
+        # given
+        prop0pred0 = 1
+        prop0pred1 = 2
+        prop1pred0 = 3
+        prop1pred1 = 4
+        # when
+        conf_mat = ClassifLibrary.compose_conf_matrix(prop0pred0, prop0pred1, prop1pred0, prop1pred1)
+        # then
+        self.assertEqual(prop0pred0, conf_mat[0][0])
+        self.assertEqual(prop0pred1, conf_mat[0][1])
+        self.assertEqual(prop1pred0, conf_mat[1][0])
+        self.assertEqual(prop1pred1, conf_mat[1][1])
+
+    def test_should_initialize_list_of_propper_size(self):
+        # given
+        size = 5
+        # when
+        result = ClassifLibrary.initialize_list_of_lists(size)
+        # then
+        self.assertEqual(size, len(result))
+
+    def test_should_calculate_propper_mean_res_obj(self):
+        # given
+        mv_score1, mv_score2 = 5, 7
+        mv_score_std1, mv_score_std2 = .6, .9
+        mv_mcc1, mv_mcc2 = .6, .75
+        mv_mcc_std1, mv_mcc_std2 = .03, .11
+        i_score1, i_score2 = 3, 4
+        i_score_std1, i_score_std2 = 21, 26
+        i_mcc1, i_mcc2 = -5, -4.7
+        i_mcc_std1, i_mcc_std2 = -.33, -5.05
+        res1 = IntegrRes(mv_score = mv_score1, mv_score_std = mv_score_std1, mv_mcc = mv_mcc1, mv_mcc_std = mv_mcc_std1,
+                         i_score = i_score1, i_score_std = i_score_std1, i_mcc = i_mcc1, i_mcc_std = i_mcc_std1)
+        res2 = IntegrRes(mv_score = mv_score2, mv_score_std = mv_score_std2, mv_mcc = mv_mcc2, mv_mcc_std = mv_mcc_std2,
+                         i_score = i_score2, i_score_std = i_score_std2, i_mcc = i_mcc2, i_mcc_std = i_mcc_std2)
+        partial_ress = [[[res1]], [[res2]]]
+        # when
+        result = ClassifLibrary.get_mean_res(partial_ress = partial_ress)
+        # then
+        self.assertEqual(1, len(result))
+        self.assertEqual(np.mean([mv_score1, mv_score2]), result[0][0].mv_score)
+        self.assertEqual(np.std([mv_score1, mv_score2]), result[0][0].mv_score_std)
+        self.assertEqual(np.mean([mv_mcc1, mv_mcc2]), result[0][0].mv_mcc)
+        self.assertEqual(np.std([mv_mcc1, mv_mcc2]), result[0][0].mv_mcc_std)
+        self.assertEqual(np.mean([i_score1, i_score2]), result[0][0].i_score)
+        self.assertEqual(np.std([i_score1, i_score2]), result[0][0].i_score_std)
+        self.assertEqual(np.mean([i_mcc1, i_mcc2]), result[0][0].i_mcc)
+        self.assertEqual(np.std([i_mcc1, i_mcc2]), result[0][0].i_mcc_std)
+
+    def test_should_return_right_decision_limit_for_odd_coef_num_for_0(self):
+        # given
+        x = 0
+        num_of_coeffs = 9
+        coeffs = [[random.random(), i] for i in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual((num_of_coeffs - 1) / 2, y)
+
+    def test_should_return_right_decision_limit_for_odd_coef_num_for_10(self):
+        # given
+        x = 10
+        num_of_coeffs = 9
+        coeffs = [[i, 5 * i] for i in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(15 * (num_of_coeffs - 1) / 2, y)
+
+    def test_should_return_right_decision_limit_for_odd_coef_num_for_0_random(self):
+        # given
+        x = 0
+        num_of_coeffs = 9
+        coeffs = [[random.random(), random.random()] for _ in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2)][1], y)
+
+    def test_should_return_right_decision_limit_for_odd_coef_num_for_100_random(self):
+        # given
+        x = 100
+        num_of_coeffs = 9
+        coeffs = [[random.random(), 0] for _ in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(100 * np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2)][0], y)
+
+    def test_should_return_right_decision_limit_for_even_coef_num_for_0(self):
+        # given
+        x = 0
+        num_of_coeffs = 10
+        coeffs = [[random.random(), i] for i in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual((num_of_coeffs - 1) / 2, y)
+
+    def test_should_return_right_decision_limit_for_even_coef_num_for_10(self):
+        # given
+        x = 10
+        num_of_coeffs = 10
+        coeffs = [[i, 5 * i] for i in range(num_of_coeffs)]
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(15 * (num_of_coeffs - 1) / 2, y)
+
+    def test_should_return_right_decision_limit_for_even_coef_num_for_0_random(self):
+        # given
+        x = 0
+        num_of_coeffs = 10
+        coeffs = [[random.random(), random.random()] for _ in range(num_of_coeffs)]
+        expected_y = (np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2)][1] +
+                      np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2) + 1][1]) / 2
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(expected_y, y)
+
+    def test_should_return_right_decision_limit_for_even_coef_num_for_100_random(self):
+        # given
+        x = 100
+        num_of_coeffs = 10
+        coeffs = [[random.random(), 0] for _ in range(num_of_coeffs)]
+        expected_y = x * (np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2)][0] +
+                          np.sort(coeffs, axis = 0)[int((num_of_coeffs - 1) / 2) + 1][0]) / 2
+        # when
+        y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
+        # then
+        self.assertEqual(expected_y, y)
 
 
 if __name__ == '__main__':
