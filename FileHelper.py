@@ -306,11 +306,10 @@ def determine_filename(results_directory_relative: str = 'results', classifier_d
     else:
         integration_indicator = str(1)
     filename = 'n_' + str(classifier_data.number_of_classifiers) + \
-               '_nb_' + str(classifier_data.number_of_best_classifiers) + \
                '_b_' + bagging_indicator + \
                '_i_' + integration_indicator
     if os.path.isfile(results_directory_relative + '//' + filename + '.xls'):
-        log_number = 0
+        log_number = 1
         while True:
             if not os.path.isfile(results_directory_relative + '//' + filename + '_v_' + str(log_number) + '.xls'):
                 break
