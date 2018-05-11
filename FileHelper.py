@@ -1,6 +1,7 @@
 import xlwt
 from ClassifierData import ClassifierData
 from CompositionType import CompositionType
+from datetime import datetime
 import os
 
 
@@ -284,7 +285,8 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(
                    'is_validation_hard': str(classifier_data.is_validation_hard),
                    'generate_all_permutations': str(classifier_data.generate_all_permutations),
                    'bagging': str(classifier_data.bagging),
-                   'type_of_composition': classifier_data.type_of_composition.value}
+                   'type_of_composition': classifier_data.type_of_composition.value,
+                   'timestamp': str(datetime.now())}
     last_row = 1 + len(filenames) * (numbers_of_base_classifiers - 2)
     for entry_name in output_data:
         last_row += 1
