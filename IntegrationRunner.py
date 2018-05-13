@@ -16,10 +16,10 @@ number_of_dataset_if_not_generated = 0
 
 ### Classification strategy ###
 type_of_classifier = ClfType.LINEAR
-type_of_composition = CompositionType.MEAN
+type_of_composition = CompositionType.MEDIAN
 is_validation_hard = False
 generate_all_permutations = True
-bagging = False
+bagging = True
 number_of_bagging_repetitions = 10
 space_division = list(range(3, 11))
 number_of_classifiers = 7

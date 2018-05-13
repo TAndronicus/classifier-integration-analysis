@@ -1,7 +1,10 @@
+import xlrd
 import xlwt
+from AdvIntegrRes import AdvIntegrRes
 from ClassifierData import ClassifierData
 from CompositionType import CompositionType
 from datetime import datetime
+import numpy as np
 import os
 
 
@@ -371,3 +374,44 @@ def save_intermediate_results(score: [], mcc: [], i: int, classifier_data: Class
                 sheet.write(row, col, value[row][col])
     workbook.save(results_directory_relative + '//' + filename.split('.')[0].split('//')[1] + '_c_' + str(
         number_of_classifiers) + '_s_' + str(space_division[i]) + '.xls')
+
+
+def read_objects_from_file(res_filename: str, n_class: int, bagging: int, i_meth: int):
+    """Reads objects from result files
+
+    :param res_filename: str, one of: 'biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+                 'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+                 'twonorm.dat', 'wdbc.dat', 'wisconsin.dat'
+    :param n_class: int
+    :param bagging: int
+    :param i_meth: int
+    :return:
+    """
+    filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+                 'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+                 'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+    file = xlrd.open_workbook(res_filename)
+    sheet = file.sheet_by_index(0)
+    result_objects = []
+    for line_num in range(sheet.nrows):
+        line = sheet.row(line_num)
+        if line[1].value in filenames:
+            n_best_line = line_num
+            while True:
+                if sheet.cell(n_best_line, 0).ctype == 1:
+                    n_best = int(sheet.cell(n_best_line, 0).value)
+                    break
+                n_best_line -= 1
+            for n_subspace in range(int((sheet.ncols - 2) / 8)):
+                space_parts = int(sheet.cell(0, 2 + n_subspace * 8).value)
+                mv_score = sheet.cell(line_num, 8 * n_subspace + 2).value
+                mv_score_std = sheet.cell(line_num, 8 * n_subspace + 3).value
+                mv_mcc = sheet.cell(line_num, 8 * n_subspace + 4).value
+                mv_mcc_std = sheet.cell(line_num, 8 * n_subspace + 5).value
+                i_score = sheet.cell(line_num, 8 * n_subspace + 6).value
+                i_score_std = sheet.cell(line_num, 8 * n_subspace + 7).value
+                i_mcc = sheet.cell(line_num, 8 * n_subspace + 8).value
+                i_mcc_std = sheet.cell(line_num, 8 * n_subspace + 9).value
+                res_obj = AdvIntegrRes(mv_score, mv_score_std, mv_mcc, mv_mcc_std, i_score, i_score_std, i_mcc, i_mcc_std, n_class, n_best, i_meth, bagging, space_parts, line[1].value)
+                result_objects.append(res_obj)
+    return result_objects
