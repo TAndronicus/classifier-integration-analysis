@@ -1,8 +1,10 @@
-import FileHelper
-import PlotHelper
 import os
+
 import matplotlib.pyplot as plt
 import numpy as np
+
+import FileHelper
+import PlotHelper
 
 
 def read_in_objects():
