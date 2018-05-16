@@ -135,3 +135,7 @@ def plot_dependence(filename: str = "biodeg.scsv",
 
 plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
                     i_meth = 0, bagging = 0, dependency = "n_best")
+plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                    i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
+plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                    i_meth = 0, bagging = 0, dependency = "n_class_non_const_n_best")
