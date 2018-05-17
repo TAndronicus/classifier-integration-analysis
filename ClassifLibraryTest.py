@@ -872,6 +872,38 @@ class MyLibraryTest(unittest.TestCase):
         self.assertEqual(np.mean([i_mcc1, i_mcc2]), result[0][0].i_mcc)
         self.assertEqual(np.std([i_mcc1, i_mcc2]), result[0][0].i_mcc_std)
 
+    def test_should_calculate_propper_mean_res_obj_extended(self):
+        # given
+        mv_score1, mv_score2, mv_score3, mv_score4 = 2, 5, 7, 3
+        mv_score_std1, mv_score_std2, mv_score_std3, mv_score_std4 = .7, .6, .9, .7
+        mv_mcc1, mv_mcc2, mv_mcc3, mv_mcc4 = .7, .5, .6, .75
+        mv_mcc_std1, mv_mcc_std2, mv_mcc_std3, mv_mcc_std4 = .03, .11, .06, .13
+        i_score1, i_score2, i_score3, i_score4 = 3, 4, 1, 4
+        i_score_std1, i_score_std2, i_score_std3, i_score_std4 = 21, 26, 42, 63
+        i_mcc1, i_mcc2, i_mcc3, i_mcc4 = -5, -4.7, .2, 3.4
+        i_mcc_std1, i_mcc_std2, i_mcc_std3, i_mcc_std4 = -.33, -5.05, .24, 2.52
+        res1 = IntegrRes(mv_score = mv_score1, mv_score_std = mv_score_std1, mv_mcc = mv_mcc1, mv_mcc_std = mv_mcc_std1,
+                         i_score = i_score1, i_score_std = i_score_std1, i_mcc = i_mcc1, i_mcc_std = i_mcc_std1)
+        res2 = IntegrRes(mv_score = mv_score2, mv_score_std = mv_score_std2, mv_mcc = mv_mcc2, mv_mcc_std = mv_mcc_std2,
+                         i_score = i_score2, i_score_std = i_score_std2, i_mcc = i_mcc2, i_mcc_std = i_mcc_std2)
+        res3 = IntegrRes(mv_score = mv_score3, mv_score_std = mv_score_std3, mv_mcc = mv_mcc3, mv_mcc_std = mv_mcc_std3,
+                         i_score = i_score3, i_score_std = i_score_std3, i_mcc = i_mcc3, i_mcc_std = i_mcc_std3)
+        res4 = IntegrRes(mv_score = mv_score4, mv_score_std = mv_score_std4, mv_mcc = mv_mcc4, mv_mcc_std = mv_mcc_std4,
+                         i_score = i_score4, i_score_std = i_score_std4, i_mcc = i_mcc4, i_mcc_std = i_mcc_std4)
+        partial_ress = [[[res1]], [[res2]], [[res3]], [[res4]]]
+        # when
+        result = ClassifLibrary.get_mean_res(partial_ress = partial_ress)
+        # then
+        self.assertEqual(1, len(result))
+        self.assertEqual(np.mean([mv_score1, mv_score2, mv_score3, mv_score4]), result[0][0].mv_score)
+        self.assertEqual(np.std([mv_score1, mv_score2, mv_score3, mv_score4]), result[0][0].mv_score_std)
+        self.assertEqual(np.mean([mv_mcc1, mv_mcc2, mv_mcc3, mv_mcc4]), result[0][0].mv_mcc)
+        self.assertEqual(np.std([mv_mcc1, mv_mcc2, mv_mcc3, mv_mcc4]), result[0][0].mv_mcc_std)
+        self.assertEqual(np.mean([i_score1, i_score2, i_score3, i_score4]), result[0][0].i_score)
+        self.assertEqual(np.std([i_score1, i_score2, i_score3, i_score4]), result[0][0].i_score_std)
+        self.assertEqual(np.mean([i_mcc1, i_mcc2, i_mcc3, i_mcc4]), result[0][0].i_mcc)
+        self.assertEqual(np.std([i_mcc1, i_mcc2, i_mcc3, i_mcc4]), result[0][0].i_mcc_std)
+
     def test_should_return_right_decision_limit_for_odd_coef_num_for_0(self):
         # given
         x = 0

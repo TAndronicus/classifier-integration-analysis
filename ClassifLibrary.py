@@ -1735,9 +1735,9 @@ def get_mean_res(partial_ress: []):
     :param partial_ress: []
     :return: res: []
     """
-    results_pro_selection = []
+    results_pro_space_division = []
     for i in range(len(partial_ress[0])):
-        results_pro_space_division = []
+        results_pro_n_best = []
         for j in range(len(partial_ress[0][0])):
             mv_score, mv_mcc, i_score, i_mcc = [], [], [], []
             for result_pro_iteration in partial_ress:
@@ -1753,6 +1753,6 @@ def get_mean_res(partial_ress: []):
                             i_score_std = np.std(i_score, axis = 0),
                             i_mcc = np.mean(i_mcc, axis = 0),
                             i_mcc_std = np.std(i_mcc, axis = 0))
-            results_pro_space_division.append(res)
-        results_pro_selection.append(results_pro_space_division)
-    return results_pro_selection
+            results_pro_n_best.append(res)
+        results_pro_space_division.append(results_pro_n_best)
+    return results_pro_space_division

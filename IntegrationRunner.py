@@ -8,15 +8,16 @@ from CompositionType import CompositionType
 from datetime import datetime
 
 ### Dataset ###
-filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
-             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
-             'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+#filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+ #            'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+  #           'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+filenames = ['cryotherapy.xlsx']
 files_to_switch = ['haberman.dat', 'sonar.dat']
 number_of_dataset_if_not_generated = 0
 
 ### Classification strategy ###
 type_of_classifier = ClfType.LINEAR
-type_of_composition = CompositionType.MEDIAN
+type_of_composition = CompositionType.MEAN
 is_validation_hard = False
 generate_all_permutations = True
 bagging = True
@@ -102,6 +103,7 @@ for filename in filenames:
             res = MergingAlgorithm.run(classifier_data)
     except NotEnoughSamplesError as e:
         print(e.args[0])
+        raise e
     results.append(res)
 FileHelper.save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(filenames, results,
                                                                                        number_of_classifiers,
