@@ -8,10 +8,10 @@ from CompositionType import CompositionType
 from datetime import datetime
 
 ### Dataset ###
-#filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
- #            'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
-  #           'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
-filenames = ['cryotherapy.xlsx']
+filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+             'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+#filenames = ['cryotherapy.xlsx']
 files_to_switch = ['haberman.dat', 'sonar.dat']
 number_of_dataset_if_not_generated = 0
 
@@ -23,7 +23,7 @@ generate_all_permutations = True
 bagging = True
 number_of_bagging_repetitions = 10
 space_division = list(range(3, 11))
-number_of_classifiers = 7
+number_of_classifiers = 9
 
 ### Samples generation ###
 are_samples_generated = False
