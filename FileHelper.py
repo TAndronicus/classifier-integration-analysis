@@ -333,20 +333,20 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(
         sheet.write(1, 8 * j + 8, "i_mcc")
         sheet.write(1, 8 * j + 9, "i_mcc_std")
     for j in range(2, numbers_of_base_classifiers):
-        sheet.write(len(filenames) * (j - 2) + 2, 0, str(j))
-    for i in range(len(filenames)):
+        sheet.write(len(results_pro_space_division_pro_base_classif) * (j - 2) + 2, 0, str(j))
+    for i in range(len(results_pro_space_division_pro_base_classif)):
         for j in range(numbers_of_base_classifiers - 2):
-            sheet.write(j * len(filenames) + i + 2, 1, filenames[i])
+            sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 1, filenames[i])
             for k in range(len(space_division)):
                 res = results_pro_space_division_pro_base_classif[i][j][k]
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 2, res.mv_score)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 3, res.mv_score_std)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 4, res.mv_mcc)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 5, res.mv_mcc_std)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 6, res.i_score)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 7, res.i_score_std)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 8, res.i_mcc)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 9, res.i_mcc_std)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 2, res.mv_score)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 3, res.mv_score_std)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 4, res.mv_mcc)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 5, res.mv_mcc_std)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 6, res.i_score)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 7, res.i_score_std)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 8, res.i_mcc)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 9, res.i_mcc_std)
     output_data = {'type_of_classifier': classifier_data.type_of_classifier.value,
                    'are_samples_generated': str(classifier_data.are_samples_generated),
                    'number_of_samples_if_generated': classifier_data.number_of_samples_if_generated,
@@ -356,7 +356,7 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(
                    'bagging': str(classifier_data.bagging),
                    'type_of_composition': classifier_data.type_of_composition.value,
                    'timestamp': str(datetime.now())}
-    last_row = 1 + len(filenames) * (numbers_of_base_classifiers - 2)
+    last_row = 1 + len(results_pro_space_division_pro_base_classif) * (numbers_of_base_classifiers - 2)
     for entry_name in output_data:
         last_row += 1
         sheet.write(last_row, 0, entry_name)

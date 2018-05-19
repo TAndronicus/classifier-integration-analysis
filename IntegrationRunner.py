@@ -9,7 +9,7 @@ from datetime import datetime
 
 ### Dataset ###
 #filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wd', 'wi']
-filenames = ['c']
+filenames = ['h', 'c']
 filenames = FileHelper.prepare_filenames(filenames)
 filenames = FileHelper.sort_filenames_by_size(filenames)
 files_to_switch = ['haberman.dat', 'sonar.dat']
@@ -21,7 +21,7 @@ type_of_composition = CompositionType.MEAN
 is_validation_hard = False
 generate_all_permutations = True
 bagging = True
-number_of_bagging_repetitions = 10
+number_of_bagging_repetitions = 3
 space_division = list(range(3, 11))
 number_of_classifiers = 9
 
