@@ -53,6 +53,21 @@ class FileHelperTest(unittest.TestCase):
         for expected_filename, filename in zip(expected_filenames, filenames):
             self.assertEqual(expected_filename, filename)
 
+    def test_should_sort_files(self):
+        # given
+        filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+                     'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+                     'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+        expected_filenames = FileHelper.FILENAMES
+        for expected_filename in expected_filenames:
+            if expected_filename not in filenames:
+                expected_filenames.remove(expected_filename)
+        # when
+        filenames_sorted = FileHelper.sort_filenames_by_size(filenames)
+        # then
+        for expected_filename, filename_sorted in zip(expected_filenames, filenames_sorted):
+            self.assertEqual(expected_filename, filename_sorted)
+
 
 if __name__ == '__main__':
     unittest.main()

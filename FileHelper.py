@@ -4,22 +4,38 @@ from AdvIntegrRes import AdvIntegrRes
 from ClassifierData import ClassifierData
 from CompositionType import CompositionType
 from datetime import datetime
-import numpy as np
 import os
 
+FILENAMES = [
+    'twonorm.dat',  # 7400
+    'seismic_bumps.dat',  # 2584
+    'data_banknote_authentication.csv',  # 1372
+    'biodeg.scsv',  # 1055
+    'wisconsin.dat'  # 683
+    'wdbc.dat',  # 569
+    'pop_failures.tsv',  # 540
+    'ionosphere.dat',  # 351
+    'bupa.dat',  # 345
+    'haberman.dat',  # 306
+    'cryotherapy.xlsx',  # 90
+    'meter_a.tsv',  # 86
+]
 
-FILENAMES = ['biodeg.scsv',
-             'bupa.dat',
-             'cryotherapy.xlsx',
-             'data_banknote_authentication.csv',
-             'haberman.dat',
-             'ionosphere.dat',
-             'meter_a.tsv',
-             'pop_failures.tsv',
-             'seismic_bumps.dat',
-             'twonorm.dat',
-             'wdbc.dat',
-             'wisconsin.dat']
+
+def sort_filenames_by_size(filenames: []):
+    """Sorts filenames by size ascending
+
+    :param filenames: []
+    :return: []
+    """
+    filenames_sorted = []
+    for FILENAME in FILENAMES:
+        if FILENAME in filenames:
+            filenames_sorted.append(FILENAME)
+    for filename in filenames:
+        if filename not in FILENAMES:
+            filenames_sorted.append(filename)
+    return filenames_sorted
 
 
 def prepare_filenames(filenames_raw: []):
@@ -462,6 +478,7 @@ def read_objects_from_file(res_filename: str, n_class: int, bagging: int, i_meth
                 i_score_std = sheet.cell(line_num, 8 * n_subspace + 7).value
                 i_mcc = sheet.cell(line_num, 8 * n_subspace + 8).value
                 i_mcc_std = sheet.cell(line_num, 8 * n_subspace + 9).value
-                res_obj = AdvIntegrRes(mv_score, mv_score_std, mv_mcc, mv_mcc_std, i_score, i_score_std, i_mcc, i_mcc_std, n_class, n_best, i_meth, bagging, space_parts, line[1].value)
+                res_obj = AdvIntegrRes(mv_score, mv_score_std, mv_mcc, mv_mcc_std, i_score, i_score_std, i_mcc,
+                                       i_mcc_std, n_class, n_best, i_meth, bagging, space_parts, line[1].value)
                 result_objects.append(res_obj)
     return result_objects
