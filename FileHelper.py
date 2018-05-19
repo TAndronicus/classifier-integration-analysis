@@ -11,7 +11,7 @@ FILENAMES = [
     'seismic_bumps.dat',  # 2584
     'data_banknote_authentication.csv',  # 1372
     'biodeg.scsv',  # 1055
-    'wisconsin.dat'  # 683
+    'wisconsin.dat',  # 683
     'wdbc.dat',  # 569
     'pop_failures.tsv',  # 540
     'ionosphere.dat',  # 351
