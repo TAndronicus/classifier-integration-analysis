@@ -8,6 +8,56 @@ import numpy as np
 import os
 
 
+FILENAMES = ['biodeg.scsv',
+             'bupa.dat',
+             'cryotherapy.xlsx',
+             'data_banknote_authentication.csv',
+             'haberman.dat',
+             'ionosphere.dat',
+             'meter_a.tsv',
+             'pop_failures.tsv',
+             'seismic_bumps.dat',
+             'twonorm.dat',
+             'wdbc.dat',
+             'wisconsin.dat']
+
+
+def prepare_filenames(filenames_raw: []):
+    """Prepares array with right filenames based on array with first parts of them
+
+    :param filenames_raw: []
+    :return: []
+    """
+    filenames = []
+    for filename_raw in filenames_raw:
+        try:
+            filename = get_full_filename(filename_raw)
+            filenames.append(filename)
+        except FileNotFoundError as e:
+            raise FileNotFoundError(e.args[0] + ': filename = ' + filename_raw)
+    return filenames
+
+
+def get_full_filename(filename_raw: str):
+    """Returns whole filename basen on the first part
+
+    :param filename_raw: str
+    :return: str
+    """
+    was_found = False
+    for FILENAME in FILENAMES:
+        if FILENAME.startswith(filename_raw):
+            if was_found:
+                raise FileNotFoundError('Name of file wrong or ambiguous')
+            else:
+                filename = FILENAME
+                was_found = True
+    if was_found:
+        return filename
+    else:
+        raise FileNotFoundError('Name of file not found')
+
+
 def save_merging_results_one_space_division(filenames: [], results: [], result_filename: str = 'results//Results.xls',
                                             sheetname: str = 'Result'):
     """Saves results of merging algorithm for one space division and one number of base classifier

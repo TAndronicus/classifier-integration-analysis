@@ -8,10 +8,12 @@ from CompositionType import CompositionType
 from datetime import datetime
 
 ### Dataset ###
-filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
-             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
-             'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+#filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+ #            'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+  #           'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
 #filenames = ['cryotherapy.xlsx']
+filenames_raw = ['bi', 'bu', 'c']
+filenames = FileHelper.prepare_filenames(filenames_raw)
 files_to_switch = ['haberman.dat', 'sonar.dat']
 number_of_dataset_if_not_generated = 0
 
