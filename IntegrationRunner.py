@@ -101,7 +101,7 @@ for filename in filenames:
             res = MergingAlgorithm.run(classifier_data)
     except NotEnoughSamplesError as e:
         print(e.args[0])
-        raise e
+        break
     results.append(res)
 FileHelper.save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(filenames, results,
                                                                                        number_of_classifiers,
