@@ -133,9 +133,152 @@ def plot_dependence(filename: str = "biodeg.scsv",
         plt.show()
 
 
-plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-                    i_meth = 0, bagging = 0, dependency = "n_best")
-plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-                    i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
-plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-                    i_meth = 0, bagging = 0, dependency = "n_class_non_const_n_best")
+def plot_bagging_difference(
+        filename: str = "biodeg.scsv",
+        space_parts: int = 3,
+        n_class: int = 3,
+        n_best: int = 2,
+        n_best_diff: int = 1,
+        i_meth: int = 0,
+        dependency: str = "space_parts"):
+    if dependency == "space_parts":
+        attr = 'space_parts'
+        xlab = 'Liczba podprzestrzeni'
+        non_bagging = get_dependent_on_space_parts(filename, n_class, n_best, i_meth, 0)
+        bagging = get_dependent_on_space_parts(filename, n_class, n_best, i_meth, 1)
+    elif dependency == "n_class_const_n_best":
+        attr = 'n_class'
+        xlab = 'Liczba klasyfikatorów bazowych'
+        non_bagging = get_dependent_on_n_classif_const_n_best(filename, space_parts, n_best, i_meth, 0)
+        bagging = get_dependent_on_n_classif_const_n_best(filename, space_parts, n_best, i_meth, 1)
+    elif dependency == "n_class_non_const_n_best":
+        attr = 'n_class'
+        xlab = 'Liczba klasyfikatorów bazowych'
+        non_bagging = get_dependent_on_n_classif_non_const_n_best(filename, space_parts, n_best_diff, i_meth, 0)
+        bagging = get_dependent_on_n_classif_non_const_n_best(filename, space_parts, n_best_diff, i_meth, 1)
+    elif dependency == "n_best":
+        attr = "n_best"
+        xlab = 'Liczba klasyfikatorów po selekcji'
+        non_bagging = get_dependent_on_n_best(filename, space_parts, n_class, i_meth, 0)
+        bagging = get_dependent_on_n_best(filename, space_parts, n_class, i_meth, 1)
+    else:
+        attr = 'space_parts'
+        xlab = 'Liczba podprzestrzeni'
+        non_bagging = get_dependent_on_space_parts(filename, n_class, n_best, i_meth, 0)
+        bagging = get_dependent_on_space_parts(filename, n_class, n_best, i_meth, 1)
+    if len(non_bagging) == len(bagging) != 0:
+        x, y, z = [], [], []
+        for i in range(len(non_bagging)):
+            if getattr(non_bagging[i], attr) != getattr(bagging[i], attr):
+                print('dafuq')
+            x.append(getattr(non_bagging[i], attr))
+            y.append(non_bagging[i].i_score)
+            z.append(bagging[i].i_score)
+        ax = plt.subplot(1, 2, 1)
+        ax.scatter(x, y)
+        ax.scatter(x, z)
+        ax.legend(['No bagging', 'Bagging'])
+        ax.set_xlabel(xlab)
+        ax.set_ylabel('Jakość klasyfikatora (ACC)')
+        y_min, y_max = PlotHelper.get_plot_limits([y, z])
+        ax.set_ylim(y_min, y_max)
+        y, z = [], []
+        for i in range(len(non_bagging)):
+            y.append(non_bagging[i].i_mcc)
+            z.append(bagging[i].i_mcc)
+        ax = plt.subplot(1, 2, 2)
+        ax.scatter(x, y)
+        ax.scatter(x, z)
+        ax.legend(['No bagging', 'Bagging'])
+        ax.set_xlabel(xlab)
+        ax.set_ylabel('Jakość klasyfikatora (MCC)')
+        y_min, y_max = PlotHelper.get_plot_limits([y, z])
+        ax.set_ylim(y_min, y_max)
+        plt.show()
+
+def plot_method_difference(
+        filename: str = "biodeg.scsv",
+        space_parts: int = 3,
+        n_class: int = 3,
+        n_best: int = 2,
+        n_best_diff: int = 1,
+        bagging: int = 0,
+        dependency: str = "space_parts"):
+    if dependency == "space_parts":
+        attr = 'space_parts'
+        xlab = 'Liczba podprzestrzeni'
+        i_mean = get_dependent_on_space_parts(filename, n_class, n_best, 0, bagging)
+        i_median = get_dependent_on_space_parts(filename, n_class, n_best, 1, bagging)
+    elif dependency == "n_class_const_n_best":
+        attr = 'n_class'
+        xlab = 'Liczba klasyfikatorów bazowych'
+        i_mean = get_dependent_on_n_classif_const_n_best(filename, space_parts, n_best, 0, bagging)
+        i_median = get_dependent_on_n_classif_const_n_best(filename, space_parts, n_best, 1, bagging)
+    elif dependency == "n_class_non_const_n_best":
+        attr = 'n_class'
+        xlab = 'Liczba klasyfikatorów bazowych'
+        i_mean = get_dependent_on_n_classif_non_const_n_best(filename, space_parts, n_best_diff, 0, bagging)
+        i_median = get_dependent_on_n_classif_non_const_n_best(filename, space_parts, n_best_diff, 1, bagging)
+    elif dependency == "n_best":
+        attr = "n_best"
+        xlab = 'Liczba klasyfikatorów po selekcji'
+        i_mean = get_dependent_on_n_best(filename, space_parts, n_class, 0, bagging)
+        i_median = get_dependent_on_n_best(filename, space_parts, n_class, 1, bagging)
+    else:
+        attr = 'space_parts'
+        xlab = 'Liczba podprzestrzeni'
+        i_mean = get_dependent_on_space_parts(filename, n_class, n_best, 0, bagging)
+        i_median = get_dependent_on_space_parts(filename, n_class, n_best, 1, bagging)
+    if len(i_mean) == len(i_median) != 0:
+        x, y, z = [], [], []
+        for i in range(len(i_mean)):
+            if getattr(i_mean[i], attr) != getattr(i_median[i], attr):
+                print('dafuq')
+            x.append(getattr(i_mean[i], attr))
+            y.append(i_mean[i].i_score)
+            z.append(i_median[i].i_score)
+        ax = plt.subplot(1, 2, 1)
+        ax.scatter(x, y)
+        ax.scatter(x, z)
+        ax.legend(['Średnia', 'Mediana'])
+        ax.set_xlabel(xlab)
+        ax.set_ylabel('Jakość klasyfikatora (ACC)')
+        y_min, y_max = PlotHelper.get_plot_limits([y, z])
+        ax.set_ylim(y_min, y_max)
+        y, z = [], []
+        for i in range(len(i_mean)):
+            y.append(i_mean[i].i_mcc)
+            z.append(i_median[i].i_mcc)
+        ax = plt.subplot(1, 2, 2)
+        ax.scatter(x, y)
+        ax.scatter(x, z)
+        ax.legend(['Średnia', 'Mediana'])
+        ax.set_xlabel(xlab)
+        ax.set_ylabel('Jakość klasyfikatora (MCC)')
+        y_min, y_max = PlotHelper.get_plot_limits([y, z])
+        ax.set_ylim(y_min, y_max)
+        plt.show()
+
+
+# plot_dependence(filename = "wdbc.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+#                   i_meth = 0, bagging = 0, dependency = "n_best")
+# plot_dependence(filename = "pop_failures.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+#                   i_meth = 0, bagging = 0, dependency = "n_best")
+# plot_dependence(filename = "ionosphere.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+#                   i_meth = 0, bagging = 0, dependency = "n_best")
+# plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+#                   i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
+# plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+#                   i_meth = 0, bagging = 0, dependency = "n_class_non_const_n_best")
+# plot_dependence(filename = "cryotherapy.xlsx", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+#                   i_meth = 0, bagging = 0, dependency = "space_parts")
+#plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+ #               i_meth = 0, bagging = 0, dependency = "space_parts")
+#plot_bagging_difference(filename = "cryotherapy.xlsx", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+ #               i_meth = 0, dependency = "space_parts")
+#plot_bagging_difference(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+ #               i_meth = 0, dependency = "space_parts")
+#plot_method_difference(filename = "bupa.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+ #             bagging = 0, dependency = "space_parts")
+plot_method_difference(filename = "wdbc.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+              bagging = 0, dependency = "space_parts")
