@@ -18,24 +18,8 @@ FILENAMES = [
     'bupa.dat',  # 345
     'haberman.dat',  # 306
     'cryotherapy.xlsx',  # 90
-    'meter_a.tsv',  # 86
+    'meter_a.tsv'  # 86
 ]
-
-
-def sort_filenames_by_size(filenames: []):
-    """Sorts filenames by size ascending
-
-    :param filenames: []
-    :return: []
-    """
-    filenames_sorted = []
-    for FILENAME in FILENAMES:
-        if FILENAME in filenames:
-            filenames_sorted.append(FILENAME)
-    for filename in filenames:
-        if filename not in FILENAMES:
-            filenames_sorted.append(filename)
-    return filenames_sorted
 
 
 def prepare_filenames(filenames_raw: []):
@@ -52,6 +36,22 @@ def prepare_filenames(filenames_raw: []):
         except FileNotFoundError as e:
             raise FileNotFoundError(e.args[0] + ': filename = ' + filename_raw)
     return filenames
+
+
+def sort_filenames_by_size(filenames: []):
+    """Sorts filenames by size ascending
+
+    :param filenames: []
+    :return: []
+    """
+    filenames_sorted = []
+    for FILENAME in FILENAMES:
+        if FILENAME in filenames:
+            filenames_sorted.append(FILENAME)
+    for filename in filenames:
+        if filename not in FILENAMES:
+            filenames_sorted.append(filename)
+    return filenames_sorted
 
 
 def get_full_filename(filename_raw: str):
