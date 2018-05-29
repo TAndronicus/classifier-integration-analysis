@@ -99,7 +99,7 @@ def plot_dependence(filename: str = "biodeg.scsv",
     elif dependency == "n_best":
         related = get_dependent_on_n_best(filename, space_parts, n_class, i_meth, bagging)
         attr = "n_best"
-        xlab = 'Liczba wyselekcjonowanych klasyfikatorów'
+        xlab = 'Liczba klasyfikatorów po selekcji'
     else:
         related = get_dependent_on_space_parts(filename, n_class, n_best, i_meth, bagging)
         attr = "space_parts"
@@ -113,7 +113,7 @@ def plot_dependence(filename: str = "biodeg.scsv",
         ax = plt.subplot(1, 2, 1, )
         ax.scatter(x, y)
         ax.scatter(x, z)
-        ax.legend(['Majority voting', 'Integrated classifier'])
+        ax.legend(['MV', 'IC'])
         ax.set_xlabel(xlab)
         ax.set_ylabel('Jakość klasyfikatora (ACC)')
         y_min, y_max = PlotHelper.get_plot_limits([y, z])
@@ -125,7 +125,7 @@ def plot_dependence(filename: str = "biodeg.scsv",
         ax = plt.subplot(1, 2, 2)
         ax.scatter(x, y)
         ax.scatter(x, z)
-        ax.legend(['Majority voting', 'Integrated classifier'])
+        ax.legend(['MV', 'IC'])
         ax.set_xlabel(xlab)
         ax.set_ylabel('Jakość klasyfikatora (MCC)')
         ax.yaxis.tick_right()
@@ -266,31 +266,49 @@ def plot_method_difference(
         ax.set_ylim(y_min, y_max)
         plt.show()
 
-# plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "space_parts")
-# plot_dependence(filename = "wdbc.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_best")
-# plot_dependence(filename = "pop_failures.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_best")
-# plot_dependence(filename = "ionosphere.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_best")
-# plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
+
 plot_dependence(filename = "wisconsin.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-                i_meth = 1, bagging = 0, dependency = "n_class_non_const_n_best")
+                i_meth = 0, bagging = 0, dependency = "n_class_non_const_n_best")
+plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                i_meth = 0, bagging = 0, dependency = "n_class_non_const_n_best")
+plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 3,
+                i_meth = 0, bagging = 0, dependency = "n_class_non_const_n_best")
 plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
                 i_meth = 1, bagging = 0, dependency = "n_class_non_const_n_best")
-plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 3,
-                i_meth = 1, bagging = 0, dependency = "n_class_non_const_n_best")
-# plot_dependence(filename = "cryotherapy.xlsx", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "space_parts")
-# plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "space_parts")
-# plot_bagging_difference(filename = "cryotherapy.xlsx", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                         i_meth = 0, dependency = "space_parts")
-# plot_bagging_difference(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                         i_meth = 0, dependency = "space_parts")
-# plot_method_difference(filename = "bupa.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                        bagging = 0, dependency = "space_parts")
-# plot_method_difference(filename = "wdbc.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                        bagging = 0, dependency = "space_parts")
+
+plot_dependence(filename = "haberman.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
+plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
+plot_dependence(filename = "cryotherapy.xlsx", space_parts = 3, n_class = 9, n_best = 4, n_best_diff = 1,
+                i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
+plot_dependence(filename = "wdbc.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
+plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                i_meth = 1, bagging = 0, dependency = "n_class_const_n_best")
+
+plot_dependence(filename = "haberman.dat", space_parts = 3, n_class = 9, n_best = 5, n_best_diff = 1,
+                i_meth = 0, bagging = 0, dependency = "n_best")
+plot_dependence(filename = "ionosphere.dat", space_parts = 4, n_class = 9, n_best = 2, n_best_diff = 1,
+                i_meth = 0, bagging = 0, dependency = "n_best")
+plot_dependence(filename = "haberman.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                i_meth = 1, bagging = 0, dependency = "n_best")
+
+plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                i_meth = 0, bagging = 0, dependency = "space_parts")
+plot_dependence(filename = "cryotherapy.xlsx", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                i_meth = 0, bagging = 0, dependency = "space_parts")
+plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                i_meth = 0, bagging = 0, dependency = "space_parts")
+plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                i_meth = 1, bagging = 0, dependency = "space_parts")
+
+plot_method_difference(filename = "bupa.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                       bagging = 0, dependency = "n_class_const_n_best")
+plot_method_difference(filename = "wdbc.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                       bagging = 0, dependency = "n_class_const_n_best")
+
+plot_bagging_difference(filename = "wdbc.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                        i_meth = 0, dependency = "space_parts")
+plot_bagging_difference(filename = "wisconsin.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
+                        i_meth = 0, dependency = "space_parts")
