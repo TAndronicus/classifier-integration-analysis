@@ -9,7 +9,7 @@ import PlotHelper
 
 def read_in_objects():
     name_pattern = "n_{}_b_{}_i_{}.xls"
-    n_class_range = list(range(3, 10, 2))
+    n_class_range = list(range(3, 8, 2))
     i_meth_range = [0, 1]
     bagging_range = [0, 1]
     result_objects = []

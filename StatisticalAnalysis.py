@@ -45,6 +45,29 @@ def get_mv_i_diff(i_meth, bagging, measure):
                 diffs.append(object.i_mcc - object.mv_mcc)
     return means, diffs
 
+def get_diff_meth(bagging):
+    mean_score, median_score, mean_mcc, median_mcc = [], [], [], []
+    for object in objects:
+        if object.bagging == bagging:
+            if object.i_meth == 0:
+                mean_score.append(object.i_score)
+                mean_mcc.append(object.i_mcc)
+            else:
+                median_score.append(object.i_score)
+                median_mcc.append(object.i_mcc)
+    return mean_score, median_score, mean_mcc, median_mcc
+
+def get_diff_bag():
+    bag_score, nbag_score, bag_mcc, nbag_mcc = [], [], [], []
+    for object in objects:
+            if object.bagging == 0:
+                nbag_score.append(object.i_score)
+                nbag_mcc.append(object.i_mcc)
+            else:
+                bag_score.append(object.i_score)
+                bag_mcc.append(object.i_mcc)
+    return bag_score, nbag_score, bag_mcc, nbag_mcc
+
 def get_mv_i(i_meth, bagging):
     i_score, mv_score, i_mcc, mv_mcc = [], [], [], []
     for object in objects:
@@ -203,12 +226,48 @@ def normalize_variance(subjects):
 # print(np.median(mv_score))
 # print(np.median(i_mcc))
 # print(np.median(mv_mcc))
-i_score, mv_score, i_mcc, mv_mcc = get_mv_i(1, 1)
-bland_altman_plot(i_score, mv_score)
-plt.xlabel('AM')
-plt.ylabel('Δ')
-plt.show()
-bland_altman_plot(i_mcc, mv_mcc)
-plt.xlabel('AM')
-plt.ylabel('Δ')
-plt.show()
+# i_score, mv_score, i_mcc, mv_mcc = get_mv_i(1, 1)
+# bland_altman_plot(i_score, mv_score)
+# plt.xlabel('AM')
+# plt.ylabel('Δ')
+# plt.show()
+# bland_altman_plot(i_mcc, mv_mcc)
+# plt.xlabel('AM')
+# plt.ylabel('Δ')
+# plt.show()
+
+# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(0)
+# w, p = wilcoxon(mean_score, median_score)
+# print(p)
+# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(1)
+# w, p = wilcoxon(mean_score, median_score)
+# print(p)
+# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(0)
+# w, p = wilcoxon(mean_mcc, median_mcc)
+# print(p)
+# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(1)
+# w, p = wilcoxon(mean_mcc, median_mcc)
+# print(p)
+#
+# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(0)
+# stat, p, m, table = median_test(mean_score, median_score)
+# print(p)
+# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(1)
+# stat, p, m, table = median_test(mean_score, median_score)
+# print(p)
+# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(0)
+# stat, p, m, table = median_test(mean_mcc, median_mcc)
+# print(p)
+# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(1)
+# stat, p, m, table = median_test(mean_mcc, median_mcc)
+# print(p)
+
+bag_score, nbag_score, bag_mcc, nbag_mcc = get_diff_bag()
+w, p = wilcoxon(bag_score, nbag_score)
+print(p)
+stat, p, m, table = median_test(bag_score, nbag_score)
+print(p)
+w, p = wilcoxon(bag_mcc, nbag_mcc)
+print(p)
+stat, p, m, table = median_test(bag_mcc, nbag_mcc)
+print(p)
