@@ -7,18 +7,19 @@ from Nemenyi import NemenyiTestPostHoc
 
 objects = read_in_objects()
 
-def bland_altman_plot(data1, data2, *args, **kwargs):
-    data1     = np.asarray(data1)
-    data2     = np.asarray(data2)
-    mean      = np.mean([data1, data2], axis=0)
-    diff      = data1 - data2                   # Difference between data1 and data2
-    md        = np.mean(diff)                   # Mean of the difference
-    sd        = np.std(diff, axis=0)            # Standard deviation of the difference
 
+def bland_altman_plot(data1, data2, *args, **kwargs):
+    data1 = np.asarray(data1)
+    data2 = np.asarray(data2)
+    mean = np.mean([data1, data2], axis = 0)
+    diff = data1 - data2
+    md = np.mean(diff)
+    sd = np.std(diff, axis = 0)
     plt.scatter(mean, diff, *args, **kwargs)
-    plt.axhline(md,           color='gray', linestyle='--')
-    plt.axhline(md + 1.96*sd, color='gray', linestyle='--')
-    plt.axhline(md - 1.96*sd, color='gray', linestyle='--')
+    plt.axhline(md, color = 'gray', linestyle = '--')
+    plt.axhline(md + 1.96 * sd, color = 'gray', linestyle = '--')
+    plt.axhline(md - 1.96 * sd, color = 'gray', linestyle = '--')
+
 
 def get_dependent_from_n_class_const(n_class, n_best, space_parts, i_meth, bagging):
     subjects = initialize_list_of_lists(len(n_class))
@@ -32,11 +33,12 @@ def get_dependent_from_n_class_const(n_class, n_best, space_parts, i_meth, baggi
                 subjects[i].append(object)
     return subjects
 
+
 def get_mv_i_diff(i_meth, bagging, measure):
     means, diffs = [], []
     for object in objects:
         if object.i_meth == i_meth and \
-            object.bagging == bagging:
+                object.bagging == bagging:
             if measure == 'score':
                 means.append((object.i_score + object.mv_score) / 2)
                 diffs.append(object.i_score - object.mv_score)
@@ -44,6 +46,7 @@ def get_mv_i_diff(i_meth, bagging, measure):
                 means.append((object.i_mcc + object.mv_mcc) / 2)
                 diffs.append(object.i_mcc - object.mv_mcc)
     return means, diffs
+
 
 def get_diff_meth(bagging):
     mean_score, median_score, mean_mcc, median_mcc = [], [], [], []
@@ -57,27 +60,30 @@ def get_diff_meth(bagging):
                 median_mcc.append(object.i_mcc)
     return mean_score, median_score, mean_mcc, median_mcc
 
+
 def get_diff_bag():
     bag_score, nbag_score, bag_mcc, nbag_mcc = [], [], [], []
     for object in objects:
-            if object.bagging == 0:
-                nbag_score.append(object.i_score)
-                nbag_mcc.append(object.i_mcc)
-            else:
-                bag_score.append(object.i_score)
-                bag_mcc.append(object.i_mcc)
+        if object.bagging == 0:
+            nbag_score.append(object.i_score)
+            nbag_mcc.append(object.i_mcc)
+        else:
+            bag_score.append(object.i_score)
+            bag_mcc.append(object.i_mcc)
     return bag_score, nbag_score, bag_mcc, nbag_mcc
+
 
 def get_mv_i(i_meth, bagging):
     i_score, mv_score, i_mcc, mv_mcc = [], [], [], []
     for object in objects:
         if object.i_meth == i_meth and \
-            object.bagging == bagging:
+                object.bagging == bagging:
             i_score.append(object.i_score)
             mv_score.append(object.mv_score)
             i_mcc.append(object.i_mcc)
             mv_mcc.append(object.mv_mcc)
     return i_score, mv_score, i_mcc, mv_mcc
+
 
 def get_dependent_from_n_class_non_const(n_class, diff, space_parts, i_meth, bagging):
     subjects = initialize_list_of_lists(len(n_class))
@@ -91,6 +97,7 @@ def get_dependent_from_n_class_non_const(n_class, diff, space_parts, i_meth, bag
                 subjects[i].append(object)
     return subjects
 
+
 def get_dependent_from_n_best(n_class, n_best, space_parts, i_meth, bagging):
     subjects = initialize_list_of_lists(len(n_best))
     for i in range(len(n_best)):
@@ -103,6 +110,7 @@ def get_dependent_from_n_best(n_class, n_best, space_parts, i_meth, bagging):
                 subjects[i].append(object)
     return subjects
 
+
 def get_dependent_from_space_parts(n_class, n_best, space_parts, i_meth, bagging):
     subjects = initialize_list_of_lists(len(space_parts))
     for i in range(len(space_parts)):
@@ -114,6 +122,7 @@ def get_dependent_from_space_parts(n_class, n_best, space_parts, i_meth, bagging
                     object.bagging == bagging:
                 subjects[i].append(object)
     return subjects
+
 
 def get_min_stat(subjects, alpha = .005):
     minstat = 1
@@ -128,18 +137,20 @@ def get_min_stat(subjects, alpha = .005):
         print('Normal')
     return minstat
 
+
 def get_p_ks(subjects, alpha = .005):
     minstat = 1
     for subject in subjects:
         ks = kstest(subject, 'norm')
         minstat = min(ks[1], minstat)
         if minstat < alpha:
-            #print('Not normal')
+            # print('Not normal')
             break
     if minstat >= alpha:
-        #print('Normal')
+        # print('Normal')
         pass
     return minstat
+
 
 def get_p_sw(subjects, alpha = .005):
     minstat = 1
@@ -147,12 +158,13 @@ def get_p_sw(subjects, alpha = .005):
         sw = shapiro(subject)
         minstat = min(sw[1], minstat)
         if minstat < alpha:
-            #print('Not normal')
+            # print('Not normal')
             break
     if minstat >= alpha:
-        #print('Normal')
+        # print('Normal')
         pass
     return minstat
+
 
 def extract_arrtibute(subjects, attr):
     result = []
@@ -163,18 +175,21 @@ def extract_arrtibute(subjects, attr):
         result.append(partial_result)
     return result
 
+
 def test_friedman(subjects, alpha = .005):
     w, p = friedmanchisquare(*subjects)
     if p < alpha:
-        #print('Different distribution')
+        # print('Different distribution')
         pass
     else:
-        #print('Same distribution')
+        # print('Same distribution')
         pass
     return p
 
+
 def convert_to_numpy(array):
     return np.array(array)
+
 
 def normalize_variance(subjects):
     means = np.mean(subjects, axis = 1)

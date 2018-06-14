@@ -9,7 +9,7 @@ import PlotHelper
 
 def read_in_objects():
     name_pattern = "n_{}_b_{}_i_{}.xls"
-    n_class_range = list(range(3, 8, 2))
+    n_class_range = list(range(3, 10, 2))
     i_meth_range = [0, 1]
     bagging_range = [0, 1]
     result_objects = []
@@ -308,7 +308,16 @@ def plot_method_difference(
 # plot_method_difference(filename = "wdbc.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
 #                        bagging = 0, dependency = "n_class_const_n_best")
 #
-# plot_bagging_difference(filename = "data_banknote_authentication.csv", space_parts = 3, n_class = 7, n_best = 2, n_best_diff = 1,
-#                         i_meth = 0, dependency = "space_parts")
+plot_bagging_difference(filename = "data_banknote_authentication.csv", space_parts = 3, n_class = 7, n_best = 2, n_best_diff = 1,
+                        i_meth = 0, dependency = "space_parts")
 # plot_bagging_difference(filename = "wisconsin.dat", space_parts = 3, n_class = 7, n_best = 2, n_best_diff = 1,
 #                         i_meth = 0, dependency = "space_parts")
+
+objs = read_in_objects()
+for obj in objs:
+    if obj.filename == 'data_banknote_authentication.csv' \
+        and obj.i_meth == 0 \
+        and obj.bagging == 1 \
+        and obj.n_class == 7 \
+        and obj.n_best == 2:
+        print(obj.i_score)
