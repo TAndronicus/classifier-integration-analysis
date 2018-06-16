@@ -308,8 +308,8 @@ def plot_method_difference(
 # plot_method_difference(filename = "wdbc.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
 #                        bagging = 0, dependency = "n_class_const_n_best")
 #
-plot_bagging_difference(filename = "data_banknote_authentication.csv", space_parts = 3, n_class = 7, n_best = 2, n_best_diff = 1,
-                        i_meth = 0, dependency = "space_parts")
+# plot_bagging_difference(filename = "data_banknote_authentication.csv", space_parts = 3, n_class = 7, n_best = 2, n_best_diff = 1,
+#                         i_meth = 0, dependency = "space_parts")
 # plot_bagging_difference(filename = "wisconsin.dat", space_parts = 3, n_class = 7, n_best = 2, n_best_diff = 1,
 #                         i_meth = 0, dependency = "space_parts")
 
