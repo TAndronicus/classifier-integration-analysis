@@ -18,20 +18,20 @@ number_of_dataset_if_not_generated = 0
 type_of_classifier = ClfType.LINEAR
 type_of_composition = CompositionType.MEAN
 is_validation_hard = False
-generate_all_permutations = False
+generate_all_permutations = True
 bagging = False
 number_of_bagging_repetitions = 3
-space_division = [3]  # list(range(3, 11))
-number_of_classifiers = 3
+space_division = list(range(3, 11))
+number_of_classifiers = 9
 
 ### Samples generation ###
 are_samples_generated = False
 number_of_samples_if_generated = 1000
 
 ### Plotting + builtin
-draw_color_plot = True
+draw_color_plot = False
 write_computed_scores = False
-show_plots = True
+show_plots = False
 show_only_first_plot = True
 
 ### Logging ###
