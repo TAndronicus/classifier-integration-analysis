@@ -58,6 +58,7 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
     except NotEnoughSamplesError as e:
         X_splitted, y_splitted = [], []
         indicate_insufficient_samples(e, classif_data)
+        raise e
 
     if show_plots:
         number_of_subplots = ClassifLibrary.determine_number_of_subplots(classif_data)

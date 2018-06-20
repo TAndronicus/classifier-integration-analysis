@@ -8,7 +8,8 @@ from CompositionType import CompositionType
 from datetime import datetime
 
 ### Dataset ###
-filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wd', 'wi']
+#filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wd', 'wi']
+filenames = ['wd']
 filenames = FileHelper.prepare_filenames(filenames)
 filenames = FileHelper.sort_filenames_by_size(filenames)
 files_to_switch = ['haberman.dat', 'sonar.dat']
@@ -18,9 +19,9 @@ number_of_dataset_if_not_generated = 0
 type_of_classifier = ClfType.LINEAR
 type_of_composition = CompositionType.MEAN
 is_validation_hard = False
-generate_all_permutations = True
-bagging = False
-number_of_bagging_repetitions = 3
+generate_all_permutations = False
+bagging = True
+number_of_bagging_repetitions = 10
 space_division = list(range(3, 11))
 number_of_classifiers = 9
 
@@ -90,14 +91,13 @@ for filename in filenames:
                                       logging_intermediate_results = logging_intermediate_results,
                                       space_division = space_division)
     try:
-        if bagging == True:
+        if bagging:
             bagging_results = []
             for i in range(number_of_bagging_repetitions):
                 print('{}. bagging iteration'.format(i + 1))
                 bagging_res = MergingAlgorithm.run(classifier_data)
                 bagging_results.append(bagging_res)
             res = ClassifLibrary.get_mean_res(bagging_results)
-
         else:
             res = MergingAlgorithm.run(classifier_data)
     except NotEnoughSamplesError as e:
