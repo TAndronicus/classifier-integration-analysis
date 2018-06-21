@@ -312,12 +312,144 @@ def plot_method_difference(
 #                         i_meth = 0, dependency = "space_parts")
 # plot_bagging_difference(filename = "wisconsin.dat", space_parts = 3, n_class = 7, n_best = 2, n_best_diff = 1,
 #                         i_meth = 0, dependency = "space_parts")
-
+i_meth = 0
 objs = read_in_objects()
+filename = FileHelper.get_full_filename('t')
+# filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wd', 'wi']
+print('Bagging off')
+print('ACC MV')
 for obj in objs:
-    if obj.filename == 'data_banknote_authentication.csv' \
-        and obj.i_meth == 0 \
-        and obj.bagging == 1 \
-        and obj.n_class == 7 \
-        and obj.n_best == 2:
+    if obj.filename == filename \
+            and obj.i_meth == i_meth \
+            and obj.bagging == 0 \
+            and obj.n_class == 7 \
+            and obj.n_best == 2:
+        print(obj.mv_score)
+print('ACC I')
+for obj in objs:
+    if obj.filename == filename \
+            and obj.i_meth == i_meth \
+            and obj.bagging == 0 \
+            and obj.n_class == 7 \
+            and obj.n_best == 2:
         print(obj.i_score)
+print('MCC MV')
+for obj in objs:
+    if obj.filename == filename \
+            and obj.i_meth == i_meth \
+            and obj.bagging == 0 \
+            and obj.n_class == 7 \
+            and obj.n_best == 2:
+        print(obj.mv_mcc)
+print('MCC I')
+for obj in objs:
+    if obj.filename == filename \
+            and obj.i_meth == i_meth \
+            and obj.bagging == 0 \
+            and obj.n_class == 7 \
+            and obj.n_best == 2:
+        print(obj.i_mcc)
+
+print('Bagging on')
+print('ACC MV')
+for obj in objs:
+    if obj.filename == filename \
+            and obj.i_meth == i_meth \
+            and obj.bagging == 1 \
+            and obj.n_class == 7 \
+            and obj.n_best == 2:
+        print(obj.mv_score)
+print('ACC I')
+for obj in objs:
+    if obj.filename == filename \
+            and obj.i_meth == i_meth \
+            and obj.bagging == 1 \
+            and obj.n_class == 7 \
+            and obj.n_best == 2:
+        print(obj.i_score)
+print('MCC MV')
+for obj in objs:
+    if obj.filename == filename \
+            and obj.i_meth == i_meth \
+            and obj.bagging == 1 \
+            and obj.n_class == 7 \
+            and obj.n_best == 2:
+        print(obj.mv_mcc)
+print('MCC I')
+for obj in objs:
+    if obj.filename == filename \
+            and obj.i_meth == i_meth \
+            and obj.bagging == 1 \
+            and obj.n_class == 7 \
+            and obj.n_best == 2:
+        print(obj.i_mcc)
+
+
+# filename = FileHelper.get_full_filename('t')
+# filenames = ['bi', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wi']
+# print('MEAN')
+# print('ACC MV')
+# for obj in objs:
+#     if obj.filename == filename \
+#             and obj.i_meth == 0 \
+#             and obj.bagging == 0 \
+#             and obj.space_parts == 3 \
+#             and obj.n_best == 2:
+#         print(obj.mv_score)
+# print('ACC I')
+# for obj in objs:
+#     if obj.filename == filename \
+#             and obj.i_meth == 0 \
+#             and obj.bagging == 0 \
+#             and obj.space_parts == 3 \
+#             and obj.n_best == 2:
+#         print(obj.i_score)
+# print('MCC MV')
+# for obj in objs:
+#     if obj.filename == filename \
+#             and obj.i_meth == 0 \
+#             and obj.bagging == 0 \
+#             and obj.space_parts == 3 \
+#             and obj.n_best == 2:
+#         print(obj.mv_mcc)
+# print('MCC I')
+# for obj in objs:
+#     if obj.filename == filename \
+#             and obj.i_meth == 0 \
+#             and obj.bagging == 0 \
+#             and obj.space_parts == 3 \
+#             and obj.n_best == 2:
+#         print(obj.i_mcc)
+# print('MEDIAN')
+# print('ACC MV')
+# for obj in objs:
+#     if obj.filename == filename \
+#             and obj.i_meth == 1 \
+#             and obj.bagging == 0 \
+#             and obj.space_parts == 3 \
+#             and obj.n_best == 2:
+#         print(obj.mv_score)
+# print('ACC I')
+# for obj in objs:
+#     if obj.filename == filename \
+#             and obj.i_meth == 1 \
+#             and obj.bagging == 0 \
+#             and obj.space_parts == 3 \
+#             and obj.n_best == 2:
+#         print(obj.i_score)
+# print('MCC MV')
+# for obj in objs:
+#     if obj.filename == filename \
+#             and obj.i_meth == 1 \
+#             and obj.bagging == 0 \
+#             and obj.space_parts == 3 \
+#             and obj.n_best == 2:
+#         print(obj.mv_mcc)
+# print('MCC I')
+# for obj in objs:
+#     if obj.filename == filename \
+#             and obj.i_meth == 1 \
+#             and obj.bagging == 0 \
+#             and obj.space_parts == 3 \
+#             and obj.n_best == 2:
+#         print(obj.i_mcc)
