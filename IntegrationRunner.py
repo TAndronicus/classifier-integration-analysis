@@ -8,8 +8,8 @@ from CompositionType import CompositionType
 from datetime import datetime
 
 ### Dataset ###
-#filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wd', 'wi']
-filenames = ['t']
+filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wd', 'wi']
+#filenames = ['t']
 filenames = FileHelper.prepare_filenames(filenames)
 filenames = FileHelper.sort_filenames_by_size(filenames)
 files_to_switch = ['haberman.dat', 'sonar.dat']
@@ -21,8 +21,8 @@ type_of_composition = CompositionType.MEAN
 is_validation_hard = False
 generate_all_permutations = False
 bagging = True
-number_of_bagging_repetitions = 10
-space_division = list(range(3, 11))
+number_of_bagging_repetitions = 1
+space_division = [3]#list(range(3, 11))
 number_of_classifiers = 9
 
 ### Samples generation ###
