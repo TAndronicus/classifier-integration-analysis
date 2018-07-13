@@ -8,8 +8,8 @@ from CompositionType import CompositionType
 from datetime import datetime
 
 ### Dataset ###
-#filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wd', 'wi']
-filenames = ['bi', 'wi']
+filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wd', 'wi']
+#filenames = ['bi', 'wi']
 filenames = FileHelper.prepare_filenames(filenames)
 filenames = FileHelper.sort_filenames_by_size(filenames)
 files_to_switch = ['haberman.dat', 'sonar.dat']
@@ -19,11 +19,11 @@ number_of_dataset_if_not_generated = 0
 type_of_classifier = ClfType.LINEAR
 type_of_composition = CompositionType.MEAN
 is_validation_hard = False
-generate_all_permutations = False
+generate_all_permutations = True
 bagging = True
-number_of_bagging_repetitions = 1
-space_division = [3]#list(range(3, 11))
-number_of_classifiers = 3
+number_of_bagging_repetitions = 10
+space_division = list(range(3, 11))
+number_of_classifiers = 9
 
 ### Samples generation ###
 are_samples_generated = False
@@ -38,7 +38,7 @@ show_only_first_plot = True
 ### Logging ###
 results_directory_relative = 'results'
 logging_to_file = True
-logging_intermediate_results = False
+logging_intermediate_results = True
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
 try:

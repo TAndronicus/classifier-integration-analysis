@@ -120,6 +120,9 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
                 confusion_matrices.append(i_conf_mat)
                 cumulated_scores.append(i_score)
                 mccs = ClassifLibrary.compute_mccs(confusion_matrices)
+                for m in mccs:
+                    if abs(m) > 1:
+                        print('Fuckup1')
                 scores_pro_space_division.append(cumulated_scores)
                 mccs_pro_space_division.append(mccs)
 
@@ -159,6 +162,9 @@ def run(classif_data = ClassifLibrary.ClassifierData()):
                 in zip(mean_score_pro_selection, mean_mcc_pro_selection,
                        std_score_pro_selection, std_mcc_pro_selection):
             print('###  {} subspaces  ###'.format(space_division[space_iter]))
+            for m in mean_mcc_pro_space_division:
+                if abs(m) > 1:
+                    print('Fuckup2')
             ClassifLibrary.print_permutation_results(mean_score_pro_space_division, mean_mcc_pro_space_division)
             res = ClassifLibrary.prepare_result_object(mean_score_pro_space_division,
                                                        mean_mcc_pro_space_division,
