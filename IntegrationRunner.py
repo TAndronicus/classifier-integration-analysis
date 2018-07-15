@@ -20,10 +20,10 @@ type_of_classifier = ClfType.LINEAR
 type_of_composition = CompositionType.MEAN
 is_validation_hard = False
 generate_all_permutations = True
-bagging = True
+bagging = False
 number_of_bagging_repetitions = 10
-space_division = list(range(3, 11))
-number_of_classifiers = 9
+space_division = list(range(3, 6))
+number_of_classifiers = 5
 
 ### Samples generation ###
 are_samples_generated = False
