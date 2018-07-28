@@ -8,21 +8,22 @@ from CompositionType import CompositionType
 from datetime import datetime
 
 ### Dataset ###
-filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
-             'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
-             'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wd', 'wi']
+#filenames = ['t', 'wd', 'p']
+filenames = FileHelper.prepare_filenames(filenames)
+filenames = FileHelper.sort_filenames_by_size(filenames)
 files_to_switch = ['haberman.dat', 'sonar.dat']
 number_of_dataset_if_not_generated = 0
 
 ### Classification strategy ###
 type_of_classifier = ClfType.LINEAR
-type_of_composition = CompositionType.MEAN
+type_of_composition = CompositionType.MEDIAN
 is_validation_hard = False
 generate_all_permutations = True
-bagging = False
+bagging = True
 number_of_bagging_repetitions = 10
 space_division = list(range(3, 11))
-number_of_classifiers = 7
+number_of_classifiers = 9
 
 ### Samples generation ###
 are_samples_generated = False
@@ -37,7 +38,7 @@ show_only_first_plot = True
 ### Logging ###
 results_directory_relative = 'results'
 logging_to_file = True
-logging_intermediate_results = False
+logging_intermediate_results = True
 
 results_directory_absolute = os.path.join(os.path.dirname(__file__), results_directory_relative)
 try:
@@ -90,18 +91,18 @@ for filename in filenames:
                                       logging_intermediate_results = logging_intermediate_results,
                                       space_division = space_division)
     try:
-        if bagging == True:
+        if bagging:
             bagging_results = []
             for i in range(number_of_bagging_repetitions):
                 print('{}. bagging iteration'.format(i + 1))
                 bagging_res = MergingAlgorithm.run(classifier_data)
                 bagging_results.append(bagging_res)
             res = ClassifLibrary.get_mean_res(bagging_results)
-
         else:
             res = MergingAlgorithm.run(classifier_data)
     except NotEnoughSamplesError as e:
         print(e.args[0])
+        break
     results.append(res)
 FileHelper.save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(filenames, results,
                                                                                        number_of_classifiers,

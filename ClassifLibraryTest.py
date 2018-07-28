@@ -8,6 +8,7 @@ from sklearn.neighbors import NearestCentroid
 from sklearn.svm import LinearSVC
 
 import ClassifLibrary
+import ClassifLibraryOld
 from ClassifLibrary import ClassifierData
 from IntegrRes import IntegrRes
 
@@ -34,7 +35,7 @@ class MyLibraryTest(unittest.TestCase):
         clf = LinearSVC()
         clf.fit(self.X, self.y)
         # when
-        clf_type = ClassifLibrary.determine_clf_type(clf)
+        clf_type = ClassifLibraryOld.determine_clf_type(clf)
         # then
         self.assertEqual(clf_type, ClassifLibrary.ClfType.LINEAR)
 
@@ -43,7 +44,7 @@ class MyLibraryTest(unittest.TestCase):
         clf = NearestCentroid()
         clf.fit(self.X, self.y)
         # when
-        clf_type = ClassifLibrary.determine_clf_type(clf)
+        clf_type = ClassifLibraryOld.determine_clf_type(clf)
         # then
         self.assertEqual(clf_type, ClassifLibrary.ClfType.MEAN)
 
@@ -87,7 +88,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_sorted_data_from_dataset(self):
         # given
         # when
-        X, y = ClassifLibrary.load_samples_from_datasets_first_two_rows()
+        X, y = ClassifLibraryOld.load_samples_from_datasets_first_two_rows()
         # then
         for i in range(len(X) - 1):
             self.assertFalse((X[i + 1][0] >= X[i][0]) ^ (y[i + 1] == y[i]))
@@ -95,15 +96,15 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_dataset_with_two_attributes(self):
         # given
         # when
-        X, y = ClassifLibrary.load_samples_from_datasets_first_two_rows()
+        X, y = ClassifLibraryOld.load_samples_from_datasets_first_two_rows()
         # then
         self.assertEqual(self.NUMBER_OF_ATTRIBUTES, np.shape(X)[1])
 
     def test_should_not_change_data(self):
         # given
         # when
-        X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
-        X2, y2 = ClassifLibrary.load_samples_from_datasets_first_two_rows(
+        X1, y1 = ClassifLibraryOld.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
+        X2, y2 = ClassifLibraryOld.load_samples_from_datasets_first_two_rows(
             ClassifierData(number_of_dataset_if_not_generated = 12))
         # then
         self.assertTrue(len(X2) <= len(X1))
@@ -115,7 +116,7 @@ class MyLibraryTest(unittest.TestCase):
         data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx',
                               number_of_dataset_if_not_generated = 12)
         # when
-        X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
+        X1, y1 = ClassifLibraryOld.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
         X2, y2 = ClassifLibrary.prepare_raw_data(data)
         # then
         self.assertTrue(len(X2) <= len(X1))
@@ -128,7 +129,7 @@ class MyLibraryTest(unittest.TestCase):
                               number_of_dataset_if_not_generated = 12)
         # when
         X1, y1 = ClassifLibrary.prepare_raw_data(data)
-        X2, y2 = ClassifLibrary.load_samples_from_datasets_first_two_rows(
+        X2, y2 = ClassifLibraryOld.load_samples_from_datasets_first_two_rows(
             classifier_data = ClassifierData(number_of_dataset_if_not_generated = 12))
         # then
         self.assertTrue(len(X2) == len(X1))
@@ -138,7 +139,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_sorted_data_from_dataset_given_columns(self):
         # given
         # when
-        X, y = ClassifLibrary.load_samples_from_datasets_non_parametrised()
+        X, y = ClassifLibraryOld.load_samples_from_datasets_non_parametrised()
         # then
         for i in range(len(X) - 1):
             self.assertFalse((X[i + 1][0] >= X[i][0]) ^ (y[i + 1] == y[i]))
@@ -146,15 +147,15 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_dataset_with_two_attributes_given_columns(self):
         # given
         # when
-        X, y = ClassifLibrary.load_samples_from_datasets_non_parametrised()
+        X, y = ClassifLibraryOld.load_samples_from_datasets_non_parametrised()
         # then
         self.assertEqual(self.NUMBER_OF_ATTRIBUTES, np.shape(X)[1])
 
     def test_should_not_change_data_given_columns(self):
         # given
         # when
-        X1, y1 = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
-        X2, y2 = ClassifLibrary.load_samples_from_datasets_non_parametrised(
+        X1, y1 = ClassifLibraryOld.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
+        X2, y2 = ClassifLibraryOld.load_samples_from_datasets_non_parametrised(
             classifier_data = ClassifierData(number_of_dataset_if_not_generated = 12))
         # then
         self.assertTrue(len(X2) <= len(X1))
@@ -166,7 +167,7 @@ class MyLibraryTest(unittest.TestCase):
         data = ClassifierData(are_samples_generated = False, filename = 'datasets.xlsx')
         # when
         X1, y1 = ClassifLibrary.prepare_raw_data(data)
-        X2, y2 = ClassifLibrary.load_samples_from_datasets_non_parametrised()
+        X2, y2 = ClassifLibraryOld.load_samples_from_datasets_non_parametrised()
         # then
         self.assertTrue(len(X2) == len(X1))
         self.assertEqual(len(X1[0]), 2)
@@ -455,7 +456,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_have_amount_of_data_as_multiple_of_number_of_classifiers_plus_2_in_every_subspace_for_real_dataset(
             self):
         # given
-        X_raw, y_raw = ClassifLibrary.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
+        X_raw, y_raw = ClassifLibraryOld.load_samples_from_file_non_parametrized(self.TEST_FILENAME)
         X0_raw, X1_raw = ClassifLibrary.divide_generated_samples(X_raw, y_raw)
         X0_sorted, X1_sorted = ClassifLibrary.sort_attributes(X0_raw), ClassifLibrary.sort_attributes(X1_raw)
         lengths0, lengths1 = [], []
@@ -517,7 +518,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_sort_only_by_X(self):
         # given
         # when
-        X, y = ClassifLibrary.sort_results(self.X, self.y)
+        X, y = ClassifLibraryOld.sort_results(self.X, self.y)
         # then
         for i in range(len(y) - 1):
             self.assertTrue(X[i][0] <= X[i + 1][0])
@@ -534,7 +535,7 @@ class MyLibraryTest(unittest.TestCase):
     def test_should_return_training_samples_for_every_classifier(self):
         # given
         # when
-        X_whole, y_whole, X_final_test, y_final_test = ClassifLibrary.divide_samples_between_classifiers(self.X, self.y)
+        X_whole, y_whole, X_final_test, y_final_test = ClassifLibraryOld.divide_samples_between_classifiers(self.X, self.y)
         # then
         self.assertEqual(len(X_whole), self.NUMBER_OF_CLASSIFIERS)
 
@@ -542,14 +543,14 @@ class MyLibraryTest(unittest.TestCase):
         # given
         # when
         X_whole, y_whole, X_final_test, y_final_test = \
-            ClassifLibrary.split_sorted_samples_between_classifiers(self.X, self.y)
+            ClassifLibraryOld.split_sorted_samples_between_classifiers(self.X, self.y)
         # then
         self.assertEqual(len(X_whole), self.NUMBER_OF_CLASSIFIERS)
 
     def ignore_deprecated_test_should_return_sets_with_given_ratio(self):
         # given
         # when
-        X_train, X_test, y_train, y_test = ClassifLibrary.divide_samples_between_training_and_testing(self.X, self.y)
+        X_train, X_test, y_train, y_test = ClassifLibraryOld.divide_samples_between_training_and_testing(self.X, self.y)
         # then
         self.assertAlmostEqual(len(X_train) / (len(X_train) + len(X_test)), self.QUOTIENT)
 
@@ -557,7 +558,7 @@ class MyLibraryTest(unittest.TestCase):
         # given
         # when
         X_whole_train, y_whole_train, X_validation, y_validation, X_test, y_test = \
-            ClassifLibrary.split_sorted_samples(self.X, self.y)
+            ClassifLibraryOld.split_sorted_samples(self.X, self.y)
         # then
         self.assertEqual(len(X_whole_train), self.NUMBER_OF_CLASSIFIERS)
 
@@ -630,7 +631,7 @@ class MyLibraryTest(unittest.TestCase):
     def ignore_deprecated_test_train_test_sorted_split(self):
         # given
         # when
-        X_train, X_test, y_train, y_test = ClassifLibrary.train_test_sorted_split(self.X, self.y)
+        X_train, X_test, y_train, y_test = ClassifLibraryOld.train_test_sorted_split(self.X, self.y)
         # then
         self.assertAlmostEqual(len(X_train) / (len(X_train) + len(X_test)), self.QUOTIENT)
 
@@ -687,7 +688,7 @@ class MyLibraryTest(unittest.TestCase):
         scores = [[0.25], [0], [0.5], [0.75], [1]]
         # when
         a, b = \
-            ClassifLibrary.evaluate_average_coefficients_from_n_best(
+            ClassifLibraryOld.evaluate_average_coefficients_from_n_best(
                 coefficients, scores, 0,
                 ClassifierData(number_of_best_classifiers = 3, number_of_classifiers = len(scores)))
         # then
@@ -872,6 +873,38 @@ class MyLibraryTest(unittest.TestCase):
         self.assertEqual(np.mean([i_mcc1, i_mcc2]), result[0][0].i_mcc)
         self.assertEqual(np.std([i_mcc1, i_mcc2]), result[0][0].i_mcc_std)
 
+    def test_should_calculate_propper_mean_res_obj_extended(self):
+        # given
+        mv_score1, mv_score2, mv_score3, mv_score4 = 2, 5, 7, 3
+        mv_score_std1, mv_score_std2, mv_score_std3, mv_score_std4 = .7, .6, .9, .7
+        mv_mcc1, mv_mcc2, mv_mcc3, mv_mcc4 = .7, .5, .6, .75
+        mv_mcc_std1, mv_mcc_std2, mv_mcc_std3, mv_mcc_std4 = .03, .11, .06, .13
+        i_score1, i_score2, i_score3, i_score4 = 3, 4, 1, 4
+        i_score_std1, i_score_std2, i_score_std3, i_score_std4 = 21, 26, 42, 63
+        i_mcc1, i_mcc2, i_mcc3, i_mcc4 = -5, -4.7, .2, 3.4
+        i_mcc_std1, i_mcc_std2, i_mcc_std3, i_mcc_std4 = -.33, -5.05, .24, 2.52
+        res1 = IntegrRes(mv_score = mv_score1, mv_score_std = mv_score_std1, mv_mcc = mv_mcc1, mv_mcc_std = mv_mcc_std1,
+                         i_score = i_score1, i_score_std = i_score_std1, i_mcc = i_mcc1, i_mcc_std = i_mcc_std1)
+        res2 = IntegrRes(mv_score = mv_score2, mv_score_std = mv_score_std2, mv_mcc = mv_mcc2, mv_mcc_std = mv_mcc_std2,
+                         i_score = i_score2, i_score_std = i_score_std2, i_mcc = i_mcc2, i_mcc_std = i_mcc_std2)
+        res3 = IntegrRes(mv_score = mv_score3, mv_score_std = mv_score_std3, mv_mcc = mv_mcc3, mv_mcc_std = mv_mcc_std3,
+                         i_score = i_score3, i_score_std = i_score_std3, i_mcc = i_mcc3, i_mcc_std = i_mcc_std3)
+        res4 = IntegrRes(mv_score = mv_score4, mv_score_std = mv_score_std4, mv_mcc = mv_mcc4, mv_mcc_std = mv_mcc_std4,
+                         i_score = i_score4, i_score_std = i_score_std4, i_mcc = i_mcc4, i_mcc_std = i_mcc_std4)
+        partial_ress = [[[res1]], [[res2]], [[res3]], [[res4]]]
+        # when
+        result = ClassifLibrary.get_mean_res(partial_ress = partial_ress)
+        # then
+        self.assertEqual(1, len(result))
+        self.assertEqual(np.mean([mv_score1, mv_score2, mv_score3, mv_score4]), result[0][0].mv_score)
+        self.assertEqual(np.std([mv_score1, mv_score2, mv_score3, mv_score4]), result[0][0].mv_score_std)
+        self.assertEqual(np.mean([mv_mcc1, mv_mcc2, mv_mcc3, mv_mcc4]), result[0][0].mv_mcc)
+        self.assertEqual(np.std([mv_mcc1, mv_mcc2, mv_mcc3, mv_mcc4]), result[0][0].mv_mcc_std)
+        self.assertEqual(np.mean([i_score1, i_score2, i_score3, i_score4]), result[0][0].i_score)
+        self.assertEqual(np.std([i_score1, i_score2, i_score3, i_score4]), result[0][0].i_score_std)
+        self.assertEqual(np.mean([i_mcc1, i_mcc2, i_mcc3, i_mcc4]), result[0][0].i_mcc)
+        self.assertEqual(np.std([i_mcc1, i_mcc2, i_mcc3, i_mcc4]), result[0][0].i_mcc_std)
+
     def test_should_return_right_decision_limit_for_odd_coef_num_for_0(self):
         # given
         x = 0
@@ -954,7 +987,7 @@ class MyLibraryTest(unittest.TestCase):
         # when
         y = ClassifLibrary.get_decision_limit(sample = x, filtered_coeffs = coeffs)
         # then
-        self.assertEqual(expected_y, y)
+        self.assertAlmostEqual(expected_y, y, delta = .000001)
 
 
 if __name__ == '__main__':

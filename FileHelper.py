@@ -1,8 +1,77 @@
+import xlrd
 import xlwt
+from AdvIntegrRes import AdvIntegrRes
 from ClassifierData import ClassifierData
 from CompositionType import CompositionType
 from datetime import datetime
 import os
+
+FILENAMES = [
+    'twonorm.dat',  # 7400
+    'seismic_bumps.dat',  # 2584
+    'data_banknote_authentication.csv',  # 1372
+    'biodeg.scsv',  # 1055
+    'wisconsin.dat',  # 683
+    'wdbc.dat',  # 569
+    'pop_failures.tsv',  # 540
+    'ionosphere.dat',  # 351
+    'bupa.dat',  # 345
+    'haberman.dat',  # 306
+    'cryotherapy.xlsx',  # 90
+    'meter_a.tsv'  # 86
+]
+
+
+def prepare_filenames(filenames_raw: []):
+    """Prepares array with right filenames based on array with first parts of them
+
+    :param filenames_raw: []
+    :return: []
+    """
+    filenames = []
+    for filename_raw in filenames_raw:
+        try:
+            filename = get_full_filename(filename_raw)
+            filenames.append(filename)
+        except FileNotFoundError as e:
+            raise FileNotFoundError(e.args[0] + ': filename = ' + filename_raw)
+    return filenames
+
+
+def sort_filenames_by_size(filenames: []):
+    """Sorts filenames by size ascending
+
+    :param filenames: []
+    :return: []
+    """
+    filenames_sorted = []
+    for FILENAME in FILENAMES:
+        if FILENAME in filenames:
+            filenames_sorted.append(FILENAME)
+    for filename in filenames:
+        if filename not in FILENAMES:
+            filenames_sorted.append(filename)
+    return filenames_sorted
+
+
+def get_full_filename(filename_raw: str):
+    """Returns whole filename basen on the first part
+
+    :param filename_raw: str
+    :return: str
+    """
+    was_found = False
+    for FILENAME in FILENAMES:
+        if FILENAME.startswith(filename_raw):
+            if was_found:
+                raise FileNotFoundError('Name of file wrong or ambiguous')
+            else:
+                filename = FILENAME
+                was_found = True
+    if was_found:
+        return filename
+    else:
+        raise FileNotFoundError('Name of file not found')
 
 
 def save_merging_results_one_space_division(filenames: [], results: [], result_filename: str = 'results//Results.xls',
@@ -264,20 +333,20 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(
         sheet.write(1, 8 * j + 8, "i_mcc")
         sheet.write(1, 8 * j + 9, "i_mcc_std")
     for j in range(2, numbers_of_base_classifiers):
-        sheet.write(len(filenames) * (j - 2) + 2, 0, str(j))
-    for i in range(len(filenames)):
+        sheet.write(len(results_pro_space_division_pro_base_classif) * (j - 2) + 2, 0, str(j))
+    for i in range(len(results_pro_space_division_pro_base_classif)):
         for j in range(numbers_of_base_classifiers - 2):
-            sheet.write(j * len(filenames) + i + 2, 1, filenames[i])
+            sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 1, filenames[i])
             for k in range(len(space_division)):
                 res = results_pro_space_division_pro_base_classif[i][j][k]
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 2, res.mv_score)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 3, res.mv_score_std)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 4, res.mv_mcc)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 5, res.mv_mcc_std)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 6, res.i_score)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 7, res.i_score_std)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 8, res.i_mcc)
-                sheet.write(j * len(filenames) + i + 2, 8 * k + 9, res.i_mcc_std)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 2, res.mv_score)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 3, res.mv_score_std)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 4, res.mv_mcc)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 5, res.mv_mcc_std)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 6, res.i_score)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 7, res.i_score_std)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 8, res.i_mcc)
+                sheet.write(j * len(results_pro_space_division_pro_base_classif) + i + 2, 8 * k + 9, res.i_mcc_std)
     output_data = {'type_of_classifier': classifier_data.type_of_classifier.value,
                    'are_samples_generated': str(classifier_data.are_samples_generated),
                    'number_of_samples_if_generated': classifier_data.number_of_samples_if_generated,
@@ -287,7 +356,7 @@ def save_res_objects_pro_space_division_pro_base_classif_with_classif_data_name(
                    'bagging': str(classifier_data.bagging),
                    'type_of_composition': classifier_data.type_of_composition.value,
                    'timestamp': str(datetime.now())}
-    last_row = 1 + len(filenames) * (numbers_of_base_classifiers - 2)
+    last_row = 1 + len(results_pro_space_division_pro_base_classif) * (numbers_of_base_classifiers - 2)
     for entry_name in output_data:
         last_row += 1
         sheet.write(last_row, 0, entry_name)
@@ -371,3 +440,45 @@ def save_intermediate_results(score: [], mcc: [], i: int, classifier_data: Class
                 sheet.write(row, col, value[row][col])
     workbook.save(results_directory_relative + '//' + filename.split('.')[0].split('//')[1] + '_c_' + str(
         number_of_classifiers) + '_s_' + str(space_division[i]) + '.xls')
+
+
+def read_objects_from_file(res_filename: str, n_class: int, bagging: int, i_meth: int):
+    """Reads objects from result files
+
+    :param res_filename: str, one of: 'biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+                 'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+                 'twonorm.dat', 'wdbc.dat', 'wisconsin.dat'
+    :param n_class: int
+    :param bagging: int
+    :param i_meth: int
+    :return:
+    """
+    filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx', 'data_banknote_authentication.csv',
+                 'haberman.dat', 'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv', 'seismic_bumps.dat',
+                 'twonorm.dat', 'wdbc.dat', 'wisconsin.dat']
+    file = xlrd.open_workbook(res_filename)
+    sheet = file.sheet_by_index(0)
+    result_objects = []
+    for line_num in range(sheet.nrows):
+        line = sheet.row(line_num)
+        if line[1].value in filenames:
+            n_best_line = line_num
+            while True:
+                if sheet.cell(n_best_line, 0).ctype == 1:
+                    n_best = int(sheet.cell(n_best_line, 0).value)
+                    break
+                n_best_line -= 1
+            for n_subspace in range(int((sheet.ncols - 2) / 8)):
+                space_parts = int(sheet.cell(0, 2 + n_subspace * 8).value)
+                mv_score = sheet.cell(line_num, 8 * n_subspace + 2).value
+                mv_score_std = sheet.cell(line_num, 8 * n_subspace + 3).value
+                mv_mcc = sheet.cell(line_num, 8 * n_subspace + 4).value
+                mv_mcc_std = sheet.cell(line_num, 8 * n_subspace + 5).value
+                i_score = sheet.cell(line_num, 8 * n_subspace + 6).value
+                i_score_std = sheet.cell(line_num, 8 * n_subspace + 7).value
+                i_mcc = sheet.cell(line_num, 8 * n_subspace + 8).value
+                i_mcc_std = sheet.cell(line_num, 8 * n_subspace + 9).value
+                res_obj = AdvIntegrRes(mv_score, mv_score_std, mv_mcc, mv_mcc_std, i_score, i_score_std, i_mcc,
+                                       i_mcc_std, n_class, n_best, i_meth, bagging, space_parts, line[1].value)
+                result_objects.append(res_obj)
+    return result_objects
