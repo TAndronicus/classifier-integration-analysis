@@ -1,7 +1,6 @@
 import os
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 import FileHelper
 import PlotHelper
@@ -70,6 +69,19 @@ def get_dependent_on_n_best(filename, space_parts, n_class, i_meth, bagging):
         if obj.filename == filename \
                 and obj.space_parts == space_parts \
                 and obj.n_class == n_class \
+                and obj.i_meth == i_meth \
+                and obj.bagging == bagging:
+            related.append(obj)
+    return related
+
+
+def get_dependent_on_filename(space_parts, n_class, n_best, i_meth, bagging):
+    result_objects = read_in_objects()
+    related = []
+    for obj in result_objects:
+        if obj.space_parts == space_parts \
+                and obj.n_class == n_class \
+                and obj.n_best == n_best \
                 and obj.i_meth == i_meth \
                 and obj.bagging == bagging:
             related.append(obj)
@@ -267,189 +279,13 @@ def plot_method_difference(
         plt.show()
 
 
-# plot_dependence(filename = "wisconsin.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_class_non_const_n_best")
-# plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_class_non_const_n_best")
-# plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 3,
-#                 i_meth = 0, bagging = 0, dependency = "n_class_non_const_n_best")
-# plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 1, bagging = 0, dependency = "n_class_non_const_n_best")
-#
-# plot_dependence(filename = "haberman.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
-# plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
-# plot_dependence(filename = "cryotherapy.xlsx", space_parts = 3, n_class = 9, n_best = 4, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
-# plot_dependence(filename = "wdbc.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_class_const_n_best")
-# plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 1, bagging = 0, dependency = "n_class_const_n_best")
-#
-# plot_dependence(filename = "haberman.dat", space_parts = 3, n_class = 9, n_best = 5, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_best")
-# plot_dependence(filename = "ionosphere.dat", space_parts = 4, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "n_best")
-# plot_dependence(filename = "haberman.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 1, bagging = 0, dependency = "n_best")
-#
-# plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "space_parts")
-# plot_dependence(filename = "cryotherapy.xlsx", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "space_parts")
-# plot_dependence(filename = "meter_a.tsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 0, bagging = 0, dependency = "space_parts")
-# plot_dependence(filename = "biodeg.scsv", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                 i_meth = 1, bagging = 0, dependency = "space_parts")
-#
-# plot_method_difference(filename = "bupa.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                        bagging = 0, dependency = "n_class_const_n_best")
-# plot_method_difference(filename = "wdbc.dat", space_parts = 3, n_class = 9, n_best = 2, n_best_diff = 1,
-#                        bagging = 0, dependency = "n_class_const_n_best")
-#
-# plot_bagging_difference(filename = "data_banknote_authentication.csv", space_parts = 3, n_class = 7, n_best = 2, n_best_diff = 1,
-#                         i_meth = 0, dependency = "space_parts")
-# plot_bagging_difference(filename = "wisconsin.dat", space_parts = 3, n_class = 7, n_best = 2, n_best_diff = 1,
-#                         i_meth = 0, dependency = "space_parts")
-i_meth = 0
-objs = read_in_objects()
-filename = FileHelper.get_full_filename('t')
-# filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wd', 'wi']
-print('Bagging off')
-print('ACC MV')
-for obj in objs:
-    if obj.filename == filename \
-            and obj.i_meth == i_meth \
-            and obj.bagging == 0 \
-            and obj.n_class == 7 \
-            and obj.n_best == 2:
-        print(obj.mv_score)
-print('ACC I')
-for obj in objs:
-    if obj.filename == filename \
-            and obj.i_meth == i_meth \
-            and obj.bagging == 0 \
-            and obj.n_class == 7 \
-            and obj.n_best == 2:
-        print(obj.i_score)
-print('MCC MV')
-for obj in objs:
-    if obj.filename == filename \
-            and obj.i_meth == i_meth \
-            and obj.bagging == 0 \
-            and obj.n_class == 7 \
-            and obj.n_best == 2:
-        print(obj.mv_mcc)
-print('MCC I')
-for obj in objs:
-    if obj.filename == filename \
-            and obj.i_meth == i_meth \
-            and obj.bagging == 0 \
-            and obj.n_class == 7 \
-            and obj.n_best == 2:
-        print(obj.i_mcc)
+for bc in range(2, 9):
+    dep_wa = get_dependent_on_filename(10, 9, bc, 0, 0)
+    dep_m = get_dependent_on_filename(10, 9, bc, 1, 0)
+    with open('stats' + str(bc), 'w') as file:
+        file.write(',ACC,,,MCC,,\n,$\\Psi_{MV}$,$\\Psi_{WA}$,$\\Psi_{M}$,$\\Psi_{MV}$,$\\Psi_{WA}$,$\\Psi_{M}$\n')
+        for i in range(len(dep_wa)):
+            file.write(str(dep_m[i].filename).split('.')[0] + ',' + str(dep_m[i].mv_score)[0:5] + ',' + str(dep_wa[i].i_score)[0:5] + ',' +
+                       str(dep_m[i].i_score)[0:5] + ',' + str(dep_m[i].mv_mcc)[0:5] + ',' + str(dep_wa[i].i_mcc)[0:5] + ',' + str(dep_m[i].i_mcc)[0:5] + '\n')
 
-print('Bagging on')
-print('ACC MV')
-for obj in objs:
-    if obj.filename == filename \
-            and obj.i_meth == i_meth \
-            and obj.bagging == 1 \
-            and obj.n_class == 7 \
-            and obj.n_best == 2:
-        print(obj.mv_score)
-print('ACC I')
-for obj in objs:
-    if obj.filename == filename \
-            and obj.i_meth == i_meth \
-            and obj.bagging == 1 \
-            and obj.n_class == 7 \
-            and obj.n_best == 2:
-        print(obj.i_score)
-print('MCC MV')
-for obj in objs:
-    if obj.filename == filename \
-            and obj.i_meth == i_meth \
-            and obj.bagging == 1 \
-            and obj.n_class == 7 \
-            and obj.n_best == 2:
-        print(obj.mv_mcc)
-print('MCC I')
-for obj in objs:
-    if obj.filename == filename \
-            and obj.i_meth == i_meth \
-            and obj.bagging == 1 \
-            and obj.n_class == 7 \
-            and obj.n_best == 2:
-        print(obj.i_mcc)
-
-
-# filename = FileHelper.get_full_filename('t')
-# filenames = ['bi', 'c', 'd', 'h', 'i', 'm', 'p', 's', 't', 'wi']
-# print('MEAN')
-# print('ACC MV')
-# for obj in objs:
-#     if obj.filename == filename \
-#             and obj.i_meth == 0 \
-#             and obj.bagging == 0 \
-#             and obj.space_parts == 3 \
-#             and obj.n_best == 2:
-#         print(obj.mv_score)
-# print('ACC I')
-# for obj in objs:
-#     if obj.filename == filename \
-#             and obj.i_meth == 0 \
-#             and obj.bagging == 0 \
-#             and obj.space_parts == 3 \
-#             and obj.n_best == 2:
-#         print(obj.i_score)
-# print('MCC MV')
-# for obj in objs:
-#     if obj.filename == filename \
-#             and obj.i_meth == 0 \
-#             and obj.bagging == 0 \
-#             and obj.space_parts == 3 \
-#             and obj.n_best == 2:
-#         print(obj.mv_mcc)
-# print('MCC I')
-# for obj in objs:
-#     if obj.filename == filename \
-#             and obj.i_meth == 0 \
-#             and obj.bagging == 0 \
-#             and obj.space_parts == 3 \
-#             and obj.n_best == 2:
-#         print(obj.i_mcc)
-# print('MEDIAN')
-# print('ACC MV')
-# for obj in objs:
-#     if obj.filename == filename \
-#             and obj.i_meth == 1 \
-#             and obj.bagging == 0 \
-#             and obj.space_parts == 3 \
-#             and obj.n_best == 2:
-#         print(obj.mv_score)
-# print('ACC I')
-# for obj in objs:
-#     if obj.filename == filename \
-#             and obj.i_meth == 1 \
-#             and obj.bagging == 0 \
-#             and obj.space_parts == 3 \
-#             and obj.n_best == 2:
-#         print(obj.i_score)
-# print('MCC MV')
-# for obj in objs:
-#     if obj.filename == filename \
-#             and obj.i_meth == 1 \
-#             and obj.bagging == 0 \
-#             and obj.space_parts == 3 \
-#             and obj.n_best == 2:
-#         print(obj.mv_mcc)
-# print('MCC I')
-# for obj in objs:
-#     if obj.filename == filename \
-#             and obj.i_meth == 1 \
-#             and obj.bagging == 0 \
-#             and obj.space_parts == 3 \
-#             and obj.n_best == 2:
-#         print(obj.i_mcc)
+print('heh')
