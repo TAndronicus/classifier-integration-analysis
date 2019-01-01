@@ -5,6 +5,12 @@ import matplotlib.pyplot as plt
 import FileHelper
 import PlotHelper
 
+filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx',
+             'data_banknote_authentication.csv', 'haberman.dat',
+             'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv',
+             'seismic_bumps.dat', 'twonorm.dat', 'wdbc.dat',
+             'wisconsin.dat']
+
 
 def read_in_objects():
     name_pattern = "n_{}_b_{}_i_{}.xls"
@@ -279,13 +285,114 @@ def plot_method_difference(
         plt.show()
 
 
-for bc in range(2, 9):
-    dep_wa = get_dependent_on_filename(10, 9, bc, 0, 0)
-    dep_m = get_dependent_on_filename(10, 9, bc, 1, 0)
-    with open('stats' + str(bc), 'w') as file:
-        file.write(',ACC,,,MCC,,\n,$\\Psi_{MV}$,$\\Psi_{WA}$,$\\Psi_{M}$,$\\Psi_{MV}$,$\\Psi_{WA}$,$\\Psi_{M}$\n')
-        for i in range(len(dep_wa)):
-            file.write(str(dep_m[i].filename).split('.')[0] + ',' + str(dep_m[i].mv_score)[0:5] + ',' + str(dep_wa[i].i_score)[0:5] + ',' +
-                       str(dep_m[i].i_score)[0:5] + ',' + str(dep_m[i].mv_mcc)[0:5] + ',' + str(dep_wa[i].i_mcc)[0:5] + ',' + str(dep_m[i].i_mcc)[0:5] + '\n')
+def print_tables():
+    global space
+    for space in range(3, 11):
+        dep_wa = get_dependent_on_filename(space, 9, 8, 0, 0)
+        dep_m = get_dependent_on_filename(space, 9, 8, 1, 0)
+        with open('stats' + str(space), 'w') as file:
+            file.write(
+                ',ACC,,,MCC,,\n,$\\Psi_{\mathrm{MV}}$,$\\Psi_{\mathrm{WA}}$,$\\Psi_{\mathrm{M}}$,$\\Psi_{\mathrm{MV}}$,$\\Psi_{\mathrm{WA}}$,$\\Psi_{\mathrm{M}}$\n')
+            for i in range(len(dep_wa)):
+                file.write(str(dep_m[i].filename).split('.')[0] + ',' + str(round_to_3(dep_m[i].mv_score)) + ',' + str(round_to_3(dep_wa[i].i_score)) + ',' + str(round_to_3(dep_m[i].i_score)) + ',' + str(round_to_3(dep_m[i].mv_mcc)) + ',' + str(round_to_3(dep_wa[i].i_mcc)) + ',' + str(round_to_3(dep_m[i].i_mcc)) + '\n')
 
-print('heh')
+# for o in obj:
+spaces = [3, 4, 5, 6, 7, 8, 9, 10]
+clfs = [3, 4, 5, 6, 7, 8, 9]
+
+def get_obj(n_class, n_best, n_space):
+    obj = read_in_objects()
+    res = []
+    for o in obj:
+        if o.n_class == n_class and o.n_best == n_best and o.space_parts == n_space and o.bagging == 0:
+            res.append(o)
+    return res
+
+
+def get_one(n_class, n_best, n_space, filename, meth):
+    obj = read_in_objects()
+    for o in obj:
+        if o.n_class == n_class and o.n_best == n_best and o.space_parts == n_space and o.bagging == 0 and o.filename == filename and o.i_meth == meth:
+            return o
+
+
+def check_space():
+    for clf in clfs:
+        for best in range(2, clf):
+            forwards = 0
+            backwards = 0
+            comp = 0
+            worse = 0
+            for index in range(0, len(spaces) - 1):
+                o1 = get_obj(clf, best, spaces[index])
+                o2 = get_obj(clf, best, spaces[index + 1])
+                if len(o1) != len(o2):
+                    print("Różne dł")
+                for i in range(0, len(o1)):
+                    if o1[i].i_score < o2[i].i_score:
+                        forwards += 1
+                    if o1[i].i_score > o2[i].i_score:
+                        backwards += 1
+                    if o1[i].i_score > o1[i].mv_score:
+                        comp += 1
+                    if o1[i].i_score < o1[i].mv_score:
+                        worse += 1
+            lo = get_obj(clf, best, spaces[-1])
+            for o in lo:
+                if o.i_score > o.mv_score:
+                    comp += 1
+                if o.i_score < o.mv_score:
+                    worse += 1
+            if forwards + backwards == 0:
+                continue
+            print("clfs: " + str(clf) + ", best: " + str(best) + " ::: forwards : " + str(forwards) + ", backwards : " + str(backwards) + ", better : " + str(comp) + ", worse : " + str(worse))
+
+
+def check_best():
+    global clf, space, o
+    for clf in clfs:
+        for space in spaces:
+            forwards = 0
+            backwards = 0
+            comp = 0
+            worse = 0
+            for index in range(2, clf - 1):
+                o1 = get_obj(clf, index, space)
+                o2 = get_obj(clf, index + 1, space)
+                if len(o1) != len(o2):
+                    print("Różne dł")
+                for i in range(0, len(o1)):
+                    if o1[i].i_score < o2[i].i_score:
+                        forwards += 1
+                    if o1[i].i_score > o2[i].i_score:
+                        backwards += 1
+                    if o1[i].i_score > o1[i].mv_score:
+                        comp += 1
+                    if o1[i].i_score < o1[i].mv_score:
+                        worse += 1
+            ol = get_obj(clf, clf - 1, space)
+            for o in ol:
+                if o.i_score > o.mv_score:
+                    comp += 1
+                if o.i_score < o.mv_score:
+                    worse += 1
+            if forwards + backwards == 0:
+                continue
+            print(
+                "clfs: " + str(clf) + ", space: " + str(space) + " ::: forwards : " + str(forwards) + ", backwards : " + str(backwards) + ", better : " + str(
+                    comp) + ", worse : " + str(worse))
+
+
+def round_to_3(a: float):
+    return int(a * 1000) / 1000
+
+def show_diff_space(clf1, clf2, best1, best2):
+    for space in spaces:
+        for filename in filenames:
+            for method in range(0, 2):
+                print(filename)
+                o1 = get_one(clf1, best1, space, filename, method)
+                o2 = get_one(clf2, best2, space, filename, method)
+                if round_to_3(o1.i_score) != round_to_3(o2.i_score):
+                    print("space: " + str(space) + ", ds: " + o1.filename)
+

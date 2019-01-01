@@ -3,7 +3,7 @@ from ClassifLibrary import initialize_list_of_lists
 from scipy.stats import kstest, shapiro, friedmanchisquare, f_oneway, kruskal, wilcoxon, ttest_ind, median_test
 import numpy as np
 import matplotlib.pyplot as plt
-from Nemenyi import NemenyiTestPostHoc
+from nonparametric_tests import friedman_aligned_ranks_test, friedman_test, bonferroni_dunn_test, holm_test
 
 objects = read_in_objects()
 
@@ -200,106 +200,36 @@ def normalize_variance(subjects):
     return result
 
 
-# subjects = get_dependent_from_n_class_const([3, 5, 7, 9], 2, 3, 1, 0)
-# #subjects = get_dependent_from_n_class_non_const([3, 5, 7, 9], 1, 3, 1, 0)
-# #subjects = get_dependent_from_n_best(9, [2, 3, 4, 5, 6, 7, 8], 3, 1, 0)
-# #subjects = get_dependent_from_space_parts(9, 2, [3, 4, 5, 6, 7, 8, 9, 10], 1, 0)
-#
-# subjects = extract_arrtibute(subjects, 'i_score')
-# #subjects = extract_arrtibute(subjects, 'i_mcc')
-#
-# p_ks = get_p_ks(subjects)
-# p_sw = get_p_sw(subjects)
-# print(p_ks)
-# print(p_sw)
-# f, p_an = f_oneway(*normalize_variance(subjects))
-# print(p_an)
-# k, p_kr = kruskal(*subjects)
-# print(p_an)
-# p_fr = test_friedman(subjects)
-# print(p_fr)
-# w, p_wi = wilcoxon(subjects[0], subjects[-1])
-# print(p_wi)
-# t, p_t = ttest_ind(normalize_variance(subjects)[0], normalize_variance(subjects)[-1])
-# print(p_t)
+def extract_param(objects, param):
+    vals = []
+    for o in objects:
+        row = []
+        for val in o:
+            row.append(getattr(val, param))
+        vals.append(row)
+    return vals
 
-# means, diffs = get_mv_i_diff(1, 0, 'mcc')
-# w, p = wilcoxon(diffs)
-# #print(p)
-# i_score, mv_score, i_mcc, mv_mcc = get_mv_i(1, 1)
-# # stat, p_med, m, tab = median_test(i_score, mv_score)
-# # print(p_med)
-# # print(m)
-# # stat, p_med, m, tab = median_test(i_mcc, mv_mcc)
-# # print(p_med)
-# # print(m)
-# print(np.mean(i_score))
-# print(np.mean(mv_score))
-# print(np.mean(i_mcc))
-# print(np.mean(mv_mcc))
-# print(np.median(i_score))
-# print(np.median(mv_score))
-# print(np.median(i_mcc))
-# print(np.median(mv_mcc))
-# i_score, mv_score, i_mcc, mv_mcc = get_mv_i(1, 1)
-# bland_altman_plot(i_score, mv_score)
-# plt.xlabel('AM')
-# plt.ylabel('Δ')
-# plt.show()
-# bland_altman_plot(i_mcc, mv_mcc)
-# plt.xlabel('AM')
-# plt.ylabel('Δ')
-# plt.show()
 
-# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(0)
-# w, p = wilcoxon(mean_score, median_score)
-# print(p)
-# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(1)
-# w, p = wilcoxon(mean_score, median_score)
-# print(p)
-# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(0)
-# w, p = wilcoxon(mean_mcc, median_mcc)
-# print(p)
-# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(1)
-# w, p = wilcoxon(mean_mcc, median_mcc)
-# print(p)
-#
-# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(0)
-# stat, p, m, table = median_test(mean_score, median_score)
-# print(p)
-# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(1)
-# stat, p, m, table = median_test(mean_score, median_score)
-# print(p)
-# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(0)
-# stat, p, m, table = median_test(mean_mcc, median_mcc)
-# print(p)
-# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(1)
-# stat, p, m, table = median_test(mean_mcc, median_mcc)
-# print(p)
+def friedman_holm_test(vals):
+    f, p, rankings, pivots = friedman_test(vals)
+    dict = {}
+    for i in range(0, len(rankings)):
+        dict[str(i)] = rankings[i]
+    pvals = []
+    for i in range(0, len(rankings)):
+        comparisons, z, pH, adj_p = holm_test(dict, str(i))
+        pvals.append(min(adj_p))
+    return p, min(pvals)
 
-# mean_score, median_score, mean_mcc, median_mcc = get_diff_meth(1)
-# print(np.mean(mean_score))
-# print(np.mean(median_score))
-# print(np.median(mean_score))
-# print(np.median(median_score))
-# print(np.mean(mean_mcc))
-# print(np.mean(median_mcc))
-# print(np.median(mean_mcc))
-# print(np.median(median_mcc))
 
-# bag_score, nbag_score, bag_mcc, nbag_mcc = get_diff_bag()
-# w, p = wilcoxon(bag_score, nbag_score)
-# print(p)
-# stat, p, m, table = median_test(bag_score, nbag_score)
-# print(p)
-# w, p = wilcoxon(bag_mcc, nbag_mcc)
-# print(p)
-# stat, p, m, table = median_test(bag_mcc, nbag_mcc)
-# print(p)
+def print_p_val_multi_post_hoc(pF, pH):
+    print('pF = ' + str(pF) + ', pH = ' + str(pH))
 
-bag_score, nbag_score, bag_mcc, nbag_mcc = get_diff_bag()
-res = []
-for i in range(len(bag_score)):
-    res.append(bag_score[i] - nbag_score[i])
-sw = kstest(res, 'norm')
-print(sw)
+
+obj = get_dependent_from_space_parts(5, 3, list(range(3, 11)), 0, 0)
+valsScore = extract_param(obj, 'i_score')
+pF, pH = friedman_holm_test(valsScore)
+print_p_val_multi_post_hoc(pF, pH)
+valsMcc = extract_param(obj, 'i_mcc')
+pF, pH = friedman_holm_test(valsMcc)
+print_p_val_multi_post_hoc(pF, pH)
