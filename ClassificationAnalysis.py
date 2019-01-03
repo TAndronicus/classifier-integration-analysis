@@ -14,13 +14,22 @@ filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx',
 spaces = [3, 4, 5, 6, 7, 8, 9, 10]
 clfs = [3, 4, 5, 6, 7, 8, 9]
 method_dict_short = {
-    0 : "A",
-    1 : "M"
+    0: "A",
+    1: "M"
 }
 method_dict_long = {
-    0 : "Weighted average",
-    1 : "Median"
+    0: "Weighted average",
+    1: "Median"
 }
+measures_dict = {
+    "ia": "i_score",
+    "im": "i_mcc",
+    "mva": "mv_score",
+    "mvm": "mv_mcc"
+}
+measures = ['score', 'mcc']
+intRef = ['i', 'mv']
+
 
 def read_in_objects():
     name_pattern = "n_{}_b_{}_i_{}.xls"
@@ -308,9 +317,6 @@ def print_tables():
                     round_to_3(dep_m[i].i_score)) + ',' + str(round_to_3(dep_m[i].mv_mcc)) + ',' + str(round_to_3(dep_wa[i].i_mcc)) + ',' + str(round_to_3(dep_m[i].i_mcc)) + '\n')
 
 
-# for o in obj:
-
-
 def get_obj(n_class, n_best, n_space):
     obj = read_in_objects()
     res = []
@@ -417,4 +423,16 @@ def show_diff_space(clf1, clf2, best1, best2):
                 o2 = get_one(clf2, best2, space, filename, method)
                 if round_to_3(o1.i_score) != round_to_3(o2.i_score):
                     print("space: " + str(space) + ", ds: " + o1.filename)
+
+
+with open('res', 'w') as f:
+    # header (filenames)
+    for filename in filenames:
+        f.write(',' + filename.split('.')[0])
+    f.write("\n")
+    for (key, val) in method_dict_short.items():
+        for clf in clfs:
+            f.write('\clf{' + val + '}{' + str(clf - 1) + '}')
+            for filename in filenames:
+                pass
 

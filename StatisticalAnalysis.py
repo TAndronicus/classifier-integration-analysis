@@ -6,7 +6,31 @@ import matplotlib.pyplot as plt
 from nonparametric_tests import friedman_aligned_ranks_test, friedman_test, bonferroni_dunn_test, holm_test
 
 objects = read_in_objects()
+filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx',
+             'data_banknote_authentication.csv', 'haberman.dat',
+             'ionosphere.dat', 'meter_a.tsv', 'pop_failures.tsv',
+             'seismic_bumps.dat', 'twonorm.dat', 'wdbc.dat',
+             'wisconsin.dat']
 
+spaces = [3, 4, 5, 6, 7, 8, 9, 10]
+clfs = [3, 4, 5, 6, 7, 8, 9]
+best = [2, 3, 4, 5, 6, 7, 8]
+method_dict_short = {
+    0: "A",
+    1: "M"
+}
+method_dict_long = {
+    0: "Weighted average",
+    1: "Median"
+}
+measures_dict = {
+    "ia": "i_score",
+    "im": "i_mcc",
+    "mva": "mv_score",
+    "mvm": "mv_mcc"
+}
+measures = ['score', 'mcc']
+intRef = ['i', 'mv']
 
 def bland_altman_plot(data1, data2, *args, **kwargs):
     data1 = np.asarray(data1)
@@ -226,10 +250,66 @@ def print_p_val_multi_post_hoc(pF, pH):
     print('pF = ' + str(pF) + ', pH = ' + str(pH))
 
 
-obj = get_dependent_from_space_parts(5, 3, list(range(3, 11)), 0, 0)
-valsScore = extract_param(obj, 'i_score')
-pF, pH = friedman_holm_test(valsScore)
-print_p_val_multi_post_hoc(pF, pH)
-valsMcc = extract_param(obj, 'i_mcc')
-pF, pH = friedman_holm_test(valsMcc)
-print_p_val_multi_post_hoc(pF, pH)
+def find_by_filename(objs, filename):
+    for obj in objs:
+        if obj.filename == filename:
+            return obj
+    return None
+
+
+# obj = get_dependent_from_space_parts(5, 3, list(range(3, 11)), 0, 0)
+# valsScore = extract_param(obj, 'i_score')
+# pF, pH = friedman_holm_test(valsScore)
+# print_p_val_multi_post_hoc(pF, pH)
+# valsMcc = extract_param(obj, 'i_mcc')
+# pF, pH = friedman_holm_test(valsMcc)
+# print_p_val_multi_post_hoc(pF, pH)
+
+
+def extract_mv_param(obj, param):
+    row = []
+    for o in obj[0]:
+        row.append(getattr(o, param))
+    return row
+
+
+def format_to_length(number: float, length: int):
+    number_as_int = int(pow(10, length) * number)
+    if pow(10, length) * number - number_as_int > .5:
+        number_as_int = number_as_int + 1
+    number_as_str = str(.0 + number_as_int / pow(10, length))[0:length + 2]
+    while len(number_as_str) < length + 2:
+        number_as_str = number_as_str + '0'
+    return number_as_str
+
+for space in spaces:
+    for measure in measures:
+        with open(measure + '_' + str(space) + '.csv', 'w') as file:
+    # header (filenames)
+            for filename in filenames:
+                file.write(',' + filename.split('.')[0])
+            file.write(",Rank\n")
+            for (key, val) in method_dict_short.items(): # iteracja po metodach
+                ranks = []
+                obj = get_dependent_from_n_best(9, best, space, key, 0)
+                valsScore = extract_param(obj, 'i_' + 'score')
+                mv_scores = extract_mv_param(obj, 'mv_' + 'score')
+                valsScore.append(mv_scores)
+                f, p, rankings, pivots = friedman_test(valsScore)
+                for best_index in range(0, len(best)):
+                    file.write('\clf{' + val + '}{' + str(best[best_index]) + '}')
+                    for filename in filenames:
+                        f_obj = find_by_filename(obj[best_index], filename)
+                        file.write(',' + format_to_length(getattr(f_obj, 'i_' + 'score'), 3))
+                    file.write(',' + format_to_length(rankings[best_index], 2))
+                    file.write('\n')
+            file.write('\clf{MV}')
+            for filename in filenames:
+                f_obj = find_by_filename(obj[0], filename)
+                file.write(',' + format_to_length(getattr(f_obj, 'mv_' + 'score'), 3))
+            file.write(',' + format_to_length(rankings[-1], 2))
+            file.write('\n')
+
+
+
+
