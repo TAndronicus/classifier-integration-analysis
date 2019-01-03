@@ -11,6 +11,16 @@ filenames = ['biodeg.scsv', 'bupa.dat', 'cryotherapy.xlsx',
              'seismic_bumps.dat', 'twonorm.dat', 'wdbc.dat',
              'wisconsin.dat']
 
+spaces = [3, 4, 5, 6, 7, 8, 9, 10]
+clfs = [3, 4, 5, 6, 7, 8, 9]
+method_dict_short = {
+    0 : "A",
+    1 : "M"
+}
+method_dict_long = {
+    0 : "Weighted average",
+    1 : "Median"
+}
 
 def read_in_objects():
     name_pattern = "n_{}_b_{}_i_{}.xls"
@@ -286,7 +296,7 @@ def plot_method_difference(
 
 
 def print_tables():
-    global space
+    # global space
     for space in range(3, 11):
         dep_wa = get_dependent_on_filename(space, 9, 8, 0, 0)
         dep_m = get_dependent_on_filename(space, 9, 8, 1, 0)
@@ -294,11 +304,12 @@ def print_tables():
             file.write(
                 ',ACC,,,MCC,,\n,$\\Psi_{\mathrm{MV}}$,$\\Psi_{\mathrm{WA}}$,$\\Psi_{\mathrm{M}}$,$\\Psi_{\mathrm{MV}}$,$\\Psi_{\mathrm{WA}}$,$\\Psi_{\mathrm{M}}$\n')
             for i in range(len(dep_wa)):
-                file.write(str(dep_m[i].filename).split('.')[0] + ',' + str(round_to_3(dep_m[i].mv_score)) + ',' + str(round_to_3(dep_wa[i].i_score)) + ',' + str(round_to_3(dep_m[i].i_score)) + ',' + str(round_to_3(dep_m[i].mv_mcc)) + ',' + str(round_to_3(dep_wa[i].i_mcc)) + ',' + str(round_to_3(dep_m[i].i_mcc)) + '\n')
+                file.write(str(dep_m[i].filename).split('.')[0] + ',' + str(round_to_3(dep_m[i].mv_score)) + ',' + str(round_to_3(dep_wa[i].i_score)) + ',' + str(
+                    round_to_3(dep_m[i].i_score)) + ',' + str(round_to_3(dep_m[i].mv_mcc)) + ',' + str(round_to_3(dep_wa[i].i_mcc)) + ',' + str(round_to_3(dep_m[i].i_mcc)) + '\n')
+
 
 # for o in obj:
-spaces = [3, 4, 5, 6, 7, 8, 9, 10]
-clfs = [3, 4, 5, 6, 7, 8, 9]
+
 
 def get_obj(n_class, n_best, n_space):
     obj = read_in_objects()
@@ -316,6 +327,9 @@ def get_one(n_class, n_best, n_space, filename, meth):
             return o
 
 
+"""
+Sprawdza różnicę między populacjami dla zmieniającej się gęstości podziałów
+"""
 def check_space():
     for clf in clfs:
         for best in range(2, clf):
@@ -345,9 +359,13 @@ def check_space():
                     worse += 1
             if forwards + backwards == 0:
                 continue
-            print("clfs: " + str(clf) + ", best: " + str(best) + " ::: forwards : " + str(forwards) + ", backwards : " + str(backwards) + ", better : " + str(comp) + ", worse : " + str(worse))
+            print("clfs: " + str(clf) + ", best: " + str(best) + " ::: forwards : " + str(forwards) + ", backwards : " + str(backwards) + ", better : " + str(
+                comp) + ", worse : " + str(worse))
 
 
+"""
+Sprawdza różnicę między populacjami dla zmieniającej się gęstości podziałów
+"""
 def check_best():
     global clf, space, o
     for clf in clfs:
@@ -386,6 +404,10 @@ def check_best():
 def round_to_3(a: float):
     return int(a * 1000) / 1000
 
+
+"""
+Prints spaces for which score is different by at least 0,0005
+"""
 def show_diff_space(clf1, clf2, best1, best2):
     for space in spaces:
         for filename in filenames:
