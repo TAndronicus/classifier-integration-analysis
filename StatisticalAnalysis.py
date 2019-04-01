@@ -246,6 +246,15 @@ def friedman_holm_test(vals):
     return p, min(pvals)
 
 
+def holm_min(rankings):
+    dict = {}
+    for i in range(0, len(rankings)):
+        dict[str(i)] = rankings[i]
+    comparisonsH, z, pH, adj_p = holm_test(dict, str(len(rankings) - 1))
+    comparisonsD, z_values, p_values, adj_p_values = bonferroni_dunn_test(dict, str(len(rankings) - 1))
+    return min(pH)
+
+
 def print_p_val_multi_post_hoc(pF, pH):
     print('pF = ' + str(pF) + ', pH = ' + str(pH))
 
@@ -282,34 +291,68 @@ def format_to_length(number: float, length: int):
         number_as_str = number_as_str + '0'
     return number_as_str
 
+pH = {}
 for space in spaces:
     for measure in measures:
-        with open(measure + '_' + str(space) + '.csv', 'w') as file:
+        resname = measure + '_' + str(space)
+        with open(resname + '.csv', 'w') as file:
     # header (filenames)
             for filename in filenames:
-                file.write(',' + filename.split('.')[0])
+                file.write(',' + filename.split('.')[0][0:3])
             file.write(",Rank\n")
             for (key, val) in method_dict_short.items(): # iteracja po metodach
                 ranks = []
                 obj = get_dependent_from_n_best(9, best, space, key, 0)
-                valsScore = extract_param(obj, 'i_' + 'score')
-                mv_scores = extract_mv_param(obj, 'mv_' + 'score')
+                valsScore = extract_param(obj, 'i_' + measure)
+                mv_scores = extract_mv_param(obj, 'mv_' + measure)
                 valsScore.append(mv_scores)
                 f, p, rankings, pivots = friedman_test(valsScore)
+                pH[val + '_' + resname] = holm_min(rankings)
                 for best_index in range(0, len(best)):
                     file.write('\clf{' + val + '}{' + str(best[best_index]) + '}')
                     for filename in filenames:
                         f_obj = find_by_filename(obj[best_index], filename)
-                        file.write(',' + format_to_length(getattr(f_obj, 'i_' + 'score'), 3))
+                        file.write(',' + format_to_length(getattr(f_obj, 'i_' + measure), 3))
                     file.write(',' + format_to_length(rankings[best_index], 2))
                     file.write('\n')
-            file.write('\clf{MV}')
-            for filename in filenames:
-                f_obj = find_by_filename(obj[0], filename)
-                file.write(',' + format_to_length(getattr(f_obj, 'mv_' + 'score'), 3))
-            file.write(',' + format_to_length(rankings[-1], 2))
-            file.write('\n')
+                file.write('\clf{MV}')
+                for filename in filenames:
+                    f_obj = find_by_filename(get_dependent_from_n_best(9, best, space, 0, 0)[0], filename)
+                    file.write(',' + format_to_length(getattr(f_obj, 'mv_' + measure), 3))
+                file.write(',' + format_to_length(rankings[-1], 2))
+                file.write('\n')
 
 
+with open('holm.csv', 'w') as file:
+    file.write('n_s,A,,M,\n')
+    file.write(',ACC,MCC,ACC,MCC\n')
+    for space in spaces:
+        if space % 2 == 0:
+            continue
+        file.write(str(space))
+        for (_, val) in method_dict_short.items():
+            for measure in measures:
+                file.write(',' + format_to_length(pH[val + '_' + measure + '_' + str(space)], 2))
+        file.write('\n')
 
+with open('stat.csv', 'w') as file:
+    file.write('para,z,p_dunn,p_holm\n')
+    for space in spaces:
+        for measure in measures:
+            for (key, val) in method_dict_short.items(): # iteracja po metodach
+                file.write('Subspaces: ' + str(space) + '\n')
+                file.write('Measure: ' + measure + '\n')
+                file.write('Method: ' + val + '\n')
+                obj = get_dependent_from_n_best(9, best, space, key, 0)
+                valsScore = extract_param(obj, 'i_' + measure)
+                mv_scores = extract_mv_param(obj, 'mv_' + measure)
+                valsScore.append(mv_scores)
+                f, p, rankings, pivots = friedman_test(valsScore)
+                dict = {}
+                for i in range(0, len(rankings)):
+                    dict[str(i)] = rankings[i]
+                comparisonsH, z, pH, adj_p = holm_test(dict, str(len(rankings) - 1))
+                comparisonsD, z_values, p_values, adj_p_values = bonferroni_dunn_test(dict, str(len(rankings) - 1))
+                for i in range(0, len(pH)):
+                    file.write(comparisonsD[i] + ',' + format_to_length(z[i], 2) + ',' + format_to_length(p_values[i], 2) + ',' + format_to_length(pH[i], 2) + '\n')
 
