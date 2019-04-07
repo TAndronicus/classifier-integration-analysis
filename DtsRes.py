@@ -13,6 +13,6 @@ class DtsRes:
         self.filename = filename
 
     def __str__(self) -> str:
-        return str(self.filename) + ", " + str(self.n_clf) + ", " + str(self.alpha) + ":::\t" + str(self.i_score) + "\t:\t" + str(self.mv_score) + \
+        return str(self.filename) + ", " + str(self.n_clf) + ", " + self.alpha + ":::\t" + str(self.i_score) + "\t:\t" + str(self.mv_score) + \
                ",\t" + str(self.i_mcc) + "\t:\t" + str(self.mv_mcc)
 

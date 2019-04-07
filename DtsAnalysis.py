@@ -4,8 +4,8 @@ from nonparametric_tests import friedman_test, bonferroni_dunn_test, holm_test
 
 seriex = ['simple', 'pre', 'post-cv', 'post-training']
 filenames = ["bi", "bu", "c", "d", "h", "i", "m", "p", "se", "t", "wd", "wi"]
-n_clfs = [3, 5, 7]
-alphas = [.3, 1]
+n_clfs = [3, 5, 7, 9]
+alphas = [".3", "1.0"]
 dims = ["clf", "alpha", "series"]
 
 
