@@ -2,10 +2,10 @@ import os
 from DtsRes import DtsRes
 from nonparametric_tests import friedman_test, bonferroni_dunn_test, holm_test
 
-seriex = ['simple', 'pre', 'post-cv', 'post-training']
+seriex = ['sim', 'pre', 'post-cv', 'post-tr']
 filenames = ["bi", "bu", "c", "d", "h", "i", "m", "p", "se", "t", "wd", "wi"]
 n_clfs = [3, 5, 7, 9]
-alphas = [".3", "1.0"]
+alphas = ["0.3", "1.0"]
 dims = ["clf", "alpha", "series"]
 
 
@@ -73,14 +73,10 @@ def create_rank_dict(rankings):
     return dict
 
 
-objs = get_dependent_on(dims[2], 7, 60, seriex[0])
+objs = get_dependent_on(dims[2], n_clfs[0], alphas[0], seriex[0])
 objs = map_dtrex(objs, "mcc")
 iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(objs)
 print(rankings_cmp)
 rankings = create_rank_dict(rankings_cmp)
 comparisonsH, z, pH, adj_p = holm_test(rankings, str(len(rankings) - 1))
 print(pH)
-# for o in objs:
-#     for oin in o:
-#         print(str(oin))
-#     print("\n")
