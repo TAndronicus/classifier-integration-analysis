@@ -2,7 +2,7 @@ import os
 
 alphas = [".3", "1.0"]
 n_clfs = [3, 5, 7, 9]
-seriex = ['sim', 'pre', 'post-cv', 'post-tr', 'dt-deep', 'dt-shallow']
+seriex = ['sim', 'pre', 'post-cv', 'post-tr', 'deep', 'shallow']
 n_feas = [2]
 
 

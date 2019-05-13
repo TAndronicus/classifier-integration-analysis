@@ -2,10 +2,10 @@ import os
 from DtRes import DtRes
 from nonparametric_tests import friedman_test, bonferroni_dunn_test, holm_test
 
-seriex = ['dt-deep', 'dt-shallow']
+seriex = ['deep', 'deep-inv', 'shallow', 'shallow-inv']
 filenames = ["bi", "bu", "c", "d", "h", "i", "m", "p", "se", "t", "wd", "wi"]
 n_clfs = [3, 5, 7, 9]
-n_feas = [2]
+n_feas = [2, 3]
 n_divs = [20, 40, 60]
 dims = ["clf", "fea", "div", "series"]
 
@@ -26,7 +26,7 @@ def read(n_clf, n_fea, n_div, series):
 
 
 def get_dependent_on(dim, n_clf, n_fea, n_div, series):
-    if not(dim in dims):
+    if not (dim in dims):
         raise Exception("Wrong dim")
     if dim == dims[0]:
         objs = []
@@ -79,14 +79,103 @@ def create_rank_dict(rankings):
     return dict
 
 
-objs = get_dependent_on(dims[2], 7, 2, 60, seriex[0])
-objs = map_dtrex(objs, "mcc")
-iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(objs)
-print(rankings_cmp)
-rankings = create_rank_dict(rankings_cmp)
-comparisonsH, z, pH, adj_p = holm_test(rankings, str(len(rankings) - 1))
-print(pH)
-# for o in objs:
-#     for oin in o:
-#         print(str(oin))
-#     print("\n")
+def print_stats_n_clf():
+    dependent_dim = dims[0]
+    objs = get_dependent_on(dependent_dim, 7, 2, 60, seriex[0])
+    objs = map_dtrex(objs, "acc")
+    iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(objs)
+    print(rankings_cmp)
+    rankings = create_rank_dict(rankings_cmp)
+    comparisonsH, z, pH, adj_p = holm_test(rankings, str(len(rankings) - 1))
+    pH = [x for _, x in sorted(zip(comparisonsH, pH))]
+    print(pH)
+    for series in seriex:
+        print(series)
+        for meas in ["acc", "mcc"]:
+            print(meas)
+            objs = get_dependent_on(dependent_dim, 7, 2, 60, series)
+            objs = map_dtrex(objs, meas)
+            iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(objs)
+            rankings = create_rank_dict(rankings_cmp)
+            print("ranks: " + str(rankings_cmp))
+            comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, str(len(rankings) - 1))
+            pH = [x for _, x in sorted(zip(comparisonsH, pH))]
+            print("p-values: " + str(pH))
+
+
+def print_stats_series(file=None):
+    dependent_dim = dims[3]
+    for n_fea in n_feas:
+        for meas in ["acc", "mcc"]:
+            for n_clf in n_clfs:
+                custom_print("\nn_fea: " + str(n_fea) + ", n_clf: " + str(n_clf) + ", meas: " + meas + "\n", file)
+                objs = get_dependent_on(dependent_dim, n_clf, n_fea, n_divs[2], seriex[0])
+                objs = map_dtrex(objs, meas)
+                iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(objs)
+                rankings = create_rank_dict(rankings_cmp)
+                custom_print("ranks: " + str(rankings_cmp) + "\n", file)
+                comparisonsH, z, pH, adj_p = holm_test(rankings, str(len(rankings) - 1))
+                pH = [x for _, x in sorted(zip(comparisonsH, pH))]
+                custom_print("p-values: " + str(pH) + "\n", file)
+
+
+def custom_print(text, file = None):
+    if file is None:
+        print(text, end = "")
+    else:
+        file.write(text)
+
+
+def get_sums_by_filenames():
+    res = {}
+    for filename in filenames:
+        res[filename] = 0
+    return res
+
+
+def find_first_by_filename(objects, filename):
+    for object in objects:
+        if object.filename == filename:
+            return object
+    raise Exception("Filename not found: " + filename)
+
+
+def print_results(file_to_write=None):
+    dependent_dim = dims[3]
+    n_div = n_divs[2]
+    for n_fea in n_feas:
+        for meas in ["acc", "mcc"]:
+            for n_clf in n_clfs:
+                custom_print("\nn_fea: " + str(n_fea) + ", meas: " + meas + ", n_clf: " + str(n_clf) + "\n", file_to_write)
+                custom_print("series", file_to_write)
+
+                for filename in filenames:
+                    custom_print("," + filename, file_to_write)
+                custom_print(",rank\n", file_to_write)
+
+                objs_all_series = get_dependent_on(dependent_dim, n_clf, n_fea, n_div, seriex[0])
+                values = map_dtrex(objs_all_series, meas)
+                iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)
+
+                counter = 0
+                sum_by_filename = get_sums_by_filenames()
+                for series in seriex:
+                    custom_print(series + ",", file_to_write)
+                    objs = read(n_clf, n_fea, n_div, series)
+                    for filename in filenames:
+                        obj = find_first_by_filename(objs, filename)
+                        custom_print(str(getattr(obj, "i_" + meas)) + ",", file_to_write)
+                        sum_by_filename[filename] = sum_by_filename[filename] + getattr(obj, "mv_" + meas)
+                    custom_print(str(rankings_cmp[counter]) + "\n", file_to_write)
+                    counter = counter + 1
+
+                custom_print("mv,", file_to_write)
+                for filename in filenames:
+                    custom_print(str(sum_by_filename[filename] / len(seriex)) + ",", file_to_write)
+                custom_print(str(rankings_cmp[counter]) + "\n", file_to_write)
+
+
+# with open("2-res.csv", "w") as f:
+#     print_results(f)
+with open("2-stats.csv", "w") as f:
+    print_stats_series(f)
