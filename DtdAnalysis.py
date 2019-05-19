@@ -1,6 +1,8 @@
 import os
-from DtRes import DtRes
+from DtdRes import DtdRes
 from nonparametric_tests import friedman_test, bonferroni_dunn_test, holm_test
+from LatexMappings import LatexMappings
+from MathUtils import round_to_str
 
 seriex = ['deep', 'deep-inv', 'shallow', 'shallow-inv']
 filenames = ["bi", "bu", "c", "d", "h", "i", "m", "p", "se", "t", "wd", "wi"]
@@ -19,7 +21,7 @@ def read(n_clf, n_fea, n_div, series):
         counter = 0
         for line in file.readlines():
             values = line.split(",")
-            obj = DtRes(float(values[0]), float(values[1]), float(values[2]), float(values[3]), n_clf, n_fea, n_div, filenames[counter])
+            obj = DtdRes(float(values[0]), float(values[1]), float(values[2]), float(values[3]), n_clf, n_fea, n_div, filenames[counter])
             objects.append(obj)
             counter += 1
     return objects
@@ -81,14 +83,6 @@ def create_rank_dict(rankings):
 
 def print_stats_n_clf():
     dependent_dim = dims[0]
-    objs = get_dependent_on(dependent_dim, 7, 2, 60, seriex[0])
-    objs = map_dtrex(objs, "acc")
-    iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(objs)
-    print(rankings_cmp)
-    rankings = create_rank_dict(rankings_cmp)
-    comparisonsH, z, pH, adj_p = holm_test(rankings, str(len(rankings) - 1))
-    pH = [x for _, x in sorted(zip(comparisonsH, pH))]
-    print(pH)
     for series in seriex:
         print(series)
         for meas in ["acc", "mcc"]:
@@ -103,7 +97,7 @@ def print_stats_n_clf():
             print("p-values: " + str(pH))
 
 
-def print_stats_series(file=None):
+def print_stats_series(file = None):
     dependent_dim = dims[3]
     for n_fea in n_feas:
         for meas in ["acc", "mcc"]:
@@ -114,7 +108,7 @@ def print_stats_series(file=None):
                 iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(objs)
                 rankings = create_rank_dict(rankings_cmp)
                 custom_print("ranks: " + str(rankings_cmp) + "\n", file)
-                comparisonsH, z, pH, adj_p = holm_test(rankings, str(len(rankings) - 1))
+                comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, str(len(rankings) - 1))
                 pH = [x for _, x in sorted(zip(comparisonsH, pH))]
                 custom_print("p-values: " + str(pH) + "\n", file)
 
@@ -140,14 +134,13 @@ def find_first_by_filename(objects, filename):
     raise Exception("Filename not found: " + filename)
 
 
-def print_results(file_to_write=None):
+def print_results(file_to_write = None):
     dependent_dim = dims[3]
     n_div = n_divs[2]
     for n_fea in n_feas:
         for meas in ["acc", "mcc"]:
             for n_clf in n_clfs:
                 custom_print("\nn_fea: " + str(n_fea) + ", meas: " + meas + ", n_clf: " + str(n_clf) + "\n", file_to_write)
-                custom_print("series", file_to_write)
 
                 for filename in filenames:
                     custom_print("," + filename, file_to_write)
@@ -160,22 +153,27 @@ def print_results(file_to_write=None):
                 counter = 0
                 sum_by_filename = get_sums_by_filenames()
                 for series in seriex:
-                    custom_print(series + ",", file_to_write)
+                    custom_print(LatexMappings.series_names[series] + ",", file_to_write)
                     objs = read(n_clf, n_fea, n_div, series)
                     for filename in filenames:
                         obj = find_first_by_filename(objs, filename)
-                        custom_print(str(getattr(obj, "i_" + meas)) + ",", file_to_write)
+                        custom_print(round_to_str(getattr(obj, "i_" + meas), 3) + ",", file_to_write)
                         sum_by_filename[filename] = sum_by_filename[filename] + getattr(obj, "mv_" + meas)
-                    custom_print(str(rankings_cmp[counter]) + "\n", file_to_write)
+                    custom_print(round_to_str(rankings_cmp[counter], 2) + "\n", file_to_write)
                     counter = counter + 1
 
-                custom_print("mv,", file_to_write)
+                custom_print(LatexMappings.series_names['mv'] + ",", file_to_write)
                 for filename in filenames:
-                    custom_print(str(sum_by_filename[filename] / len(seriex)) + ",", file_to_write)
-                custom_print(str(rankings_cmp[counter]) + "\n", file_to_write)
+                    custom_print(round_to_str(sum_by_filename[filename] / len(seriex), 3) + ",", file_to_write)
+                custom_print(round_to_str(rankings_cmp[counter], 2) + "\n", file_to_write)
+                ## post-hoc
+                rankings = create_rank_dict(rankings_cmp)
+                comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, str(len(rankings) - 1))
+                pH = [x for _, x in sorted(zip(comparisonsH, pH))]
+                custom_print("p-values: " + str(pH) + "\n", file_to_write)
 
 
 # with open("2-res.csv", "w") as f:
 #     print_results(f)
-with open("2-stats.csv", "w") as f:
-    print_stats_series(f)
+# with open("2-stats.csv", "w") as f:
+#     print_stats_series(f)

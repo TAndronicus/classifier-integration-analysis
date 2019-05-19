@@ -168,5 +168,7 @@ def print_results(file_to_write):
 
 # with open("1-res.csv", "w") as file:
 #     print_results(file)
-with open("1-stats.csv", "w") as f:
-    print_stats_series(f)
+# with open("1-stats.csv", "w") as f:
+#     print_stats_series(f)
+print_stats_series()
+

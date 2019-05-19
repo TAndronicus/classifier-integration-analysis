@@ -1,4 +1,4 @@
-class DtRes:
+class DtdRes:
     """Data object for classifier integration results
 
     """
