@@ -103,7 +103,7 @@ def print_stats_series(file = None):
         for meas in ["acc", "mcc"]:
             for n_clf in n_clfs:
                 custom_print("\nn_fea: " + str(n_fea) + ", n_clf: " + str(n_clf) + ", meas: " + meas + "\n", file)
-                objs = get_dependent_on(dependent_dim, n_clf, n_fea, n_divs[2], seriex[0])
+                objs = get_dependent_on(dependent_dim, n_clf, n_fea, n_divs[0], seriex[0])
                 objs = map_dtrex(objs, meas)
                 iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(objs)
                 rankings = create_rank_dict(rankings_cmp)
@@ -111,6 +111,7 @@ def print_stats_series(file = None):
                 comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, str(len(rankings) - 1))
                 pH = [x for _, x in sorted(zip(comparisonsH, pH))]
                 custom_print("p-values: " + str(pH) + "\n", file)
+                custom_print("friedman p-val: " + str(p_value) + "\n", file)
 
 
 def custom_print(text, file = None):
@@ -173,7 +174,7 @@ def print_results(file_to_write = None):
                 custom_print("p-values: " + str(pH) + "\n", file_to_write)
 
 
-# with open("2-res.csv", "w") as f:
-#     print_results(f)
-# with open("2-stats.csv", "w") as f:
-#     print_stats_series(f)
+with open("2-res.csv", "w") as f:
+    print_results(f)
+with open("2-stats.csv", "w") as f:
+    print_stats_series(f)
