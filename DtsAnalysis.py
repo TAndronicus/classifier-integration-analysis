@@ -1,18 +1,24 @@
 import os
 from DtsRes import DtsRes
 from nonparametric_tests import friedman_test, bonferroni_dunn_test, holm_test
+from MathUtils import round_to_str
+from LatexMappings import LatexMappings
 
-seriex = ["sim", "pre", "post-cv", "post-tr"]
-effective_seriex = ["pre", "post-cv", "post-tr"]
-filenames = ["bi", "bu", "c", "d", "h", "i", "m", "p", "se", "t", "wd", "wi"]
+seriex = ["pre-tr"]
+filenames = ["bi", "bu", "c", "d", "h", "i", "m", "p", "se", "wd", "wi"]
 n_clfs = [3, 5, 7, 9]
-alphas = ["1.0", "0.3"]
-dims = ["clf", "alpha", "series", "effective_series"]
+alphas = ["0.0", "0.3", "0.7", "1.0"]
+betas1 = ["0.5"]
+betas2 = ["0.0"]
+gammas1 = ["20.0"]
+gammas2 = gammas1
+dims = ["clf", "alpha", "series"]
 
 
 def read(n_clf, alpha, series):
-    name_pattern = "dt/" + series + "/{}_{}"
-    res_filename = name_pattern.format(n_clf, alpha)
+    def_beta1, def_beta2, def_gamma1, def_gamma2 = betas1[0], betas2[0], gammas1[0], gammas2[0]  # Defaults
+    name_pattern = "dt/dts/" + series + "/{}_{}_{}_{}_{}_{}"
+    res_filename = name_pattern.format(n_clf, alpha, def_beta1, def_beta2, def_gamma1, def_gamma2)
     absolute_path = os.path.join(os.path.dirname(__file__), res_filename)
     objects = []
     with(open(absolute_path)) as file:
@@ -41,11 +47,6 @@ def get_dependent_on(dim, n_clf, alpha, series):
     if dim == dims[2]:
         objs = []
         for ns in seriex:
-            objs.append(read(n_clf, alpha, ns))
-        return objs
-    if dim == dims[3]:
-        objs = []
-        for ns in effective_seriex:
             objs.append(read(n_clf, alpha, ns))
         return objs
 
@@ -103,12 +104,12 @@ def print_stats_n_clf():
 
 
 def print_stats_series(file = None):
-    dependent_dim = dims[3]
+    dependent_dim = dims[2]
     for alpha in alphas:
         for n_clf in n_clfs:
             for meas in ["acc", "mcc"]:
                 custom_print("\nalpha: " + alpha + ", meas: " + meas + ", n_clf: " + str(n_clf) + "\n", file)
-                objs = get_dependent_on(dependent_dim, n_clf, alpha, effective_seriex[0])
+                objs = get_dependent_on(dependent_dim, n_clf, alpha, seriex[0])
                 objs = map_dtrex(objs, meas)
                 iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(objs)
                 custom_print("ranks: " + str(rankings_cmp) + "\n", file)
@@ -125,7 +126,7 @@ def custom_print(text, file = None):
         file.write(text)
 
 
-def get_sums_by_filenames():
+def initialize_sums_by_filenames():
     res = {}
     for filename in filenames:
         res[filename] = 0
@@ -133,42 +134,40 @@ def get_sums_by_filenames():
 
 
 def print_results(file_to_write):
-    dependent_dim = dims[3]
-    for alpha in alphas:
+    def_series = seriex[0]
+    dependent_dim = dims[1]
+    for n_clf in n_clfs:
         for meas in ["acc", "mcc"]:
-            for n_clf in n_clfs:
-                custom_print("\nalpha: " + alpha + ", meas: " + meas + ", n_clf: " + str(n_clf) + "\n", file_to_write)
-                custom_print("series", file_to_write)
+            custom_print("\nn_clf = " + str(n_clf) + ", meas = " + meas + "\n", file_to_write)
+            for filename in filenames:
+                custom_print("," + filename, file_to_write)
+            custom_print(",rank\n", file_to_write)
 
+            objs_all_series = get_dependent_on(dependent_dim, n_clf, alphas[0], def_series)
+            values = map_dtrex(objs_all_series, meas)
+            iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)
+
+            counter = 0
+            sum_by_filename = initialize_sums_by_filenames()
+            for alpha in alphas:
+                custom_print(LatexMappings.map_dts_alpha(alpha) + ",", file_to_write)
+                objs = read(n_clf, alpha, def_series)
                 for filename in filenames:
-                    custom_print("," + filename, file_to_write)
-                custom_print(",rank\n", file_to_write)
+                    obj = find_first_by_filename(objs, filename)
+                    custom_print(round_to_str(getattr(obj, "i_" + meas), 3) + ",", file_to_write)
+                    sum_by_filename[filename] = sum_by_filename[filename] + getattr(obj, "mv_" + meas)
+                custom_print(round_to_str(rankings_cmp[counter], 2) + "\n", file_to_write)
+                counter = counter + 1
 
-                objs_all_series = get_dependent_on(dependent_dim, n_clf, alpha, effective_seriex[0])
-                values = map_dtrex(objs_all_series, meas)
-                iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)
+            custom_print(LatexMappings.map_dts_alpha("mv") + ",", file_to_write)
+            for filename in filenames:
+                custom_print(round_to_str(sum_by_filename[filename] / len(alphas), 3) + ",", file_to_write)
+            custom_print(round_to_str(rankings_cmp[counter], 2) + "\n", file_to_write)
 
-                counter = 0
-                sum_by_filename = get_sums_by_filenames()
-                for series in effective_seriex:
-                    custom_print(series + ",", file_to_write)
-                    objs = read(n_clf, alpha, series)
-                    for filename in filenames:
-                        obj = find_first_by_filename(objs, filename)
-                        custom_print(str(getattr(obj, "i_" + meas)) + ",", file_to_write)
-                        sum_by_filename[filename] = sum_by_filename[filename] + getattr(obj, "mv_" + meas)
-                    custom_print(str(rankings_cmp[counter]) + "\n", file_to_write)
-                    counter = counter + 1
-
-                custom_print("mv,", file_to_write)
-                for filename in filenames:
-                    custom_print(str(sum_by_filename[filename] / len(effective_seriex)) + ",", file_to_write)
-                custom_print(str(rankings_cmp[counter]) + "\n", file_to_write)
+            custom_print("p-value: " + str(p_value) + "\n", file_to_write)
 
 
-# with open("1-res.csv", "w") as file:
-#     print_results(file)
-# with open("1-stats.csv", "w") as f:
-#     print_stats_series(f)
-print_stats_series()
-
+with open("1-res.csv", "w") as file:
+    print_results(file)
+with open("1-stats.csv", "w") as file:
+    print_stats_series(file)
