@@ -1,3 +1,6 @@
 .idea
 __pycache__
-
+results
+dt
+dt-bak
+*.csv
