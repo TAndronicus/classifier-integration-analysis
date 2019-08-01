@@ -5,7 +5,8 @@ class LatexMappings:
         'deep-inv': '$\Psi_{5}^{inv}$',
         'shallow': '$\Psi_{3}^{vol}$',
         'shallow-inv': '$\Psi_{3}^{inv}$',
-        'mv': '$\Psi_{MV}$'
+        'mv': '$\Psi_{MV}$',
+        'rf': '$\Psi_{RF}$'
     }
 
     @staticmethod

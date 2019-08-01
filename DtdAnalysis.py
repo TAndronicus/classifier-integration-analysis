@@ -4,16 +4,19 @@ from nonparametric_tests import friedman_test, bonferroni_dunn_test, holm_test
 from LatexMappings import LatexMappings
 from MathUtils import round_to_str
 
-seriex = ['deep', 'deep-inv', 'shallow', 'shallow-inv']
+# seriex = ['deep', 'deep-inv', 'shallow', 'shallow-inv']
+seriex = ['shallow']
 filenames = ["bi", "bu", "c", "d", "h", "i", "m", "p", "se", "t", "wd", "wi"]
-n_clfs = [3, 5, 7, 9]
-n_feas = [2, 3]
+# n_clfs = [3, 5, 7, 9]
+n_clfs = [3, 5]
+# n_feas = [2, 3]
+n_feas = [2]
 n_divs = [20, 40, 60]
 dims = ["clf", "fea", "div", "series"]
 
 
 def read(n_clf, n_fea, n_div, series):
-    name_pattern = "dt/" + series + "/{}_{}_{}"
+    name_pattern = "dtd/" + series + "/{}_{}_{}"
     res_filename = name_pattern.format(n_clf, n_fea, n_div)
     absolute_path = os.path.join(os.path.dirname(__file__), res_filename)
     objects = []
@@ -21,7 +24,10 @@ def read(n_clf, n_fea, n_div, series):
         counter = 0
         for line in file.readlines():
             values = line.split(",")
-            obj = DtdRes(float(values[0]), float(values[1]), float(values[2]), float(values[3]), n_clf, n_fea, n_div, filenames[counter])
+            obj = DtdRes(float(values[0]), float(values[1]), # mv
+                         float(values[2]), float(values[3]), # rf
+                         float(values[4]), float(values[5]), # i
+                         n_clf, n_fea, n_div, filenames[counter])
             objects.append(obj)
             counter += 1
     return objects
@@ -52,19 +58,22 @@ def get_dependent_on(dim, n_clf, n_fea, n_div, series):
         return objs
 
 
-def get_average_mv(n_fea, attr, n_clf):
+def get_average_reference(n_fea, attr, n_clf):
     objects = []
     for div in n_divs:
         for series in seriex:
             objects.append(read(n_clf, n_fea, div, series))
-    res_out = []
+    mv_out = []
+    rf_out = []
     length = len(objects)
     for i in range(len(objects[0])):
-        value = 0
+        mv_value, rf_value = 0, 0
         for j in range(length):
-            value += getattr(objects[j][i], "mv_" + attr)
-        res_out.append(value / length)
-    return res_out
+            mv_value += getattr(objects[j][i], "mv_" + attr)
+            rf_value += getattr(objects[j][i], "rf_" + attr)
+        mv_out.append(mv_value / length)
+        rf_out.append(rf_value / length)
+    return [mv_out, rf_out]
 
 
 def map_dtrex(objects, n_fea, attr, n_clf):
@@ -74,7 +83,8 @@ def map_dtrex(objects, n_fea, attr, n_clf):
         for obj_in in obj_out:
             res_in.append(getattr(obj_in, "i_" + attr))
         res_out.append(res_in)
-    res_out.append(get_average_mv(n_fea, attr, n_clf))
+    for reference in get_average_reference(n_fea, attr, n_clf):
+        res_out.append(reference)
     return res_out
 
 
@@ -146,6 +156,13 @@ def print_results(file_to_write = None):
                 for dataset in range(len(values[counter])):
                     custom_print(round_to_str(values[counter][dataset] / len(seriex), 3) + ",", file_to_write)
                 custom_print(round_to_str(rankings_cmp[counter], 2) + "\n", file_to_write)
+                counter = counter + 1
+
+                custom_print(LatexMappings.dtd_series_names['rf'] + ",", file_to_write)
+                for dataset in range(len(values[counter])):
+                    custom_print(round_to_str(values[counter][dataset] / len(seriex), 3) + ",", file_to_write)
+                custom_print(round_to_str(rankings_cmp[counter], 2) + "\n", file_to_write)
+
                 ## post-hoc
                 rankings = create_rank_dict(rankings_cmp)
                 comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, str(len(rankings) - 1))
