@@ -4,11 +4,11 @@ from nonparametric_tests import friedman_test, bonferroni_dunn_test, holm_test
 from LatexMappings import LatexMappings
 from MathUtils import round_to_str
 
-# seriex = ['deep', 'deep-inv', 'shallow', 'shallow-inv']
-seriex = ['shallow']
-filenames = ["bi", "bu", "c", "d", "h", "i", "m", "p", "se", "t", "wd", "wi"]
-# n_clfs = [3, 5, 7, 9]
-n_clfs = [3, 5]
+seriex = ['vol-shallow', 'vol-deep', 'inv-shallow', 'inv-deep']
+# seriex = ['vol-shallow', 'inv-shallow']
+# seriex = ['vol-deep', 'inv-deep']
+filenames = ["bi", "bu", "c", "d", "h", "i", "m", "p", "se", "wd", "wi"]
+n_clfs = [3, 5, 7, 9]
 # n_feas = [2, 3]
 n_feas = [2]
 n_divs = [20, 40, 60]
@@ -126,9 +126,17 @@ def find_first_by_filename(objects, filename):
     raise Exception("Filename not found: " + filename)
 
 
-def print_results(file_to_write = None):
+def get_mapping(mapping = 0):
+    if mapping == 0:
+        seriex = ['vol-shallow', 'inv-shallow']
+    elif mapping == 1:
+        seriex = ['vol-deep', 'inv-deep']
+    else:
+        raise Exception("No such mapping")
+
+
+def print_results(file_to_write = None, n_div = n_divs[0], mapping = 0):
     dependent_dim = dims[3]
-    n_div = n_divs[1]
     for n_fea in n_feas:
         for meas in ["acc", "mcc"]:
             for n_clf in n_clfs:
@@ -154,13 +162,13 @@ def print_results(file_to_write = None):
 
                 custom_print(LatexMappings.dtd_series_names['mv'] + ",", file_to_write)
                 for dataset in range(len(values[counter])):
-                    custom_print(round_to_str(values[counter][dataset] / len(seriex), 3) + ",", file_to_write)
+                    custom_print(round_to_str(values[counter][dataset], 3) + ",", file_to_write)
                 custom_print(round_to_str(rankings_cmp[counter], 2) + "\n", file_to_write)
                 counter = counter + 1
 
                 custom_print(LatexMappings.dtd_series_names['rf'] + ",", file_to_write)
                 for dataset in range(len(values[counter])):
-                    custom_print(round_to_str(values[counter][dataset] / len(seriex), 3) + ",", file_to_write)
+                    custom_print(round_to_str(values[counter][dataset], 3) + ",", file_to_write)
                 custom_print(round_to_str(rankings_cmp[counter], 2) + "\n", file_to_write)
 
                 ## post-hoc
@@ -170,7 +178,8 @@ def print_results(file_to_write = None):
                 custom_print("p-values: " + str(pH) + "\n", file_to_write)
 
 
-with open("2-res.csv", "w") as f:
-    print_results(f)
+for n_div in n_divs:
+    with open("2-res-" + str(n_div) + ".csv", "w") as f:
+        print_results(f, n_div)
 with open("2-stats.csv", "w") as f:
     print_stats_series(f)
