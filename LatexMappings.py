@@ -6,7 +6,9 @@ class LatexMappings:
         'vol-shallow': '$\Psi_{3}^{vol}$',
         'inv-shallow': '$\Psi_{3}^{inv}$',
         'mv': '$\Psi_{MV}$',
-        'rf': '$\Psi_{RF}$'
+        'mv-p': ['$\Psi_{3}^{MV}$', '$\Psi_{5}^{MV}$'],
+        'rf': '$\Psi_{RF}$',
+        'rf-p': ['$\Psi_{3}^{RF}$', '$\Psi_{5}^{RF}$']
     }
 
     @staticmethod

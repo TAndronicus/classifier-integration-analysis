@@ -126,7 +126,8 @@ def find_first_by_filename(objects, filename):
     raise Exception("Filename not found: " + filename)
 
 
-def get_mapping(mapping = 0):
+def set_mapping(mapping = 0):
+    global seriex
     if mapping == 0:
         seriex = ['vol-shallow', 'inv-shallow']
     elif mapping == 1:
@@ -135,7 +136,7 @@ def get_mapping(mapping = 0):
         raise Exception("No such mapping")
 
 
-def print_results(file_to_write = None, n_div = n_divs[0], mapping = 0):
+def print_results(file_to_write = None, n_div = n_divs[0]):
     dependent_dim = dims[3]
     for n_fea in n_feas:
         for meas in ["acc", "mcc"]:
@@ -160,13 +161,13 @@ def print_results(file_to_write = None, n_div = n_divs[0], mapping = 0):
                     custom_print(round_to_str(rankings_cmp[counter], 2) + "\n", file_to_write)
                     counter = counter + 1
 
-                custom_print(LatexMappings.dtd_series_names['mv'] + ",", file_to_write)
+                custom_print(LatexMappings.dtd_series_names['mv-p'][mapping] + ",", file_to_write)
                 for dataset in range(len(values[counter])):
                     custom_print(round_to_str(values[counter][dataset], 3) + ",", file_to_write)
                 custom_print(round_to_str(rankings_cmp[counter], 2) + "\n", file_to_write)
                 counter = counter + 1
 
-                custom_print(LatexMappings.dtd_series_names['rf'] + ",", file_to_write)
+                custom_print(LatexMappings.dtd_series_names['rf-p'][mapping] + ",", file_to_write)
                 for dataset in range(len(values[counter])):
                     custom_print(round_to_str(values[counter][dataset], 3) + ",", file_to_write)
                 custom_print(round_to_str(rankings_cmp[counter], 2) + "\n", file_to_write)
@@ -179,7 +180,9 @@ def print_results(file_to_write = None, n_div = n_divs[0], mapping = 0):
 
 
 for n_div in n_divs:
-    with open("2-res-" + str(n_div) + ".csv", "w") as f:
-        print_results(f, n_div)
+    for mapping in [0, 1]:
+        set_mapping(mapping)
+        with open("2-res-" + str(n_div) + "-" + ["shallow", "deep"][mapping] + ".csv", "w") as f:
+            print_results(f, n_div)
 with open("2-stats.csv", "w") as f:
     print_stats_series(f)
