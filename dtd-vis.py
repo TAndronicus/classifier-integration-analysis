@@ -67,3 +67,32 @@ plt.fill(
     'r', alpha=.4
 )
 plt.show()
+
+# Example for not 1NN
+x, y = .7, .3
+plt.fill(
+    [0, 0, 1, 1],
+    [0, 1, 1, 0],
+    'b', alpha = .2
+)
+plt.fill(
+    [x, x, 1, 1],
+    [0, y, y, 0],
+    'r', alpha = .4
+)
+plt.plot(
+    [0, 1],
+    [y, y],
+    'k--'
+)
+plt.plot(
+    [x, x],
+    [0, 1],
+    'k--'
+)
+plt.plot(x / 2, y / 2, 'bo')
+plt.plot(x / 2, (y + 1) / 2, 'bo')
+plt.plot((x + 1) / 2, (y + 1) / 2, 'bo')
+plt.plot((x + 1) / 2, y / 2, 'ro')
+plt.plot(x - .05, y - .05, 'ko')
+plt.show()
