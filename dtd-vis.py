@@ -9,7 +9,7 @@ def divide_plot(div):
 
 
 # Division
-divide_plot(3)
+divide_plot(2)
 plt.show()
 
 # Decision tree
@@ -95,4 +95,30 @@ plt.plot(x / 2, (y + 1) / 2, 'bo')
 plt.plot((x + 1) / 2, (y + 1) / 2, 'bo')
 plt.plot((x + 1) / 2, y / 2, 'ro')
 plt.plot(x - .05, y - .05, 'ko')
+plt.show()
+
+# Subregion - same classifier
+x_min, x_max, y_min, y_max = .0, .6, .1, .5
+plt.fill([x_min, x_min, x_max, x_max], [y_min, y_max, y_max, y_min], 'b', alpha=.2)
+plt.fill(
+    [x_min, x_min, x_max, x_max, x_min, x_min, 1, 1],
+    [0, y_min, y_min, y_max, y_max, 1, 1, 0],
+    'r', alpha=.4
+)
+plt.plot(
+    [0, 1],
+    [y_min, y_min],
+    'k--'
+)
+plt.plot(
+    [0, 1],
+    [y_max, y_max],
+    'k--'
+)
+plt.plot(
+    [x_max, x_max],
+    [0, 1],
+    'k--'
+)
+plt.axis([0, 1, 0, 1])
 plt.show()
