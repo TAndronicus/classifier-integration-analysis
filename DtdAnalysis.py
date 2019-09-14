@@ -182,7 +182,7 @@ def print_results(file_to_write = None, n_div = n_divs[0]):
 for n_div in n_divs:
     for mapping in [0, 1]:
         set_mapping(mapping)
-        with open("2-res-" + str(n_div) + "-" + ["shallow", "deep"][mapping] + ".csv", "w") as f:
+        with open("reports/2-res-" + str(n_div) + "-" + ["shallow", "deep"][mapping] + ".csv", "w") as f:
             print_results(f, n_div)
-with open("2-stats.csv", "w") as f:
+with open("reports/2-stats.csv", "w") as f:
     print_stats_series(f)

@@ -105,5 +105,5 @@ def print_results(file_to_write = None):
                 custom_print('p-values: ' + str(pH) + '\n', file_to_write)
 
 
-with open('2-batch.csv', 'w') as f:
+with open('reports/2-batch.csv', 'w') as f:
     print_results(f)

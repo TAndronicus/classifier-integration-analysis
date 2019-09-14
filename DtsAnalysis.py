@@ -167,7 +167,7 @@ def print_results(file_to_write):
             custom_print("p-value: " + str(p_value) + "\n", file_to_write)
 
 
-with open("1-res.csv", "w") as file:
+with open("reports/1-res.csv", "w") as file:
     print_results(file)
-with open("1-stats.csv", "w") as file:
+with open("reports/1-stats.csv", "w") as file:
     print_stats_series(file)
