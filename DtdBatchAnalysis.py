@@ -5,7 +5,8 @@ from MathUtils import round_to_str
 from nonparametric_tests import friedman_test, bonferroni_dunn_test
 
 filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 'se', 'wd', 'wi']
-references = ['mv', 'rf', 'wmv_vol', 'wmv_inv']
+# references = ['mv', 'rf', 'wmv_vol', 'wmv_inv']
+references = ['mv', 'rf']
 n_clfs = [3, 5, 7, 9]
 n_feas = [2]
 n_divs = [20, 40, 60]
@@ -35,13 +36,12 @@ def read(n_clf, n_fea):
     return objects
 
 
-def map_dtrex(objects, attr):
+def map_dtrex(objects, attr, method):
     res_out = []
     for reference in references:
         res_out.append([getattr(obj, reference + '_' + attr) for obj in objects])
-    for method in ['vol', 'inv']:
-        for div in n_divs:
-            res_out.append([getattr(obj, 'i_' + method + '_' + attr)[div] for obj in objects])
+    for div in n_divs:
+        res_out.append([getattr(obj, 'i_' + method + '_' + attr)[div] for obj in objects])
     return res_out
 
 
@@ -69,40 +69,40 @@ def find_first_by_filename(objects, filename):
 def print_results(file_to_write = None):
     for n_fea in n_feas:
         for meas in ['acc', 'mcc']:
-            for n_clf in n_clfs:
-                custom_print('\nn_fea: ' + str(n_fea) + ', meas: ' + meas + ', n_clf: ' + str(n_clf) + '\n', file_to_write)
+            for mapping in ['vol', 'inv']:
+                for n_clf in n_clfs:
+                    custom_print('\nn_fea: ' + str(n_fea) + ', meas: ' + meas + ', n_clf: ' + str(n_clf) + '\n', file_to_write)
 
-                for filename in filenames:
-                    custom_print(',' + filename, file_to_write)
-                custom_print(',rank\n', file_to_write)
-
-                objs = read(n_clf, n_fea)
-                values = map_dtrex(objs, meas)
-                iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)
-
-                counter = 0
-                for reference in references:
-                    custom_print(reference + ',', file_to_write)  # TODO: mapping to latex string
                     for filename in filenames:
-                        obj = find_first_by_filename(objs, filename)
-                        custom_print(round_to_str(getattr(obj, reference + '_' + meas), 3) + ',', file_to_write)
-                    custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
-                    counter = counter + 1
+                        custom_print(',' + filename, file_to_write)
+                    custom_print(',rank\n', file_to_write)
 
-                for method in ['vol', 'inv']:
-                    for div in n_divs:
-                        custom_print(method + '_' + str(div) + ',', file_to_write)
+                    objs = read(n_clf, n_fea)
+                    values = map_dtrex(objs, meas, mapping)
+                    iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)
+
+                    counter = 0
+                    for reference in references:
+                        custom_print(reference + ',', file_to_write)  # TODO: mapping to latex string
                         for filename in filenames:
                             obj = find_first_by_filename(objs, filename)
-                            custom_print(round_to_str(getattr(obj, 'i_' + method + '_' + meas)[div], 3) + ',', file_to_write)
+                            custom_print(round_to_str(getattr(obj, reference + '_' + meas), 3) + ',', file_to_write)
                         custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
                         counter = counter + 1
 
-                ## post-hoc
-                rankings = create_rank_dict(rankings_cmp)
-                comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, '0')
-                pH = [x for _, x in sorted(zip(comparisonsH, pH))]
-                custom_print('p-values: ' + str(pH) + '\n', file_to_write)
+                    for div in n_divs:
+                        custom_print(mapping + '_' + str(div) + ',', file_to_write)
+                        for filename in filenames:
+                            obj = find_first_by_filename(objs, filename)
+                            custom_print(round_to_str(getattr(obj, 'i_' + mapping + '_' + meas)[div], 3) + ',', file_to_write)
+                        custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
+                        counter = counter + 1
+
+                    ## post-hoc
+                    rankings = create_rank_dict(rankings_cmp)
+                    comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, '0')
+                    pH = [x for _, x in sorted(zip(comparisonsH, pH))]
+                    custom_print('p-values: ' + str(pH) + '\n', file_to_write)
 
 
 with open('reports/2-batch.csv', 'w') as f:
