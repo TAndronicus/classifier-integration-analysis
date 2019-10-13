@@ -4,7 +4,7 @@ from DtdBatchRes import DtdBatchRes
 from MathUtils import round_to_str
 from nonparametric_tests import friedman_test, bonferroni_dunn_test
 
-filenames = ['bi', 'bu', 'c', 'd', 'h', 'i', 'm', 'p', 'se', 'wd', 'wi']
+filenames = ['bio', 'bup', 'cry', 'dba', 'hab', 'ion', 'met', 'pop', 'sei', 'wdb', 'wis']
 # references = ['mv', 'rf', 'wmv_vol', 'wmv_inv']
 references = ['mv', 'rf']
 n_clfs = [3, 5, 7, 9]
@@ -66,12 +66,20 @@ def find_first_by_filename(objects, filename):
     raise Exception('Filename not found: ' + filename)
 
 
+def single_script_psi(subscript: str):
+    return '$\Psi_{' + subscript + '}$'
+
+
+def double_script_psi(subscript: str, superscript: str):
+    return '$\Psi_{' + subscript + '}^{' + superscript + '}$'
+
+
 def print_results(file_to_write = None):
     for n_fea in n_feas:
         for meas in ['acc', 'mcc']:
             for mapping in ['vol', 'inv']:
                 for n_clf in n_clfs:
-                    custom_print('\nn_fea: ' + str(n_fea) + ', meas: ' + meas + ', n_clf: ' + str(n_clf) + '\n', file_to_write)
+                    custom_print('\nn_fea: ' + str(n_fea) + ', meas: ' + meas + ', n_clf: ' + str(n_clf) + ', mapping: ' + mapping + '\n', file_to_write)
 
                     for filename in filenames:
                         custom_print(',' + filename, file_to_write)
@@ -83,7 +91,7 @@ def print_results(file_to_write = None):
 
                     counter = 0
                     for reference in references:
-                        custom_print(reference + ',', file_to_write)  # TODO: mapping to latex string
+                        custom_print(single_script_psi(reference) + ',', file_to_write)  # TODO: mapping to latex string
                         for filename in filenames:
                             obj = find_first_by_filename(objs, filename)
                             custom_print(round_to_str(getattr(obj, reference + '_' + meas), 3) + ',', file_to_write)
@@ -91,7 +99,7 @@ def print_results(file_to_write = None):
                         counter = counter + 1
 
                     for div in n_divs:
-                        custom_print(mapping + '_' + str(div) + ',', file_to_write)
+                        custom_print(double_script_psi(mapping, str(div)) + ',', file_to_write)
                         for filename in filenames:
                             obj = find_first_by_filename(objs, filename)
                             custom_print(round_to_str(getattr(obj, 'i_' + mapping + '_' + meas)[div], 3) + ',', file_to_write)
