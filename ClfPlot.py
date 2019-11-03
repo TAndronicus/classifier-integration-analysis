@@ -10,11 +10,12 @@ rc('text', usetex = True)
 critical_value = 1.66
 algorithms = {
     # @formatter:off
-    '$\Psi_{mv}$':       5.46,
-    '$\Psi_{rf}$':       2.29,
-    '$\Psi_{vol}^{20}$': 4.72,
-    '$\Psi_{vol}^{40}$': 4.31,
-    '$\Psi_{vol}^{60}$': 5.46
+    # '$\Psi_{mv}$':       5.46,
+    '$\Psi_{rf}$':  3.76,
+    '$\Psi_{0.0}$': 3.65,
+    '$\Psi_{0.3}$': 4.56,
+    '$\Psi_{0.7}$': 5.36,
+    '$\Psi_{1.0}$': 4.90
     # @formatter:on
 }
 avranks = [*algorithms.values()]
