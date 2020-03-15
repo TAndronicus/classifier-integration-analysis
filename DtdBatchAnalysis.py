@@ -110,7 +110,8 @@ def print_results(file_to_write = None):
                     rankings = create_rank_dict(rankings_cmp)
                     comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, '0')
                     pH = [x for _, x in sorted(zip(comparisonsH, pH))]
-                    custom_print('p-values: ' + str(pH) + '\n', file_to_write)
+                    custom_print('Friedman p-value: ' + str(p_value) + '\n', file_to_write)
+                    custom_print('Bonferroni-Dunn p-values: ' + str(pH) + '\n', file_to_write)
 
 
 with open('reports/2-batch.csv', 'w') as f:

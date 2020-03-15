@@ -4,15 +4,15 @@ from DtsBatchRes import DtsBatchRes
 from MathUtils import round_to_str
 from nonparametric_tests import friedman_test, bonferroni_dunn_test
 
-seriex = ["pre-tr"]
+seriex = ["pre-extended"]
 filenames = ['bio', 'bup', 'cry', 'dba', 'hab', 'ion', 'met', 'pop', 'sei', 'wdb', 'wis']
 references = ['mv', 'rf']
-n_clfs = [3, 5, 7, 9]
+n_clfs = [5]
 alphas = ["0.0", "0.3", "0.7", "1.0"]
 betas1 = ["0.5"]
 betas2 = ["0.0"]
-gammas1 = ["20.0"]
-gammas2 = ["5.0"]
+gammas1 = ["20.0", "5.0", "20.0", "10.0"]
+gammas2 = ["5.0", "5.0", "20.0", "10.0"]
 dims = ["clf", "alpha", "series"]
 
 
@@ -27,8 +27,8 @@ def read(n_clf, alpha, series):
             values = line.split(',')
             if len(values) < 6: continue
             obj = DtsBatchRes(float(values[0]), float(values[1]),  # mv
-                              float(values[2]), float(values[3]),  # rf
-                              float(values[4]), float(values[5]),  # i
+                              float(values[4]), float(values[5]),  # rf
+                              float(values[8]), float(values[9]),  # i
                               n_clf, alpha, filenames[counter])
             objects.append(obj)
             counter += 1
@@ -94,11 +94,20 @@ def initialize_sums_by_filenames():
     return res
 
 
-def print_results(file_to_write = None):
+def get_params_suffix(gamma_permutation):
+    suffix = ""
+    if gamma_permutation != -1:
+        suffix += (", gamma1: " + gammas1[gamma_permutation] + ", gamma2: " + gammas2[gamma_permutation])
+    return suffix
+
+
+def print_results(file_to_write = None, gamma_permutation = -1):
+
     def_series = seriex[0]
     for n_clf in n_clfs:
         for meas in ['acc', 'mcc']:
-            custom_print('\nn_clf: ' + str(n_clf) + ', meas: ' + meas + '\n', file_to_write)
+            suffix = get_params_suffix(gamma_permutation)
+            custom_print('\nn_clf: ' + str(n_clf) + ', meas: ' + meas + suffix + '\n', file_to_write)
 
             for filename_index in filenames:
                 custom_print(',' + filename_index, file_to_write)
@@ -133,4 +142,5 @@ def print_results(file_to_write = None):
 
 
 with open('reports/1-batch.csv', 'w') as f:
-    print_results(f)
+    for i in range(len(gammas1)):
+        print_results(f, gamma_permutation = i)
