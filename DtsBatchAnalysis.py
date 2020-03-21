@@ -16,9 +16,9 @@ gammas2 = ["5.0", "5.0", "20.0", "10.0"]
 dims = ["clf", "alpha", "series"]
 
 
-def read(n_clf, alpha, series):
+def read(n_clf, alpha, series, gamma_permutation = 0):
     name_pattern = "dts/" + series + "/{}_{}_{}_{}_{}_{}"
-    res_filename = name_pattern.format(n_clf, alpha, betas1[0], betas2[0], gammas1[0], gammas2[0])
+    res_filename = name_pattern.format(n_clf, alpha, betas1[0], betas2[0], gammas1[gamma_permutation], gammas2[gamma_permutation])
     absolute_path = os.path.join(os.path.dirname(__file__), res_filename)
     objects = []
     with(open(absolute_path)) as file:
@@ -115,7 +115,7 @@ def print_results(file_to_write = None, gamma_permutation = -1):
 
             objs = []
             for alpha in alphas:
-                objs.append(read(n_clf, alpha, def_series))
+                objs.append(read(n_clf, alpha, def_series, gamma_permutation))
             values = map_dtrex(objs, meas)
             iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)
 
@@ -141,6 +141,27 @@ def print_results(file_to_write = None, gamma_permutation = -1):
             custom_print('p-values: ' + str(pH) + '\n', file_to_write)
 
 
+def aggregate_csv(file_to_write = None, meas = 'acc', gamma_permutation = -1):
+
+    def_series = seriex[0]
+    for n_clf in n_clfs:
+        objs = []
+        for alpha in alphas:
+            objs.append(read(n_clf, alpha, def_series, gamma_permutation = gamma_permutation))
+        values = map_dtrex(objs, meas)
+
+        custom_print(','.join(['alpha' + a + '(' + meas + ')' for a in alphas]) + ',mv(' + meas + '),rf(' + meas + ')\n', file_to_write)
+        for i in range(len(values[0])):
+            for j in range(len(values)):
+                custom_print(round_to_str(values[j][i], 3) + ',', file_to_write)
+            custom_print('\n', file_to_write)
+
+
 with open('reports/1-batch.csv', 'w') as f:
     for i in range(len(gammas1)):
         print_results(f, gamma_permutation = i)
+
+for meas in ['acc', 'mcc']:
+    for i in range(len(gammas1)):
+        with open('csv/' + meas + '_' + gammas1[i] + '_' + gammas2[i] + '.csv', 'w') as f:
+            aggregate_csv(f, meas = meas, gamma_permutation = i)
