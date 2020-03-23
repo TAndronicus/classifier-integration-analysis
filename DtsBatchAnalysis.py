@@ -16,22 +16,25 @@ gammas2 = ["5.0", "5.0", "20.0", "10.0"]
 dims = ["clf", "alpha", "series"]
 
 
-def read(n_clf, alpha, series, gamma_permutation = 0):
+def read(n_clf, alpha, series, gamma_permutation = -1):
     name_pattern = "dts/" + series + "/{}_{}_{}_{}_{}_{}"
-    res_filename = name_pattern.format(n_clf, alpha, betas1[0], betas2[0], gammas1[gamma_permutation], gammas2[gamma_permutation])
-    absolute_path = os.path.join(os.path.dirname(__file__), res_filename)
     objects = []
-    with(open(absolute_path)) as file:
-        counter = 0
-        for line in file.readlines():
-            values = line.split(',')
-            if len(values) < 6: continue
-            obj = DtsBatchRes(float(values[0]), float(values[1]),  # mv
-                              float(values[4]), float(values[5]),  # rf
-                              float(values[8]), float(values[9]),  # i
-                              n_clf, alpha, filenames[counter])
-            objects.append(obj)
-            counter += 1
+    for gamma_number in [range(len(gammas1)), [gamma_permutation]][gamma_permutation != -1]:
+        res_filename = name_pattern.format(n_clf, alpha, betas1[0], betas2[0], gammas1[gamma_number], gammas2[gamma_number])
+        absolute_path = os.path.join(os.path.dirname(__file__), res_filename)
+        with(open(absolute_path)) as file:
+            counter = 0
+            for line in file.readlines():
+                values = line.split(',')
+                if len(values) < 6: continue
+                obj = DtsBatchRes(float(values[0]), float(values[1]),  # mv
+                                  float(values[4]), float(values[5]),  # rf
+                                  float(values[8]), float(values[9]),  # i
+                                  n_clf,
+                                  alpha, betas1[0], betas2[0], gammas1[gamma_number], gammas2[gamma_number],
+                                  filenames[counter])
+                objects.append(obj)
+                counter += 1
     return objects
 
 
@@ -101,67 +104,72 @@ def get_params_suffix(gamma_permutation):
     return suffix
 
 
-def print_results(file_to_write = None, gamma_permutation = -1):
-
+def print_results(file_to_write = None):
     def_series = seriex[0]
     for n_clf in n_clfs:
         for meas in ['acc', 'mcc']:
-            suffix = get_params_suffix(gamma_permutation)
-            custom_print('\nn_clf: ' + str(n_clf) + ', meas: ' + meas + suffix + '\n', file_to_write)
-
-            for filename_index in filenames:
-                custom_print(',' + filename_index, file_to_write)
-            custom_print(',rank\n', file_to_write)
-
             objs = []
             for alpha in alphas:
-                objs.append(read(n_clf, alpha, def_series, gamma_permutation))
-            values = map_dtrex(objs, meas)
-            iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)
+                objs.append(read(n_clf, alpha, def_series))
+            ref_values = map_dtrex(objs, meas)
+            for gamma_permutation in range(len(gammas1)):
+                suffix = get_params_suffix(gamma_permutation)
+                custom_print('\nn_clf: ' + str(n_clf) + ', meas: ' + meas + suffix + '\n', file_to_write)
 
-            counter = 0
-            for alpha in alphas:
-                custom_print(single_script_psi(str(float(alpha))) + ',', file_to_write)
-                for filename_index in range(len(filenames)):
-                    custom_print(round_to_str(values[counter][filename_index], 3) + ',', file_to_write)
-                custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
-                counter = counter + 1
+                for filename_index in filenames:
+                    custom_print(',' + filename_index, file_to_write)
+                custom_print(',rank\n', file_to_write)
 
-            for reference in references:
-                custom_print(single_script_psi(reference) + ',', file_to_write)
-                for filename_index in range(len(filenames)):
-                    custom_print(round_to_str(values[counter][filename_index], 3) + ',', file_to_write)
-                custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
-                counter = counter + 1
+                filtered_objs = []
+                for alpha in alphas:
+                    filtered_objs.append(read(n_clf, alpha, def_series, gamma_permutation))
+                values = map_dtrex(filtered_objs, meas)
+                iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values) # wrong stats - only means from current gamma permutation are taken
 
-            ## post-hoc
-            rankings = create_rank_dict(rankings_cmp)
-            comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, '0')
-            pH = [x for _, x in sorted(zip(comparisonsH, pH))]
-            custom_print('p-values: ' + str(pH) + '\n', file_to_write)
+                counter = 0
+                for alpha in alphas:
+                    custom_print(single_script_psi(str(float(alpha))) + ',', file_to_write)
+                    for filename_index in range(len(filenames)):
+                        custom_print(round_to_str(values[counter][filename_index], 3) + ',', file_to_write)
+                    custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
+                    counter = counter + 1
+
+                for reference in references:
+                    custom_print(single_script_psi(reference) + ',', file_to_write)
+                    for filename_index in range(len(filenames)):
+                        custom_print(round_to_str(ref_values[counter][filename_index], 3) + ',', file_to_write)
+                    custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
+                    counter = counter + 1
+
+                ## post-hoc
+                rankings = create_rank_dict(rankings_cmp)
+                comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, '0')
+                pH = [x for _, x in sorted(zip(comparisonsH, pH))]
+                custom_print('p-values: ' + str(pH) + '\n', file_to_write)
 
 
-def aggregate_csv(file_to_write = None, meas = 'acc', gamma_permutation = -1):
-
+def aggregate_csv():
     def_series = seriex[0]
     for n_clf in n_clfs:
-        objs = []
-        for alpha in alphas:
-            objs.append(read(n_clf, alpha, def_series, gamma_permutation = gamma_permutation))
-        values = map_dtrex(objs, meas)
-
-        custom_print(','.join(['alpha' + a + '(' + meas + ')' for a in alphas]) + ',mv(' + meas + '),rf(' + meas + ')\n', file_to_write)
-        for i in range(len(values[0])):
-            for j in range(len(values)):
-                custom_print(round_to_str(values[j][i], 3) + ',', file_to_write)
-            custom_print('\n', file_to_write)
+        for meas in ['acc', 'mcc']:
+            objs = []
+            for alpha in alphas:
+                objs.append(read(n_clf, alpha, def_series))
+            ref_values = map_dtrex(objs, meas)
+            for gamma_permutation in range(len(gammas1)):
+                filtered_objs = []
+                for alpha in alphas:
+                    filtered_objs.append(read(n_clf, alpha, def_series, gamma_permutation))
+                values = map_dtrex(filtered_objs, meas)
+                with open('csv/' + meas + '_' + gammas1[gamma_permutation] + '_' + gammas2[gamma_permutation] + '.csv', 'w') as file_to_write:
+                    custom_print(','.join(['alpha' + a + '(' + meas + ')' for a in alphas]) + ',mv(' + meas + '),rf(' + meas + ')\n', file_to_write)
+                    for i in range(len(values[0])):
+                        for j in range(len(values)):
+                            custom_print(round_to_str([values, ref_values][j in [4, 5]][j][i], 3) + ',', file_to_write)
+                        custom_print('\n', file_to_write)
 
 
 with open('reports/1-batch.csv', 'w') as f:
-    for i in range(len(gammas1)):
-        print_results(f, gamma_permutation = i)
+    print_results(f)
 
-for meas in ['acc', 'mcc']:
-    for i in range(len(gammas1)):
-        with open('csv/' + meas + '_' + gammas1[i] + '_' + gammas2[i] + '.csv', 'w') as f:
-            aggregate_csv(f, meas = meas, gamma_permutation = i)
+aggregate_csv()
