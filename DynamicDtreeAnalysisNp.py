@@ -7,46 +7,46 @@ from nonparametric_tests import friedman_test, bonferroni_dunn_test
 import numpy as np
 
 filenames = np.array([
-      "aa",
-      "ap",
-      "ba",
-      "bi",
-      "bu",
-      "c",
-      "d",
-      "ec",
-      "h",
-      "i",
-      "ir",
-      "m",
-      "ma",
-      "p",
-      "ph",
-      "pi",
-      "ri",
-      "sb",
-      "se",
-      "t",
-      "te",
-      "th",
-      "ti",
-      "wd",
-      "wi",
-      "wr",
-      "ww",
-      "ye"])
+    "aa",
+    "ap",
+    "ba",
+    "bi",
+    "bu",
+    "c",
+    "d",
+    "ec",
+    "h",
+    "i",
+    "ir",
+    "m",
+    "ma",
+    "p",
+    "ph",
+    "pi",
+    "ri",
+    "sb",
+    "se",
+    "t",
+    "te",
+    "th",
+    "ti",
+    "wd",
+    "wi",
+    "wr",
+    "ww",
+    "ye"])
 n_files = len(filenames)
 references = ['mv', 'rf', 'i']
 measurements = ['acc', 'mcc', 'f1', 'aur']
-n_meas = 4 # TODO: remove
 scores = np.array([ref + meas for ref in references for meas in measurements])
 n_score = len(scores)
-clfs = [3]  # [3, 5, 7, 9]
+clfs = [3, 5]  # [3, 5, 7, 9]
 n_clfs = len(clfs)
-metrics = ['euclidean']
+metrics = ['e']
 n_metrics = len(metrics)
-mappings = ['???']
+mappings = ['hbd']
 n_mappings = len(mappings)
+
 
 # [filenames x meas/scores x metrics x mappings x n_clf]
 # [28 x 12 x 1 x 1 x 4]
@@ -70,7 +70,7 @@ def read_cube():
     for i in range(0, n_metrics):
         for j in range(0, n_mappings):
             for k in range(0, n_clfs):
-                res[:, :, i, j, k] = read(metrics[i], mappings[j], clfs[k])
+                res[:, :, i, j, k] = read(metrics[i], mappings[j], clfs[k])[0]
     return res, filenames, scores, metrics, mappings, clfs
 
 
@@ -78,9 +78,9 @@ def average_cube(cube):
     return np.average(cube, axis = (2, 3)), filenames, scores, clfs
 
 
-def custom_print(text, file=None):
+def custom_print(text, file = None):
     if file is None:
-        print(text, end='')
+        print(text, end = '')
     else:
         file.write(text)
 
@@ -93,9 +93,9 @@ def double_script_psi(subscript: str, superscript: str):
     return '$\Psi_{' + subscript + '}^{' + superscript + '}$'
 
 
-def print_results(file_to_write=None):
-    cube = read_cube()
-    cube_aggregated = average_cube(cube)
+def print_results(file_to_write = None):
+    cube, _, _, _, _, _ = read_cube()
+    cube_aggregated, _, _, _ = average_cube(cube)
     for i, meas in enumerate(measurements):
         for j, mapping in enumerate(mappings):
             for k, metric in enumerate(metrics):
@@ -120,12 +120,13 @@ def print_results(file_to_write=None):
                         for n_filename, filename in enumerate(filenames):
                             custom_print(round_to_str(cube_aggregated[n_filename, n_ref * len(measurements) + i, l], 3) + ',', file_to_write)
                         # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
+                        custom_print('\n', file_to_write)
 
-                    for div in n_divs:
-                        custom_print(single_script_psi(mapping) + ',', file_to_write)
-                        for n_filename, filename in enumerate(filenames):
-                            custom_print(round_to_str(cube[n_filename, (len(reference) - 1) * len(measurements) + i, k, j, l], 3) + ',', file_to_write)
-                        # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
+                    custom_print(single_script_psi(mapping) + ',', file_to_write)
+                    for n_filename, filename in enumerate(filenames):
+                        custom_print(round_to_str(cube[n_filename, (len(reference) - 1) * len(measurements) + i, k, j, l], 3) + ',', file_to_write)
+                    # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
+                    custom_print('\n', file_to_write)
 
                     ## post-hoc
                     # rankings = create_rank_dict(rankings_cmp)
