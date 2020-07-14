@@ -6,7 +6,36 @@ from nonparametric_tests import friedman_test, bonferroni_dunn_test
 
 import numpy as np
 
-filenames = ['bio', 'bup', 'cry', 'dba', 'hab', 'ion', 'met', 'pop', 'sei', 'wdb', 'wis']
+filenames = [
+      "aa",
+      "ap",
+      "ba",
+      "bi",
+      "bu",
+      "c",
+      "d",
+      "ec",
+      "h",
+      "i",
+      "ir",
+      "m",
+      "ma",
+      "p",
+      "ph",
+      "pi",
+      "ri",
+      "sb",
+      "se",
+      "t",
+      "te",
+      "th",
+      "ti",
+      "wd",
+      "wi",
+      "wr",
+      "ww",
+      "ye"]
+files_num = len(filenames)
 references = ['mv', 'rf', 'i']
 n_clfs = [3]  # [3, 5, 7, 9]
 n_meas = 4
@@ -18,7 +47,7 @@ def read(n_clf, metric, mapping):
     name_pattern = 'dynamic-dtree/{}_{}_{}'
     res_filename = name_pattern.format(n_clf, metric, mapping)
     absolute_path = os.path.join(os.path.dirname(__file__), res_filename)
-    objects = []
+    objects = np.empty((files_num, 1), dtype = object)
     with(open(absolute_path)) as file:
         for counter, line in enumerate(file.readlines()):
             values = line.split(',')
@@ -27,7 +56,7 @@ def read(n_clf, metric, mapping):
                 float(values[4]), float(values[5]), float(values[6]), float(values[7]),  # rf
                 float(values[8]), float(values[9]), float(values[10]), float(values[11]),  # i
                 n_clf, metric, mapping, filenames[counter - 1])
-            objects.append(obj)
+            objects[counter] = obj
     return objects
 
 
