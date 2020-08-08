@@ -5,6 +5,7 @@ from MathUtils import round_to_str
 from nonparametric_tests import friedman_test, bonferroni_dunn_test
 
 import numpy as np
+import pandas as pd
 
 filenames = np.array([
     "aa",
@@ -37,10 +38,10 @@ filenames = np.array([
     "ye"])
 n_files = len(filenames)
 references = ['mv', 'rf', 'i']
-measurements = ['acc', 'mcc', 'f1', 'aur']
+measurements = ['acc', 'precisionMi', 'recallMi', 'fScoreMi', 'precisionM', 'recallM', 'fScoreM']
 scores = np.array([ref + meas for ref in references for meas in measurements])
 n_score = len(scores)
-clfs = [3, 5]  # [3, 5, 7, 9]
+clfs = [3, 5, 9]
 n_clfs = len(clfs)
 metrics = ['e']
 n_metrics = len(metrics)
@@ -113,20 +114,27 @@ def print_results(file_to_write = None):
                     # TODO: stats
                     # objs = read(clf, metric, mapping)  # metric & mapping wspólne
                     # values = map_dtrex(objs, meas, clf)
-                    # iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)
+                    # cube_aggregated[:, [0, 4], 1]
+                    # cube[:, 8, 0, 0, 1]
+                    # iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(
+                    #     np.c_[
+                    #         cube_aggregated[:, [ind * len(measurements) + i for ind in range(0, len(references) - 1)], l],
+                    #         cube[:, (len(references) - 1) * len(measurements) + i, k, j, l]
+                    #     ].T
+                    # )
+                    df = pd.DataFrame(cube_aggregated[:, [len(measurements) * n_ref + i for n_ref in range(0, len(references))], l].T)
+                    ranks = df.round(3).rank(ascending = False, method = 'dense').agg(np.average, axis = 1)
 
                     for n_ref, reference in enumerate(references[:-1]):
-                        custom_print(single_script_psi(reference) + ',', file_to_write)  # TODO: mapping to latex string
+                        custom_print(single_script_psi(reference) + ',', file_to_write)
                         for n_filename, filename in enumerate(filenames):
                             custom_print(round_to_str(cube_aggregated[n_filename, n_ref * len(measurements) + i, l], 3) + ',', file_to_write)
-                        # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
-                        custom_print('\n', file_to_write)
+                        custom_print(round_to_str(ranks[n_ref], 2) + '\n', file_to_write)
 
-                    custom_print(single_script_psi(mapping) + ',', file_to_write)
+                    custom_print(single_script_psi(references[-1]) + ',', file_to_write)
                     for n_filename, filename in enumerate(filenames):
-                        custom_print(round_to_str(cube[n_filename, (len(reference) - 1) * len(measurements) + i, k, j, l], 3) + ',', file_to_write)
-                    # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
-                    custom_print('\n', file_to_write)
+                        custom_print(round_to_str(cube[n_filename, (len(references) - 1) * len(measurements) + i, k, j, l], 3) + ',', file_to_write)
+                    custom_print(round_to_str(ranks[len(references) - 1], 2) + '\n', file_to_write)
 
                     ## post-hoc
                     # rankings = create_rank_dict(rankings_cmp)
@@ -137,3 +145,8 @@ def print_results(file_to_write = None):
 
 with open('reports/3-dynamic-dtree.csv', 'w') as f:
     print_results(f)
+
+cube, _, _, _, _, _ = read_cube()
+cube_aggregated, _, _, _ = average_cube(cube)
+df = pd.DataFrame(cube_aggregated[:, [len(measurements) * n_ref + 0 for n_ref in range(0, len(references))], 0].T)
+ranks = df.round(3).rank(ascending = False, method = 'dense').agg(np.average, axis = 1)
