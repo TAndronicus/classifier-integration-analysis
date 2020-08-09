@@ -6,8 +6,7 @@ from DtsBatchRes import DtsBatchRes
 from MathUtils import round_to_str
 from nonparametric_tests import friedman_test, bonferroni_dunn_test
 
-seriex = "pre-filtered"
-# filenames = ['bio', 'bup', 'cry', 'dba', 'hab', 'ion', 'met', 'pop', 'sei', 'wdb', 'wis']
+series = "pre-filtered"
 filenames = np.array([
     "aa",
     "ap",
@@ -38,13 +37,40 @@ filenames = np.array([
     "ww",
     "ye"])
 references = ['mv', 'rf']
-n_clfs = [3, 5]
+algorithms = ['mv', 'rf', 'i']
+measurements = ['acc', 'precisionMi', 'recallMi', 'fScoreMi', 'precisionM', 'recallM', 'fScoreM']
+clfs = [3, 5]
 alphas = ["0.0", "0.3", "0.7", "1.0"]
-betas1 = ["0.5"]
+betas1 = ["0.5"]  # TODO: flatten
 betas2 = ["0.0"]
 gammas1 = ["5.0", "20.0", "5.0", "20.0"]
 gammas2 = ["5.0", "5.0", "20.0", "20.0"]
 dims = ["clf", "alpha", "series"]
+n_filenames = len(filenames)
+n_algorithms = len(algorithms)
+n_measurements = len(measurements)
+n_clfs = len(clfs)
+n_alphas = len(alphas)
+n_gammas = len(gammas1)
+
+
+def read_cube():
+    name_pattern = "dts/" + series + "/{}_{}_{}_{}_{}_{}"
+    res = np.zeros((n_filenames, n_algorithms, n_measurements, n_clfs, n_alphas, n_gammas))
+    for l, n_clf in enumerate(clfs):
+        for m, alpha in enumerate(alphas):
+            for n in range(n_gammas):
+                res_filename = name_pattern.format(n_clf, alpha, betas1[0], betas2[0], gammas1[n], gammas2[n])
+                absolute_path = os.path.join(os.path.dirname(__file__), res_filename)
+                with(open(absolute_path)) as file:
+                    for i, line in enumerate(file.readlines()):
+                        if i == 0: continue
+                        values = line.split(',')
+                        assert n_algorithms * n_measurements == len(values)
+                        for j in range(n_algorithms):
+                            for k in range(n_measurements):
+                                res[i - 1, j, k, l, m, n] = values[j * n_measurements + k]
+    return res
 
 
 def read(n_clf, alpha, series, gamma_permutation = -1):
@@ -198,7 +224,9 @@ def aggregate_csv():
                         custom_print('\n', file_to_write)
 
 
-with open('reports/1-batch.csv', 'w') as f:
-    print_results(f)
+# with open('reports/1-batch.csv', 'w') as f:
+#     print_results(f)
 
-aggregate_csv()
+# aggregate_csv()
+
+cube = read_cube()
