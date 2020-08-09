@@ -1,10 +1,13 @@
+import math
+import os
+from datetime import datetime
+
 import xlrd
 import xlwt
+
 from AdvIntegrRes import AdvIntegrRes
 from ClassifierData import ClassifierData
 from CompositionType import CompositionType
-from datetime import datetime
-import os
 
 FILENAMES = [
     'twonorm.dat',  # 7400
@@ -482,3 +485,13 @@ def read_objects_from_file(res_filename: str, n_class: int, bagging: int, i_meth
                                        i_mcc_std, n_class, n_best, i_meth, bagging, space_parts, line[1].value)
                 result_objects.append(res_obj)
     return result_objects
+
+
+def float_nan_safe(value, default_on_nan = 0.):
+    try:
+        converted = float(value)
+        if math.isnan(converted):
+            return default_on_nan
+        return converted
+    except:
+        default_on_nan

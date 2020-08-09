@@ -3,8 +3,8 @@ import os
 import numpy as np
 
 from DtsBatchRes import DtsBatchRes
+from FileHelper import float_nan_safe
 from MathUtils import round_to_str
-from nonparametric_tests import friedman_test, bonferroni_dunn_test
 
 series = "pre-filtered"
 filenames = np.array([
@@ -69,12 +69,45 @@ def read_cube():
                         assert n_algorithms * n_measurements == len(values)
                         for j in range(n_algorithms):
                             for k in range(n_measurements):
-                                res[i - 1, j, k, l, m, n] = values[j * n_measurements + k]
+                                res[i - 1, j, k, l, m, n] = float_nan_safe(values[j * n_measurements + k])
     return res, filenames, algorithms, measurements, clfs, alphas, zip(gammas1, gammas2)
 
 
 def aggregate_cube(cube):
     return np.average(cube, axis = (4, 5)), filenames, algorithms, measurements, clfs
+
+
+def print_results(file_to_write = None):
+    cube, _, _, _, _, _, _ = read_cube()
+    aggregated_cube, _, _, _, _ = aggregate_cube(cube)
+    for l, n_clf in enumerate(clfs):
+        for k, measurement in enumerate(measurements):
+            for n in range(n_gammas):
+                custom_print('\nn_clf: ' + str(n_clf) + ', meas: ' + measurement + ', gamma1: ' + gammas1[n] + ', gamma2: ' + gammas2[n] + '\n', file_to_write)
+                for filename in filenames:
+                    custom_print(',' + filename, file_to_write)
+                custom_print(',rank\n', file_to_write)
+
+                for m, alpha in enumerate(alphas):
+                    custom_print(single_script_psi(str(float(alpha))) + ',', file_to_write)
+                    for i in range(n_filenames):
+                        custom_print(round_to_str(cube[i, n_algorithms - 1, k, l, m, n], 3) + ',', file_to_write)
+                    # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write) # TODO: stats
+
+                for j, algorithm in enumerate(algorithms[:-1]):
+                    custom_print(single_script_psi(algorithm) + ',', file_to_write)
+                    for i in range(n_filenames):
+                        try:
+                            custom_print(round_to_str(aggregated_cube[i, j, k, l], 3) + ',', file_to_write)
+                        except:
+                            print(str(n_clf) + ", " + gammas1[n] + ", " + gammas2[n])
+                    # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
+
+                ## post-hoc # TODO
+                # rankings = create_rank_dict(rankings_cmp)
+                # comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, '0')
+                # pH = [x for _, x in sorted(zip(comparisonsH, pH))]
+                # custom_print('p-values: ' + str(pH) + '\n', file_to_write)
 
 
 def read(n_clf, alpha, series, gamma_permutation = -1):
@@ -165,47 +198,47 @@ def get_params_suffix(gamma_permutation):
     return suffix
 
 
-def print_results(file_to_write = None):
-    for n_clf in n_clfs:
-        for meas in ['acc', 'mcc']:
-            objs = []
-            for alpha in alphas:
-                objs.append(read(n_clf, alpha, series))
-            ref_values = map_dtrex(objs, meas)
-            for gamma_permutation in range(len(gammas1)):
-                suffix = get_params_suffix(gamma_permutation)
-                custom_print('\nn_clf: ' + str(n_clf) + ', meas: ' + meas + suffix + '\n', file_to_write)
-
-                for filename_index in filenames:
-                    custom_print(',' + filename_index, file_to_write)
-                custom_print(',rank\n', file_to_write)
-
-                filtered_objs = []
-                for alpha in alphas:
-                    filtered_objs.append(read(n_clf, alpha, series, gamma_permutation))
-                values = map_dtrex(filtered_objs, meas)
-                iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)  # wrong stats - only means from current gamma permutation are taken
-
-                counter = 0
-                for alpha in alphas:
-                    custom_print(single_script_psi(str(float(alpha))) + ',', file_to_write)
-                    for filename_index in range(len(filenames)):
-                        custom_print(round_to_str(values[counter][filename_index], 3) + ',', file_to_write)
-                    custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
-                    counter = counter + 1
-
-                for reference in references:
-                    custom_print(single_script_psi(reference) + ',', file_to_write)
-                    for filename_index in range(len(filenames)):
-                        custom_print(round_to_str(ref_values[counter][filename_index], 3) + ',', file_to_write)
-                    custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
-                    counter = counter + 1
-
-                ## post-hoc
-                rankings = create_rank_dict(rankings_cmp)
-                comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, '0')
-                pH = [x for _, x in sorted(zip(comparisonsH, pH))]
-                custom_print('p-values: ' + str(pH) + '\n', file_to_write)
+# def print_results(file_to_write = None):
+#     for n_clf in n_clfs:
+#         for meas in ['acc', 'mcc']:
+#             objs = []
+#             for alpha in alphas:
+#                 objs.append(read(n_clf, alpha, series))
+#             ref_values = map_dtrex(objs, meas)
+#             for gamma_permutation in range(len(gammas1)):
+#                 suffix = get_params_suffix(gamma_permutation)
+#                 custom_print('\nn_clf: ' + str(n_clf) + ', meas: ' + meas + suffix + '\n', file_to_write)
+#
+#                 for filename_index in filenames:
+#                     custom_print(',' + filename_index, file_to_write)
+#                 custom_print(',rank\n', file_to_write)
+#
+#                 filtered_objs = []
+#                 for alpha in alphas:
+#                     filtered_objs.append(read(n_clf, alpha, series, gamma_permutation))
+#                 values = map_dtrex(filtered_objs, meas)
+#                 iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)  # wrong stats - only means from current gamma permutation are taken
+#
+#                 counter = 0
+#                 for alpha in alphas:
+#                     custom_print(single_script_psi(str(float(alpha))) + ',', file_to_write)
+#                     for filename_index in range(len(filenames)):
+#                         custom_print(round_to_str(values[counter][filename_index], 3) + ',', file_to_write)
+#                     custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
+#                     counter = counter + 1
+#
+#                 for reference in references:
+#                     custom_print(single_script_psi(reference) + ',', file_to_write)
+#                     for filename_index in range(len(filenames)):
+#                         custom_print(round_to_str(ref_values[counter][filename_index], 3) + ',', file_to_write)
+#                     custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
+#                     counter = counter + 1
+#
+# post-hoc
+# rankings = create_rank_dict(rankings_cmp)
+# comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, '0')
+# pH = [x for _, x in sorted(zip(comparisonsH, pH))]
+# custom_print('p-values: ' + str(pH) + '\n', file_to_write)
 
 
 def aggregate_csv():
@@ -228,10 +261,10 @@ def aggregate_csv():
                         custom_print('\n', file_to_write)
 
 
-# with open('reports/1-batch.csv', 'w') as f:
-#     print_results(f)
+with open('reports/1-batch.csv', 'w') as f:
+    print_results(f)
 
 # aggregate_csv()
 
-cube, _, _, _, _, _, _ = read_cube()
-aggregated_cube, _, _, _, _ = aggregate_cube(cube)
+# cube, _, _, _, _, _, _ = read_cube()
+# aggregated_cube, _, _, _, _ = aggregate_cube(cube)
