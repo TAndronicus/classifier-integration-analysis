@@ -1,11 +1,9 @@
 import os
 
-from DynamicDtreeRes import DynamicDtreeRes
-from MathUtils import round_to_str
-from nonparametric_tests import friedman_test, bonferroni_dunn_test
-
 import numpy as np
 import pandas as pd
+
+from MathUtils import round_to_str
 
 filenames = np.array([
     "aa",
@@ -111,17 +109,6 @@ def print_results(file_to_write = None):
                         custom_print(',' + filename, file_to_write)
                     custom_print(',rank\n', file_to_write)
 
-                    # TODO: stats
-                    # objs = read(clf, metric, mapping)  # metric & mapping wspólne
-                    # values = map_dtrex(objs, meas, clf)
-                    # cube_aggregated[:, [0, 4], 1]
-                    # cube[:, 8, 0, 0, 1]
-                    # iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(
-                    #     np.c_[
-                    #         cube_aggregated[:, [ind * len(measurements) + i for ind in range(0, len(references) - 1)], l],
-                    #         cube[:, (len(references) - 1) * len(measurements) + i, k, j, l]
-                    #     ].T
-                    # )
                     df = pd.DataFrame(cube_aggregated[:, [len(measurements) * n_ref + i for n_ref in range(0, len(references))], l].T)
                     ranks = df.round(3).rank(ascending = False, method = 'dense').agg(np.average, axis = 1)
 
@@ -135,12 +122,6 @@ def print_results(file_to_write = None):
                     for n_filename, filename in enumerate(filenames):
                         custom_print(round_to_str(cube[n_filename, (len(references) - 1) * len(measurements) + i, k, j, l], 3) + ',', file_to_write)
                     custom_print(round_to_str(ranks[len(references) - 1], 2) + '\n', file_to_write)
-
-                    ## post-hoc
-                    # rankings = create_rank_dict(rankings_cmp)
-                    # comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, '0')
-                    # pH = [x for _, x in sorted(zip(comparisonsH, pH))]
-                    # custom_print('p-values: ' + str(pH) + '\n', file_to_write)
 
 
 with open('reports/3-dynamic-dtree.csv', 'w') as f:
