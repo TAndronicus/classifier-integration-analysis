@@ -73,6 +73,10 @@ def read_cube():
     return res, filenames, algorithms, measurements, clfs, alphas, zip(gammas1, gammas2)
 
 
+def aggregate_cube(cube):
+    return np.average(cube, axis = (4, 5)), filenames, algorithms, measurements, clfs
+
+
 def read(n_clf, alpha, series, gamma_permutation = -1):
     name_pattern = "dts/" + series + "/{}_{}_{}_{}_{}_{}"
     objects = []
@@ -230,3 +234,4 @@ def aggregate_csv():
 # aggregate_csv()
 
 cube, _, _, _, _, _, _ = read_cube()
+aggregated_cube, _, _, _, _ = aggregate_cube(cube)
