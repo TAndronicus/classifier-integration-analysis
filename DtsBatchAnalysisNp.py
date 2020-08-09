@@ -70,7 +70,7 @@ def read_cube():
                         for j in range(n_algorithms):
                             for k in range(n_measurements):
                                 res[i - 1, j, k, l, m, n] = values[j * n_measurements + k]
-    return res
+    return res, filenames, algorithms, measurements, clfs, alphas, zip(gammas1, gammas2)
 
 
 def read(n_clf, alpha, series, gamma_permutation = -1):
@@ -229,4 +229,4 @@ def aggregate_csv():
 
 # aggregate_csv()
 
-cube = read_cube()
+cube, _, _, _, _, _, _ = read_cube()
