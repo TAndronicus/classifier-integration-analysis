@@ -1,18 +1,49 @@
 import os
 
+import numpy as np
+
 from DtsBatchRes import DtsBatchRes
 from MathUtils import round_to_str
 from nonparametric_tests import friedman_test, bonferroni_dunn_test
 
-seriex = ["pre-extended"]
-filenames = ['bio', 'bup', 'cry', 'dba', 'hab', 'ion', 'met', 'pop', 'sei', 'wdb', 'wis']
+seriex = ["pre-filtered"]
+# filenames = ['bio', 'bup', 'cry', 'dba', 'hab', 'ion', 'met', 'pop', 'sei', 'wdb', 'wis']
+filenames = np.array([
+    "aa",
+    "ap",
+    "ba",
+    "bi",
+    "bu",
+    "c",
+    "d",
+    "ec",
+    "h",
+    "i",
+    "ir",
+    "m",
+    "ma",
+    "p",
+    "ph",
+    "pi",
+    "ri",
+    "sb",
+    "se",
+    "t",
+    "te",
+    "th",
+    "ti",
+    "wd",
+    "wi",
+    "wr",
+    "ww",
+    "ye"])
 references = ['mv', 'rf']
-n_clfs = [5]
+n_clfs = [3, 5]
 alphas = ["0.0", "0.3", "0.7", "1.0"]
 betas1 = ["0.5"]
 betas2 = ["0.0"]
-gammas1 = ["20.0", "5.0", "20.0", "10.0"]
-gammas2 = ["5.0", "5.0", "20.0", "10.0"]
+gammas1 = ["5.0", "20.0", "5.0", "20.0"]
+gammas2 = ["5.0", "5.0", "20.0", "20.0"]
 dims = ["clf", "alpha", "series"]
 
 
