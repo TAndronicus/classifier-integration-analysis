@@ -119,30 +119,8 @@ def single_script_psi(subscript: str):
     return '$\Psi_{' + subscript + '}$'
 
 
-def aggregate_csv():
-    for n_clf in n_clfs:
-        for meas in ['acc', 'mcc']:
-            objs = []
-            for alpha in alphas:
-                objs.append(read(n_clf, alpha, series))
-            ref_values = map_dtrex(objs, meas)
-            for gamma_permutation in range(len(gammas1)):
-                filtered_objs = []
-                for alpha in alphas:
-                    filtered_objs.append(read(n_clf, alpha, series, gamma_permutation))
-                values = map_dtrex(filtered_objs, meas)
-                with open('csv/' + meas + '_' + gammas1[gamma_permutation] + '_' + gammas2[gamma_permutation] + '.csv', 'w') as file_to_write:
-                    custom_print(','.join(['alpha' + a + '(' + meas + ')' for a in alphas]) + ',mv(' + meas + '),rf(' + meas + ')\n', file_to_write)
-                    for i in range(len(values[0])):
-                        for j in range(len(values)):
-                            custom_print(round_to_str([values, ref_values][j in [4, 5]][j][i], 3) + ',', file_to_write)
-                        custom_print('\n', file_to_write)
-
-
 with open('reports/1-batch.csv', 'w') as f:
     print_results(f)
-
-# aggregate_csv()
 
 cube, _, _, _, _, _, _ = read_cube()
 aggregated_cube, _, _, _, _ = aggregate_cube(cube)
