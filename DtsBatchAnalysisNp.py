@@ -92,15 +92,14 @@ def print_results(file_to_write = None):
                     custom_print(single_script_psi(str(float(alpha))) + ',', file_to_write)
                     for i in range(n_filenames):
                         custom_print(round_to_str(cube[i, n_algorithms - 1, k, l, m, n], 3) + ',', file_to_write)
+                    custom_print('\n', file_to_write)  # TODO: remove
                     # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write) # TODO: stats
 
                 for j, algorithm in enumerate(algorithms[:-1]):
                     custom_print(single_script_psi(algorithm) + ',', file_to_write)
                     for i in range(n_filenames):
-                        try:
-                            custom_print(round_to_str(aggregated_cube[i, j, k, l], 3) + ',', file_to_write)
-                        except:
-                            print(str(n_clf) + ", " + gammas1[n] + ", " + gammas2[n])
+                        custom_print(round_to_str(aggregated_cube[i, j, k, l], 3) + ',', file_to_write)
+                    custom_print('\n', file_to_write)
                     # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
 
                 ## post-hoc # TODO
