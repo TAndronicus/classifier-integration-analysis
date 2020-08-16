@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+import pandas as pd
 
 from FileHelper import float_nan_safe
 from MathUtils import round_to_str
@@ -87,25 +88,20 @@ def print_results(file_to_write = None):
                     custom_print(',' + filename, file_to_write)
                 custom_print(',rank\n', file_to_write)
 
+                df = pd.DataFrame(np.vstack((cube[:, n_algorithms - 1, k, l, :, n].T, aggregated_cube[:, :-1, k, l].T)))
+                ranks = df.round(3).rank(ascending = False, method = 'dense').agg(np.average, axis = 1)
+
                 for m, alpha in enumerate(alphas):
                     custom_print(single_script_psi(str(float(alpha))) + ',', file_to_write)
                     for i in range(n_filenames):
                         custom_print(round_to_str(cube[i, n_algorithms - 1, k, l, m, n], 3) + ',', file_to_write)
-                    custom_print('\n', file_to_write)  # TODO: remove
-                    # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write) # TODO: stats
+                    custom_print(round_to_str(ranks[m], 2) + '\n', file_to_write)  # TODO: stats
 
                 for j, algorithm in enumerate(algorithms[:-1]):
                     custom_print(single_script_psi(algorithm) + ',', file_to_write)
                     for i in range(n_filenames):
                         custom_print(round_to_str(aggregated_cube[i, j, k, l], 3) + ',', file_to_write)
-                    custom_print('\n', file_to_write)
-                    # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
-
-                ## post-hoc # TODO
-                # rankings = create_rank_dict(rankings_cmp)
-                # comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, '0')
-                # pH = [x for _, x in sorted(zip(comparisonsH, pH))]
-                # custom_print('p-values: ' + str(pH) + '\n', file_to_write)
+                    custom_print(round_to_str(ranks[j + n_alphas], 2) + '\n', file_to_write)
 
 
 def custom_print(text, file = None):
@@ -119,7 +115,7 @@ def single_script_psi(subscript: str):
     return '$\Psi_{' + subscript + '}$'
 
 
-with open('reports/1-batch.csv', 'w') as f:
+with open('reports/2-batch.csv', 'w') as f:
     print_results(f)
 
 cube, _, _, _, _, _, _ = read_cube()
