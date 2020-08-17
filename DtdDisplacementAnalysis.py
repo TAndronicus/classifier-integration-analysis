@@ -1,10 +1,10 @@
 import os
 
+import numpy as np
+
 from DtdDisplacementRes import DtdDisplacementRes
 from MathUtils import round_to_str
 from nonparametric_tests import friedman_test, bonferroni_dunn_test
-
-import numpy as np
 
 filenames = ['bio', 'bup', 'cry', 'dba', 'hab', 'ion', 'met', 'pop', 'sei', 'wdb', 'wis']
 # references = ['mv', 'rf', 'wmv_vol', 'wmv_inv']
@@ -12,7 +12,7 @@ references = ['mv', 'rf']
 n_clfs = [3, 5, 7, 9]
 n_feas = 2
 n_divs = [20, 40, 60]
-n_displacements = 10
+n_displacements = 5
 n_meas = 2
 
 
