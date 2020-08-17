@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import itertools
 
 ### Constants
 colors = ['r', 'g', 'b']
@@ -24,6 +25,13 @@ def show():
     plt.show()
 
 
+def draw_mids(xs: [], ys: []):
+    xm = map(lambda xt: (xt[0] + xt[1]) / 2, [(xs[i], xs[i + 1]) for i in range(len(xs) - 1)])
+    ym = map(lambda yt: (yt[0] + yt[1]) / 2, [(ys[i], ys[i + 1]) for i in range(len(ys) - 1)])
+    cross_join = list(zip(*itertools.product(xm, ym)))
+    plt.scatter(cross_join[0], cross_join[1])
+
+
 ### Script
 tree1 = [[0, .6], [.3, .6], [.3, .2], [.7, .2], [.7, 1]]
 tree2 = [[0, .4], [.6, .4], [.6, 1]]
@@ -41,5 +49,16 @@ points = [item for sublist in trees for item in sublist]
 xs = set(map(lambda p: p[0], points))
 ys = set(map(lambda p: p[1], points))
 draw_tangents(xs, ys)
+show()
 
+
+for (tree, c) in zip(trees, colors):
+    draw_tree(tree, c)
+points = [item for sublist in trees for item in sublist]
+xs = list(set(list(map(lambda p: p[0], points)) + [0, 1]))
+ys = list(set(list(map(lambda p: p[1], points)) + [0, 1]))
+xs.sort()
+ys.sort()
+draw_tangents(xs, ys)
+draw_mids(xs, ys)
 show()
