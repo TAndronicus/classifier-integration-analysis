@@ -1,14 +1,15 @@
-import matplotlib.pyplot as plt
 import itertools
+
+import matplotlib.pyplot as plt
 
 ### Constants
 colors = ['r', 'g', 'b']
 
 
 ### Functions
-def draw_tree(coordinates: [], color='r'):
+def draw_tree(coordinates: [], color = 'r'):
     for (p1, p2) in [(coordinates[i], coordinates[i + 1]) for i in range(len(coordinates) - 1)]:
-        plt.plot([p1[0], p2[0]], [p1[1], p2[1]], color=color)
+        plt.plot([p1[0], p2[0]], [p1[1], p2[1]], color = color)
 
 
 def draw_tangents(xs: [], ys: []):
@@ -22,6 +23,8 @@ def show():
     axes = plt.gca()
     axes.set_xlim([0, 1])
     axes.set_ylim([0, 1])
+    plt.xlabel('$x_1$', fontsize = 16)
+    plt.ylabel('$x_2$', fontsize = 16)
     plt.show()
 
 
