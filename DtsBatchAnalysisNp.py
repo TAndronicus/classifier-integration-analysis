@@ -15,19 +15,19 @@ filenames = np.array([
     "bu",
     "c",
     "d",
-    "ec",
+    "e",
     "h",
-    "i",
+    "io",
     "ir",
-    "m",
+    "me",
     "ma",
-    "p",
+    "po",
     "ph",
     "pi",
     "ri",
     "sb",
     "se",
-    "t",
+    "tw",
     "te",
     "th",
     "ti",
@@ -35,7 +35,7 @@ filenames = np.array([
     "wi",
     "wr",
     "ww",
-    "ye"])
+    "y"])
 references = ['mv', 'rf']
 algorithms = ['mv', 'rf', 'i']
 measurements = ['acc', 'precisionMi', 'recallMi', 'fScoreMi', 'precisionM', 'recallM', 'fScoreM']
