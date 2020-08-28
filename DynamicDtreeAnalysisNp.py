@@ -13,7 +13,7 @@ filenames = np.array([
     "bu",
     "c",
     "d",
-    "ec",
+    "e",
     "h",
     "io",
     "ir",
@@ -22,7 +22,7 @@ filenames = np.array([
     "po",
     "ph",
     "pi",
-    "ri",
+    "r",
     "sb",
     "se",
     "tw",
@@ -33,7 +33,7 @@ filenames = np.array([
     "wi",
     "wr",
     "ww",
-    "ye"])
+    "y"])
 n_files = len(filenames)
 references = ['mv', 'rf', 'i']
 measurements = ['acc', 'precisionMi', 'recallMi', 'fScoreMi', 'precisionM', 'recallM', 'fScoreM']
