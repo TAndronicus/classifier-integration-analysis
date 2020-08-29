@@ -2,6 +2,8 @@ import os
 
 import numpy as np
 
+from MathUtils import round_to_str
+
 filenames = ['bio', 'bup', 'cry', 'dba', 'hab', 'ion', 'met', 'pop', 'sei', 'wdb', 'wis']
 algorithms = ['MV', 'RF', 'wMV', 'I']
 mappings = ['vol', 'inv']
@@ -70,36 +72,35 @@ def double_script_psi(subscript: str, superscript: str):
     return '$\Psi_{' + subscript + '}^{' + superscript + '}$'
 
 
-# def print_results(file_to_write = None):
-#     for meas in ['acc', 'mcc']:
-#         for mapping in ['vol', 'inv']:
-#             for n_clf in n_clfs:
-#                 custom_print('\nn_fea: ' + str(n_feas) + ', meas: ' + meas + ', n_clf: ' + str(n_clf) + ', mapping: ' + mapping + '\n', file_to_write)
-#
-#                 for filename in filenames:
-#                     custom_print(',' + filename, file_to_write)
-#                 custom_print(',rank\n', file_to_write)
-#
-#                 objs = read(n_clf, n_feas)
-#                 values = map_dtrex(objs, meas, mapping)
-#                 iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)
-#
-#                 counter = 0
-#                 for reference in references:
-#                     custom_print(single_script_psi(reference) + ',', file_to_write)  # TODO: mapping to latex string
-#                     for filename in filenames:
-#                         obj = find_first_by_filename(objs, filename)
-#                         custom_print(round_to_str(getattr(obj, reference + '_' + meas), 3) + ',', file_to_write)
-#                     custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
-#                     counter = counter + 1
-#
-#                 for div in n_divs:
-#                     custom_print(double_script_psi(mapping, str(div)) + ',', file_to_write)
-#                     for filename in filenames:
-#                         obj = find_first_by_filename(objs, filename)
-#                         custom_print(round_to_str(getattr(obj, 'i_' + mapping + '_' + meas)[div], 3) + ',', file_to_write)
-#                     custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
-#                     counter = counter + 1
+def print_results(file_to_write = None):
+    cube = read_cube()
+    for (n, displacement) in enumerate(displacements):
+        for (m, meas) in enumerate(measurements):
+            for (k, mapping) in enumerate(mappings):
+                for (o, clf) in enumerate(clfs):
+                    custom_print('\nn_fea: ' + str(num_features) + ', meas: ' + meas + ', n_clf: ' + str(clf) + ', mapping: ' + mapping + '\n', file_to_write)
+
+                    for filename in filenames:
+                        custom_print(',' + filename, file_to_write)
+                    custom_print(',rank\n', file_to_write)
+
+                    #                     objs = read(n_clf, n_feas)
+                    #                     values = map_dtrex(objs, meas, mapping)
+                    #                     iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)
+                    #
+                    for (j, reference) in enumerate(algorithms[:n_algorithms_independent + n_algorithms_mapping_dep]):
+                        custom_print(single_script_psi(reference) + ',', file_to_write)
+                        for i in range(len(filenames)):
+                            custom_print(round_to_str(cube[i, j, k, 0, m, n, o], 3) + ',', file_to_write)
+                        custom_print('\n', file_to_write)
+                        # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
+
+                    for (l, div) in enumerate(divs):
+                        custom_print(double_script_psi(mapping, str(div)) + ',', file_to_write)
+                        for i in range(len(filenames)):
+                            custom_print(round_to_str(cube[i, -1, k, l, m, n, o], 3) + ',', file_to_write)
+                        custom_print('\n', file_to_write)
+                        # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
 #
 ## post-hoc
 # rankings = create_rank_dict(rankings_cmp)
@@ -108,6 +109,6 @@ def double_script_psi(subscript: str, superscript: str):
 # custom_print('p-values: ' + str(pH) + '\n', file_to_write)
 
 
-# with open('reports/1-displacement.csv', 'w') as f:
-#     print_results(f)
+with open('reports/1-displacement.csv', 'w') as f:
+    print_results(f)
 cube = read_cube()
