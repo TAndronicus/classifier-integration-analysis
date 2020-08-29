@@ -25,7 +25,7 @@ n_displacements = len(displacements)
 n_clfs = len(clfs)
 
 num_features = 2
-references = ['mv', 'rf']
+ANY = 0
 
 
 def chunker(seq, size):
@@ -85,14 +85,14 @@ def print_results(file_to_write = None):
                         custom_print(',' + filename, file_to_write)
                     custom_print(',rank\n', file_to_write)
 
-                    df = pd.DataFrame(np.vstack((cube[:, :(n_algorithms_independent + n_algorithms_mapping_dep), k, 0, m, n, o].T, cube[:, -1, k, :, m, n, o].T)))
+                    df = pd.DataFrame(np.vstack((cube[:, :(n_algorithms_independent + n_algorithms_mapping_dep), k, ANY, m, n, o].T, cube[:, -1, k, :, m, n, o].T)))
                     ranks = df.round(3).rank(ascending = False, method = 'dense').agg(np.average, axis = 1)
 
                     rank_counter = 0
                     for (j, reference) in enumerate(algorithms[:n_algorithms_independent + n_algorithms_mapping_dep]):
                         custom_print(single_script_psi(reference) + ',', file_to_write)
                         for i in range(len(filenames)):
-                            custom_print(round_to_str(cube[i, j, k, 0, m, n, o], 3) + ',', file_to_write)
+                            custom_print(round_to_str(cube[i, j, k, ANY, m, n, o], 3) + ',', file_to_write)
                         custom_print(round_to_str(ranks[rank_counter], 2) + '\n', file_to_write)
                         rank_counter += 1
 
