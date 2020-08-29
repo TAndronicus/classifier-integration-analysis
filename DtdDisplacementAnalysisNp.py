@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+import pandas as pd
 
 from MathUtils import round_to_str
 
@@ -84,29 +85,23 @@ def print_results(file_to_write = None):
                         custom_print(',' + filename, file_to_write)
                     custom_print(',rank\n', file_to_write)
 
-                    #                     objs = read(n_clf, n_feas)
-                    #                     values = map_dtrex(objs, meas, mapping)
-                    #                     iman_davenport, p_value, rankings_avg, rankings_cmp = friedman_test(values)
-                    #
+                    df = pd.DataFrame(np.vstack((cube[:, :(n_algorithms_independent + n_algorithms_mapping_dep), k, 0, m, n, o].T, cube[:, -1, k, :, m, n, o].T)))
+                    ranks = df.round(3).rank(ascending = False, method = 'dense').agg(np.average, axis = 1)
+
+                    rank_counter = 0
                     for (j, reference) in enumerate(algorithms[:n_algorithms_independent + n_algorithms_mapping_dep]):
                         custom_print(single_script_psi(reference) + ',', file_to_write)
                         for i in range(len(filenames)):
                             custom_print(round_to_str(cube[i, j, k, 0, m, n, o], 3) + ',', file_to_write)
-                        custom_print('\n', file_to_write)
-                        # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
+                        custom_print(round_to_str(ranks[rank_counter], 2) + '\n', file_to_write)
+                        rank_counter += 1
 
                     for (l, div) in enumerate(divs):
                         custom_print(double_script_psi(mapping, str(div)) + ',', file_to_write)
                         for i in range(len(filenames)):
                             custom_print(round_to_str(cube[i, -1, k, l, m, n, o], 3) + ',', file_to_write)
-                        custom_print('\n', file_to_write)
-                        # custom_print(round_to_str(rankings_cmp[counter], 2) + '\n', file_to_write)
-#
-## post-hoc
-# rankings = create_rank_dict(rankings_cmp)
-# comparisonsH, z, pH, adj_p = bonferroni_dunn_test(rankings, '0')
-# pH = [x for _, x in sorted(zip(comparisonsH, pH))]
-# custom_print('p-values: ' + str(pH) + '\n', file_to_write)
+                        custom_print(round_to_str(ranks[rank_counter], 2) + '\n', file_to_write)
+                        rank_counter += 1
 
 
 with open('reports/1-displacement.csv', 'w') as f:
