@@ -5,13 +5,41 @@ import pandas as pd
 
 from MathUtils import round_to_str
 
-filenames = ['bio', 'bup', 'cry', 'dba', 'hab', 'ion', 'met', 'pop', 'sei', 'wdb', 'wis']
+filenames = np.array([
+    "aa",
+    "ap",
+    "ba",
+    "bi",
+    "bu",
+    "c",
+    "d",
+    "e",
+    "h",
+    "io",
+    "ir",
+    "me",
+    "ma",
+    "po",
+    "ph",
+    "pi",
+    "ri",
+    "sb",
+    "se",
+    "tw",
+    "te",
+    "th",
+    "ti",
+    "wd",
+    "wi",
+    "wr",
+    "ww",
+    "y"])
 algorithms = ['MV', 'RF', 'wMV', 'I']
 mappings = ['vol', 'inv']
 divs = [20, 40, 60]
 measurements = ['acc', 'precision', 'recall', 'fscore', 'specificity', 'auc']
-displacements = [5]
-clfs = [3, 5, 7, 9]
+displacements = [1, 5]
+clfs = [3, 5]
 has_header = True
 n_filenames = len(filenames)
 n_algorithms_independent = 2
@@ -79,7 +107,9 @@ def print_results(file_to_write = None):
         for (m, meas) in enumerate(measurements):
             for (k, mapping) in enumerate(mappings):
                 for (o, clf) in enumerate(clfs):
-                    custom_print('\nn_fea: ' + str(num_features) + ', meas: ' + meas + ', n_clf: ' + str(clf) + ', mapping: ' + mapping + '\n', file_to_write)
+                    custom_print(
+                        '\nn_fea: ' + str(num_features) + ', meas: ' + meas + ', n_clf: ' + str(clf) + ', mapping: ' + mapping + ', displacements: ' + str(displacement) + '\n',
+                        file_to_write)
 
                     for filename in filenames:
                         custom_print(',' + filename, file_to_write)
