@@ -27,14 +27,12 @@ class EtlBinaryTest(unittest.TestCase):
         )
 
     def test3(self):
-        matrix_binary = self.etl.calculate_conf_matrix_binary(.6970, .385, 1650, 650)
-        self.etl.print_conf_matrix(matrix_binary)
         self.etlHelper.assert_matrices_equal(
             [
                 [450, 300],
                 [200, 700]
             ],
-            matrix_binary
+            self.etl.calculate_conf_matrix_binary(.6970, .385, 1650, 650)
         )
 
     def test4(self):
@@ -119,25 +117,21 @@ class EtlBinaryTest(unittest.TestCase):
         )
 
     def test13(self):
-        matrix = self.etl.calculate_conf_matrix_binary(.97, 0.6556, 100, 96)
-        self.etl.print_conf_matrix(matrix)
         self.etlHelper.assert_matrices_equal(
             [
                 [94, 1],
                 [2, 3]
             ],
-            matrix
+            self.etl.calculate_conf_matrix_binary(.97, 0.6556, 100, 96)
         )
 
     def test14(self):
-        matrix_binary = self.etl.calculate_conf_matrix_binary(.6970, .385, 16500, 6500)
-        self.etl.print_conf_matrix(matrix_binary)
         self.etlHelper.assert_matrices_equal(
             [
                 [4500, 3000],
                 [2000, 7000]
             ],
-            matrix_binary
+            self.etl.calculate_conf_matrix_binary(.6970, .385, 16500, 6500)
         )
 
 
