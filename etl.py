@@ -89,13 +89,16 @@ class Etl:
                                 res[file_index, algorithm_index, rest % n_mappings, int(rest / n_mappings), :, n, o] = algorithm_values
         return res
 
-    '''tp, tn, fp, fn
-    '''
-
     def calculate_conf_matrix(self, acc, precision, recall, size):
         return [
-            size * (1 - acc) / (1 / precision + 1 / recall - 2), size * (acc - (1 - acc) / (1 / precision + 1 / recall - 2)),
-            size * (1 - acc) * (1 - precision) / (precision * (1 / precision + 1 / recall - 2)), size * (1 - acc) * (1 - recall) / (1 / precision + 1 / recall - 2)
+            [
+                size * (1 - acc) / (1 / precision + 1 / recall - 2),
+                size * (1 - acc) * (1 - precision) / (precision * (1 / precision + 1 / recall - 2))
+            ],
+            [
+                size * (1 - acc) * (1 - recall) / (1 / precision + 1 / recall - 2),
+                size * (acc - (1 - acc) / (1 / precision + 1 / recall - 2))
+            ]
         ]
 
     def calculate_conf_matrix_binary(self, acc, mcc, size, positive):
