@@ -90,13 +90,14 @@ class Etl:
         return res
 
     def calculate_conf_matrix(self, acc, precision, recall, size):
+        tp = size * (1 - acc) / (1 / precision + 1 / recall - 2)
         return [
             [
-                size * (1 - acc) / (1 / precision + 1 / recall - 2),
+                tp,
                 size * (1 - acc) * (1 - precision) / (precision * (1 / precision + 1 / recall - 2))
             ],
             [
-                size * (1 - acc) * (1 - recall) / (1 / precision + 1 / recall - 2),
+                size * (1 - acc) * (1 / recall - 1) / (1 / precision + 1 / recall - 2),
                 size * (acc - (1 - acc) / (1 / precision + 1 / recall - 2))
             ]
         ]

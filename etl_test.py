@@ -45,12 +45,14 @@ class EtlTest(unittest.TestCase):
         )
 
     def test5(self):
+        matrix = self.etl.calculate_conf_matrix(.8, .8, 1, 100)
+        self.etl.print_conf_matrix(matrix)
         self.etlHelper.assert_matrices_equal(
             [
                 [80, 20],
                 [0, 0]
             ],
-            self.etl.calculate_conf_matrix(.8, .8, 1, 80)
+            matrix
         )
 
     def test6(self):
