@@ -1,14 +1,13 @@
 import unittest
 
 from etl import calculate_conf_matrix
-from etl_test_helper import EtlTestHelper
+from etl_test_helper import assert_matrices_equal
 
 
 class EtlTest(unittest.TestCase):
-    etlHelper = EtlTestHelper()
 
     def test1(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [50, 50],
                 [0, 0]
@@ -17,7 +16,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test2(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [50, 25],
                 [25, 0]
@@ -26,7 +25,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test3(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [450, 300],
                 [200, 700]
@@ -35,7 +34,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test4(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [50, 0],
                 [50, 0]
@@ -46,7 +45,7 @@ class EtlTest(unittest.TestCase):
     def test5(self):
         matrix = calculate_conf_matrix(.8, .8, 1, 100)
         self.etl.print_conf_matrix(matrix)
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [80, 20],
                 [0, 0]
@@ -55,7 +54,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test6(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [80, 10],
                 [10, 0]
@@ -64,7 +63,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test7(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [80, 0],
                 [0, 20]
@@ -73,7 +72,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test8(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [0, 70],
                 [30, 0]
@@ -82,7 +81,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test9(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [100, 0],
                 [0, 0]
@@ -91,7 +90,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test10(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [0, 0],
                 [100, 0]
@@ -100,7 +99,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test11(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [23, 17],
                 [13, 19]
@@ -109,7 +108,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test12(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [97, 1],
                 [2, 0]
@@ -118,7 +117,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test13(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [94, 1],
                 [2, 3]
@@ -127,7 +126,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test14(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [4500, 3000],
                 [2000, 7000]
@@ -136,7 +135,7 @@ class EtlTest(unittest.TestCase):
         )
 
     def test15(self):
-        self.etlHelper.assert_matrices_equal(
+        assert_matrices_equal(
             [
                 [0, 30],
                 [0, 70]
