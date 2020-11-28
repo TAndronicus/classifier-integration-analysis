@@ -18,13 +18,12 @@ create table files
     check ( minor > 0 ),
     check ( major > 0 )
 );
-create sequence files_seq
+create sequence if not exists files_seq
     minvalue 0
     no maxvalue
     cycle
     increment by 1
     start 0;
-drop table files;
 
 insert into files (id, name, abbreviation, size, attributes, classes, minor, major, url)
 values (nextval('files_seq'), 'Indoor Channel Measurements', 'aa', 7840, 5, 19, 1, 208, 'https://archive.ics.uci.edu/ml/datasets/2.4+GHZ+Indoor+Channel+Measurements'),
