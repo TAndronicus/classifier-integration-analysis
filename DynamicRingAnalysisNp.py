@@ -2,7 +2,6 @@ import os
 
 import numpy as np
 import pandas as pd
-import psycopg2
 
 from MathUtils import round_to_str
 
@@ -52,41 +51,27 @@ n_mappings = len(mappings)
 # [filenames x meas/scores x metrics x mappings x n_clf]
 # [28 x 12 x 1 x 1 x 4]
 
-con = psycopg2.connect(database="doc", user="jb", password="", host="127.0.0.1", port="5432")
-
-
-def test():
-    cur = con.cursor()
-    cur.execute('select * from files')
-    rows = cur.fetchall()
-    for row in rows:
-        print(row)
-
 
 def read(metric, mapping, clf):
     name_pattern = 'dynamic-ring/{}_{}_{}'
     res_filename = name_pattern.format(clf, metric, mapping)
     absolute_path = os.path.join(os.path.dirname(__file__), res_filename)
-    cur = con.cursor()
+    objects = np.zeros((n_files, n_score), dtype = float)
     with(open(absolute_path)) as file:
         for counter, line in enumerate(file.readlines()):
-            cur.execute("""
-            insert into dynamic_ring_raw 
-            values (
-                nextval('mes_seq'), 
-                (select id from files where abbreviation = %s),
-                %s,
-                (select id from metrics where abbreviation = %s),
-                (select id from mappings where abbreviation = %s),""" + line + ");",
-            (filenames[counter], clf, metric, mapping)
-            )
+            values = line.split(',')
+            for score in range(0, n_score):
+                objects[counter, score] = float(values[score])
+    return objects, filenames, scores
 
 
 def read_cube():
+    res = np.zeros((n_files, n_score, n_metrics, n_mappings, n_clfs))
     for i in range(0, n_metrics):
         for j in range(0, n_mappings):
             for k in range(0, n_clfs):
-                read(metrics[i], mappings[j], clfs[k])
+                res[:, :, i, j, k] = read(metrics[i], mappings[j], clfs[k])[0]
+    return res, filenames, scores, metrics, mappings, clfs
 
 
 def average_cube(cube):
@@ -140,11 +125,10 @@ def print_results(file_to_write = None):
                     custom_print(round_to_str(ranks[len(references) - 1], 2) + '\n', file_to_write)
 
 
-# with open('reports/4-dynamic-ring.csv', 'w') as f:
-#     print_results(f)
-#
-# cube, _, _, _, _, _ = read_cube()
-# cube_aggregated, _, _, _ = average_cube(cube)
-# df = pd.DataFrame(cube_aggregated[:, [len(measurements) * n_ref + 0 for n_ref in range(0, len(references))], 0].T)
-# ranks = df.round(3).rank(ascending = False, method = 'dense').agg(np.average, axis = 1)
-test()
+with open('reports/4-dynamic-ring.csv', 'w') as f:
+    print_results(f)
+
+cube, _, _, _, _, _ = read_cube()
+cube_aggregated, _, _, _ = average_cube(cube)
+df = pd.DataFrame(cube_aggregated[:, [len(measurements) * n_ref + 0 for n_ref in range(0, len(references))], 0].T)
+ranks = df.round(3).rank(ascending = False, method = 'dense').agg(np.average, axis = 1)
