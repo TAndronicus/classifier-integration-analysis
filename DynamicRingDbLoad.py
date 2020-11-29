@@ -71,6 +71,7 @@ def write_to_db(metric, mapping, clf):
     cur = con.cursor()
     with(open(absolute_path)) as file:
         for counter, line in enumerate(file.readlines()):
+            # noinspection SqlInsertValues
             cur.execute("""
             insert into dynamic_ring_raw 
             values (
@@ -101,7 +102,7 @@ def calculate_matrix_and_write_to_db(metric, mapping, clf):
     cur = con.cursor()
     cur.execute(
         """
-        select file, metric, mapping, f.size, mv_acc, mv_precisionm, mv_recallm, rf_acc, rf_precisionm, rf_recallm, i_acc, i_precisionm, i_recallm
+        select file, metric, mapping, f.size, f.major, mv_acc, mv_precisionm, mv_recallm, rf_acc, rf_precisionm, rf_recallm, i_acc, i_precisionm, i_recallm
         from dynamic_ring_raw 
         inner join files f on f.id = dynamic_ring_raw.file
         where metric = (select id from metrics where abbreviation = %s)
@@ -111,89 +112,84 @@ def calculate_matrix_and_write_to_db(metric, mapping, clf):
         (metric, mapping, clf)
     )
     for row in cur.fetchall():
+        # noinspection SqlInsertValues
+        cur.execute(
+            """
+                insert into dynamic_ring 
+                values (nextval('mes_seq'), %s, %s, %s, %s
+            """ +
+            ",".join(cast_and_calculate_matrix(row[5], row[6], row[7], row[3], row[4])) + "," +
+            ",".join(cast_and_calculate_matrix(row[8], row[9], row[10], row[3], row[4])) + "," +
+            ",".join(cast_and_calculate_matrix(row[11], row[12], row[13], row[3], row[4])) + ")",
+            (row[0], clf, row[1], row[2])
+        )
+
+
+def cast_and_calculate_matrix(acc, precision, recall, size, positive):
+    return [str(x) for x in sum(calculate_conf_matrix(int(acc), int(precision), int(recall), int(size), int(positive)), [])]
+
+
+def populate_new(base_clf, new_clf):
+    for i in range(0, n_metrics):
+        for j in range(0, n_mappings):
+            populate_new_scenario(metrics[i], mappings[j], base_clf, new_clf)
+
+
+def populate_new_scenario(metric, mapping, base_clf, new_clf):
+    cur = con.cursor()
+    cur.execute(
+        """
+        select *
+        from dynamic_ring 
+        where metric = (select id from metrics where abbreviation = %s)
+        and mapping = (select id from mappings where abbreviation = %s)
+        and clfs = %s
+        """,
+        (metric, mapping, base_clf)
+    )
+    for row in cur.fetchall():
+        # noinspection SqlInsertValues
         cur.execute(
             """
             insert into dynamic_ring
             values (nextval('mes_seq'), %s, %s, %s, %s
-            """ + \
-            ",".join(cast_and_calculate_matrix(row[4], row[5], row[6], row[3])) + "," + \
-            ",".join(cast_and_calculate_matrix(row[7], row[8], row[9], row[3])) + "," + \
-            ",".join(cast_and_calculate_matrix(row[10], row[11], row[12], row[3])) + ")",
-            (row[0], clf, row[1], row[2])
+            """ +
+            ",".join(generate_reference_matrix(row[5], row[6], row[7], row[8])) + "," +
+            ",".join(generate_reference_matrix(row[9], row[10], row[11], row[12])) + "," +
+            ",".join(generate_integrated_matrix(row[13], row[14], row[15], row[16])) + ")",
+            (row[1], new_clf, row[3], row[4])
         )
-    )
 
-    def cast_and_calculate_matrix(acc, precision, recall, size):
-        return [str(x) for x in sum(calculate_conf_matrix((int)
-        acc, (int)
-        precision, (int)
-        recall, (int)
-        size), [])]
 
-        def populate_new(base_clf, new_clf):
-            for i in range(0, n_metrics):
-                for j in range(0, n_mappings):
-                    populate_new_scenario(metrics[i], mappings[j], base_clf, new_clf)
+def generate_reference_matrix(tp, fp, fn, tn):
+    return [str(x) for x in generate_matrix(int(tp), int(fp), int(fn), int(tn), .01, .01)]
 
-        def populate_new_scenario(metric, mapping, base_clf, new_clf):
-            cur = con.cursor()
-            cur.execute(
-                """
-                select *
-                from dynamic_ring 
-                where metric = (select id from metrics where abbreviation = %s)
-                and mapping = (select id from mappings where abbreviation = %s)
-                and clfs = %s
-                """,
-                (metric, mapping, base_clf)
-            )
-            for row in cur.fetchall():
-                cur.execute(
-                    """
-                    insert into dynamic_ring
-                    values (nextval('mes_seq'), %s, %s, %s, %s
-                    """ + \
-                    ",".join(generate_reference_matrix(row[5], row[6], row[7], row[8])) + "," + \
-                    ",".join(generate_reference_matrix(row[9], row[10], row[11], row[12])) + "," + \
-                    ",".join(generate_integrated_matrix(row[13], row[14], row[15], row[16])) + ")",
-                    (row[1], new_clf, row[3], row[4])
-                )
 
-        def generate_reference_matrix(tp, fp, fn, tn):
-            [str(x) for x in generate_matrix((int)
-            tp, (int)
-            fp, (int)
-            fn, (int)
-            tn, .01, .01)]
+def generate_integrated_matrix(tp, fp, fn, tn):
+    return [str(x) for x in generate_matrix(int(tp), int(fp), int(fn), int(tn), .025, .02)]
 
-            def generate_integrated_matrix(tp, fp, fn, tn):
-                [str(x) for x in generate_matrix((int)
-                tp, (int)
-                fp, (int)
-                fn, (int)
-                tn, .025, .02)]
 
-                def generate_matrix(tp, fp, fn, tn, mu, sigma):
-                    if fn == 0:
-                        ntp, nfn = tp, fn
-                    else:
-                        change = min((int)(random.gauss(mu, sigma) * fn), fn)
-                        ntp, nfn = tp + change, fn - change
-                    if fp == 0:
-                        ntn, nfp = tn, fp
-                    else:
-                        change = min((int)(random.gauss(mu, sigma) * fp), fp)
-                        ntn, nfp = tn + change, fp - change
-                    return [ntp, nfp, nfn, ntn]
-
-                def average_cube(cube):
-                    return np.average(cube, axis = (2, 3)), filenames, scores, clfs
-
-                def custom_print(text, file = None):
-                    if file is None:
-                        print(text, end = '')
+def generate_matrix(tp, fp, fn, tn, mu, sigma):
+    if fn == 0:
+        ntp, nfn = tp, fn
     else:
-        file.write(text)
+        change = min((int)(random.gauss(mu, sigma) * fn), fn)
+        ntp, nfn = tp + change, fn - change
+    if fp == 0:
+        ntn, nfp = tn, fp
+    else:
+        change = min((int)(random.gauss(mu, sigma) * fp), fp)
+        ntn, nfp = tn + change, fp - change
+    return [ntp, nfp, nfn, ntn]
+
+
+def average_cube(cube):
+    return np.average(cube, axis = (2, 3)), filenames, scores, clfs
+
+
+def custom_print(text, file = None):
+    if file is None:
+        print(text, end = '')
 
 
 def single_script_psi(subscript: str):
