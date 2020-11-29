@@ -2,50 +2,58 @@ import os
 
 import numpy as np
 import pandas as pd
+import psycopg2
 
 from MathUtils import round_to_str
 
-filenames = np.array([
-    "aa",
-    "ap",
-    "ba",
-    "bi",
-    "bu",
-    "c",
-    "d",
-    "e",
-    "h",
-    "io",
-    "ir",
-    "me",
-    "ma",
-    "po",
-    "ph",
-    "pi",
-    "r",
-    "sb",
-    "se",
-    "tw",
-    "te",
-    "th",
-    "ti",
-    "wd",
-    "wi",
-    "wr",
-    "ww",
-    "y"])
-n_files = len(filenames)
+# filenames = np.array([
+#     "aa",
+#     "ap",
+#     "ba",
+#     "bi",
+#     "bu",
+#     "c",
+#     "d",
+#     "e",
+#     "h",
+#     "io",
+#     "ir",
+#     "me",
+#     "ma",
+#     "po",
+#     "ph",
+#     "pi",
+#     "r",
+#     "sb",
+#     "se",
+#     "tw",
+#     "te",
+#     "th",
+#     "ti",
+#     "wd",
+#     "wi",
+#     "wr",
+#     "ww",
+#     "y"])
 references = ['mv', 'rf', 'i']
 measurements = ['acc', 'precisionMi', 'recallMi', 'fScoreMi', 'precisionM', 'recallM', 'fScoreM']
-scores = np.array([ref + meas for ref in references for meas in measurements])
+scores = np.array([ref + '_' + meas for ref in references for meas in measurements])
 n_score = len(scores)
-# clfs = [3, 5, 7, 9]
-clfs = [3]
+clfs = [3, 5, 7, 9]
+# clfs = [3]
 n_clfs = len(clfs)
 metrics = ['e']
 n_metrics = len(metrics)
 mappings = ['hbd']
 n_mappings = len(mappings)
+
+from_db = True
+con = psycopg2.connect(database = "doc", user = "jb", password = "", host = "127.0.0.1", port = "5432")
+cur = con.cursor()
+cur.execute("select abbreviation from files order by id")
+filenames = [a[0] for a in cur.fetchall()]
+cur.close()
+n_files = len(filenames)
 
 
 # [filenames x meas/scores x metrics x mappings x n_clf]
@@ -65,12 +73,38 @@ def read(metric, mapping, clf):
     return objects, filenames, scores
 
 
+def read_from_db(metric, mapping, clf):
+    con = psycopg2.connect(database = "doc", user = "jb", password = "", host = "127.0.0.1", port = "5432")
+    cur = con.cursor()
+    objects = np.zeros((n_files, n_score), dtype = float)
+    cur.execute(
+        """
+        select * 
+        from dynamic_ring_stats
+        where (metric, mapping, clfs) = (
+            (select id from metrics where abbreviation = %s),
+            (select id from mappings where abbreviation = %s),
+            %s
+        )
+        order by file
+        """,
+        (metric, mapping, clf)
+    )
+    for (count, row) in enumerate(cur.fetchall()):
+        objects[count, :] = [float(el) for el in row[5:]]
+    cur.close()
+    return objects, filenames, scores
+
+
 def read_cube():
     res = np.zeros((n_files, n_score, n_metrics, n_mappings, n_clfs))
     for i in range(0, n_metrics):
         for j in range(0, n_mappings):
             for k in range(0, n_clfs):
-                res[:, :, i, j, k] = read(metrics[i], mappings[j], clfs[k])[0]
+                if from_db:
+                    res[:, :, i, j, k] = read_from_db(metrics[i], mappings[j], clfs[k])[0]
+                else:
+                    res[:, :, i, j, k] = read(metrics[i], mappings[j], clfs[k])[0]
     return res, filenames, scores, metrics, mappings, clfs
 
 
