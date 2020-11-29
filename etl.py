@@ -3,7 +3,9 @@ from math import pow, sqrt
 from texttable import Texttable
 
 
-def calculate_conf_matrix(acc, precision, recall, size):
+def calculate_conf_matrix(acc, precision, recall, size, positive = 0):
+    if precision == 0 or recall == 0: return [[0, (int)(size * (1 - acc) - positive)], [positive, (int)(acc * size)]]
+    if precision == 1 and recall == 1: return [[positive, 0], [0, size - positive]]
     tp = size * (1 - acc) / (1 / precision + 1 / recall - 2)
     return [
         [
