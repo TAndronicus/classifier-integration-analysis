@@ -1,6 +1,6 @@
 import unittest
 
-from etl import calculate_conf_matrix
+from etl import calculate_conf_matrix, print_conf_matrix
 from etl_test_helper import assert_matrices_equal
 
 
@@ -44,7 +44,7 @@ class EtlTest(unittest.TestCase):
 
     def test5(self):
         matrix = calculate_conf_matrix(.8, .8, 1, 100)
-        self.etl.print_conf_matrix(matrix)
+        print_conf_matrix(matrix)
         assert_matrices_equal(
             [
                 [80, 20],
@@ -68,7 +68,7 @@ class EtlTest(unittest.TestCase):
                 [80, 0],
                 [0, 20]
             ],
-            calculate_conf_matrix(1, 1, 1, 100)
+            calculate_conf_matrix(1, 1, 1, 100, 80)
         )
 
     def test8(self):
@@ -77,7 +77,7 @@ class EtlTest(unittest.TestCase):
                 [0, 70],
                 [30, 0]
             ],
-            calculate_conf_matrix(0, 0, 0, 100)
+            calculate_conf_matrix(0, 0, 0, 100, 30)
         )
 
     def test9(self):
@@ -86,7 +86,7 @@ class EtlTest(unittest.TestCase):
                 [100, 0],
                 [0, 0]
             ],
-            calculate_conf_matrix(1, 1, 1, 100)
+            calculate_conf_matrix(1, 1, 1, 100, 100)
         )
 
     def test10(self):
@@ -95,7 +95,7 @@ class EtlTest(unittest.TestCase):
                 [0, 0],
                 [100, 0]
             ],
-            calculate_conf_matrix(0, 0, 0, 100)
+            calculate_conf_matrix(0, 0, 0, 100, 100)
         )
 
     def test11(self):
