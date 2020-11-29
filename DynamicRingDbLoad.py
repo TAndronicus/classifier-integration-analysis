@@ -192,9 +192,17 @@ def generate_matrix(tp, fp, fn, tn, mu, sigma):
     return [ntp, nfp, nfn, ntn]
 
 
+def insert_base_data():
+    cur = con.cursor()
+    cur.execute("call insert_base_data();")
+    con.commit()
+    cur.close()
+
+
 cleanup()
 write_cube_to_db()
 translate_into_matrix()
 for (transition_from, transition_to) in [(3, 5), (5, 7), (7, 9)]:
     populate_new(transition_from, transition_to)
+insert_base_data()
 con.close()
