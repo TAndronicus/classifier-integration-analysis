@@ -199,10 +199,18 @@ def insert_base_data():
     cur.close()
 
 
+def insert_non_windowed_stats():
+    cur = con.cursor()
+    cur.execute("call insert_non_windowed_stats();")
+    con.commit()
+    cur.close()
+
+
 cleanup()
 write_cube_to_db()
 translate_into_matrix()
 for (transition_from, transition_to) in [(3, 5), (5, 7), (7, 9)]:
     populate_new(transition_from, transition_to)
 insert_base_data()
+insert_non_windowed_stats()
 con.close()
