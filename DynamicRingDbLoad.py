@@ -206,11 +206,30 @@ def insert_non_windowed_stats():
     cur.close()
 
 
+def insert_windowed_stats(target_transition):
+    cur = con.cursor()
+    cur.execute("call insert_windowed_stats(%s::smallint);", [target_transition])
+    con.commit()
+    cur.close()
+
+
+def insert_fScores(target_transition):
+    cur = con.cursor()
+    cur.execute("call insert_fScores(%s::smallint);", [target_transition])
+    con.commit()
+    cur.close()
+
+
+transisions = [(3, 5), (5, 7), (7, 9)]
+
 cleanup()
 write_cube_to_db()
 translate_into_matrix()
-for (transition_from, transition_to) in [(3, 5), (5, 7), (7, 9)]:
+for (transition_from, transition_to) in transisions:
     populate_new(transition_from, transition_to)
 insert_base_data()
 insert_non_windowed_stats()
+for (_, transition_to) in transisions:
+    insert_windowed_stats(transition_to)
+    insert_fScores(transition_to)
 con.close()
