@@ -4,17 +4,17 @@ from texttable import Texttable
 
 
 def calculate_conf_matrix(acc, precision, recall, size, positive = 0):
-    if precision == 0 or recall == 0: return [[0, (int)(size * (1 - acc) - positive)], [positive, (int)(acc * size)]]
+    if precision == 0 or recall == 0: return [[0, round(size * (1 - acc) - positive)], [positive, round(acc * size)]]
     if precision == 1 and recall == 1: return [[positive, 0], [0, size - positive]]
-    tp = size * (1 - acc) / (1 / precision + 1 / recall - 2)
+    tp = round(size * (1 - acc) / (1 / precision + 1 / recall - 2))
     return [
         [
             tp,
-            size * (1 - acc) * (1 - precision) / (precision * (1 / precision + 1 / recall - 2))
+            round(size * (1 - acc) * (1 - precision) / (precision * (1 / precision + 1 / recall - 2)))
         ],
         [
-            size * (1 - acc) * (1 / recall - 1) / (1 / precision + 1 / recall - 2),
-            size * (acc - (1 - acc) / (1 / precision + 1 / recall - 2))
+            round(size * (1 - acc) * (1 / recall - 1) / (1 / precision + 1 / recall - 2)),
+            round(size * (acc - (1 - acc) / (1 / precision + 1 / recall - 2)))
         ]
     ]
 
