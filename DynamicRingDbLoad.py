@@ -7,7 +7,7 @@ import psycopg2
 from etl import calculate_conf_matrix
 
 filenames = np.array([
-    "aa",
+    # "aa",
     "ap",
     "ba",
     "bi",
