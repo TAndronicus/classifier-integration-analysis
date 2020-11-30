@@ -35,7 +35,7 @@ from MathUtils import round_to_str
 #     "wr",
 #     "ww",
 #     "y"])
-references = ['mv', 'rf', 'i']
+references = ['mv', 'rf', 'i', 'io']
 measurements = ['acc', 'precisionMi', 'recallMi', 'fScoreMi', 'precisionM', 'recallM', 'fScoreM']
 scores = np.array([ref + '_' + meas for ref in references for meas in measurements])
 n_score = len(scores)
