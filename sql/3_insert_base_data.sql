@@ -4,7 +4,8 @@ create or replace procedure
 as
 $$
 insert into dynamic_ring_stats (id, file, clfs, metric, mapping, mv_acc, mv_precisionMi, mv_recallMi, mv_fScoreMi, mv_precisionM, mv_recallM, mv_fScoreM, rf_acc, rf_precisionMi,
-                                rf_recallMi, rf_fScoreMi, rf_precisionM, rf_recallM, rf_fScoreM, i_acc, i_precisionMi, i_recallMi, i_fScoreMi, i_precisionM, i_recallM, i_fScoreM)
+                                rf_recallMi, rf_fScoreMi, rf_precisionM, rf_recallM, rf_fScoreM, i_acc, i_precisionMi, i_recallMi, i_fScoreMi, i_precisionM, i_recallM, i_fScoreM,
+                                ir_acc, ir_precisionmi, ir_recallmi, ir_fscoremi, ir_precisionm, ir_recallm, ir_fscorem)
 select nextval('mes_seq'),
        file,
        clfs,

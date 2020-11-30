@@ -221,6 +221,13 @@ def insert_fScores(target_transition):
     cur.close()
 
 
+def insert_dtree_data():
+    cur = con.cursor()
+    cur.execute("call insert_dtree_data();")
+    con.commit()
+    cur.close()
+
+
 transisions = [(3, 5), (5, 7), (7, 9)]
 
 cleanup()
@@ -233,4 +240,5 @@ insert_non_windowed_stats()
 for (_, transition_to) in transisions:
     insert_windowed_stats(transition_to)
     insert_fScores(transition_to)
+insert_dtree_data()
 con.close()
