@@ -40,9 +40,10 @@ references = ['mv', 'rf', 'i']
 measurements = ['acc', 'precisionMi', 'recallMi', 'fScoreMi', 'precisionM', 'recallM', 'fScoreM']
 scores = np.array([ref + meas for ref in references for meas in measurements])
 n_score = len(scores)
-# clfs = [3, 5, 7, 9]
-clfs = [3]
-n_clfs = len(clfs)
+dtree_clfs = [3, 5, 7, 9]
+ring_clfs = [3]
+n_ring_clfs = len(ring_clfs)
+n_dtree_clfs = len(dtree_clfs)
 metrics = ['e']
 n_metrics = len(metrics)
 mappings = ['hbd']
@@ -68,14 +69,16 @@ def cleanup():
     cur.close()
 
 
-def write_cube_to_db():
+def write_data_to_db():
     for i in range(0, n_metrics):
         for j in range(0, n_mappings):
-            for k in range(0, n_clfs):
-                write_to_db(metrics[i], mappings[j], clfs[k])
+            for k in range(0, n_ring_clfs):
+                write_ring_to_db(metrics[i], mappings[j], ring_clfs[k])
+            for k in range(0, n_dtree_clfs):
+                write_dtree_to_db(metrics[i], mappings[j], dtree_clfs[k])
 
 
-def write_to_db(metric, mapping, clf):
+def write_ring_to_db(metric, mapping, clf):
     name_pattern = 'dynamic-ring/{}_{}_{}'
     res_filename = name_pattern.format(clf, metric, mapping)
     absolute_path = os.path.join(os.path.dirname(__file__), res_filename)
@@ -97,11 +100,33 @@ def write_to_db(metric, mapping, clf):
         cur.close()
 
 
+def write_dtree_to_db(metric, mapping, clf):
+    name_pattern = 'dynamic-ring/dtree/{}_{}_{}'
+    res_filename = name_pattern.format(clf, metric, mapping)
+    absolute_path = os.path.join(os.path.dirname(__file__), res_filename)
+    cur = con.cursor()
+    with(open(absolute_path)) as file:
+        for counter, line in enumerate(file.readlines()):
+            # noinspection SqlInsertValues
+            cur.execute("""
+            insert into dynamic_dtree_raw 
+            values (
+                nextval('mes_seq'), 
+                (select id from files where abbreviation = %s),
+                %s,
+                (select id from metrics where abbreviation = %s),
+                (select id from mappings where abbreviation = %s),""" + line + ");",
+                        (filenames[counter], clf, metric, mapping)
+                        )
+        con.commit()
+        cur.close()
+
+
 def translate_into_matrix():
     for i in range(0, n_metrics):
         for j in range(0, n_mappings):
-            for k in range(0, n_clfs):
-                calculate_matrix_and_write_to_db(metrics[i], mappings[j], clfs[k])
+            for k in range(0, n_ring_clfs):
+                calculate_matrix_and_write_to_db(metrics[i], mappings[j], ring_clfs[k])
 
 
 def calculate_matrix_and_write_to_db(metric, mapping, clf):
@@ -231,7 +256,7 @@ def insert_dtree_data():
 transisions = [(3, 5), (5, 7), (7, 9)]
 
 cleanup()
-write_cube_to_db()
+write_data_to_db()
 translate_into_matrix()
 for (transition_from, transition_to) in transisions:
     populate_new(transition_from, transition_to)
