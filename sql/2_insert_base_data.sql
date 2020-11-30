@@ -30,6 +30,13 @@ select nextval('mes_seq'),
        0,
        i_tp::double precision / (i_tp + i_fp),
        i_tp::double precision / (i_tp + i_fn),
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
        0
 from dynamic_ring;
 $$;

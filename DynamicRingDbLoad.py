@@ -61,6 +61,7 @@ def cleanup():
         delete from dynamic_ring_raw;
         delete from dynamic_ring;
         delete from dynamic_ring_stats;
+        delete from dynamic_dtree_raw;
         """
     )
     con.commit()

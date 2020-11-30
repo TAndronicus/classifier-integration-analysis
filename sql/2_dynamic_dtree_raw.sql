@@ -1,4 +1,4 @@
-create table dynamic_ring_stats
+create table dynamic_dtree_raw
 (
     id             bigint primary key,
     file           bigint           not null references files,
@@ -25,12 +25,5 @@ create table dynamic_ring_stats
     i_fScoreMi     double precision not null,
     i_precisionM   double precision not null,
     i_recallM      double precision not null,
-    i_fScoreM      double precision not null,
-    ir_acc         double precision not null,
-    ir_precisionMi double precision not null,
-    ir_recallMi    double precision not null,
-    ir_fScoreMi    double precision not null,
-    ir_precisionM  double precision not null,
-    ir_recallM     double precision not null,
-    ir_fScoreM     double precision not null
+    i_fScoreM      double precision not null
 );
