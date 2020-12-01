@@ -6,35 +6,6 @@ import psycopg2
 
 from MathUtils import round_to_str
 
-# filenames = np.array([
-#     "aa",
-#     "ap",
-#     "ba",
-#     "bi",
-#     "bu",
-#     "c",
-#     "d",
-#     "e",
-#     "h",
-#     "io",
-#     "ir",
-#     "me",
-#     "ma",
-#     "po",
-#     "ph",
-#     "pi",
-#     "r",
-#     "sb",
-#     "se",
-#     "tw",
-#     "te",
-#     "th",
-#     "ti",
-#     "wd",
-#     "wi",
-#     "wr",
-#     "ww",
-#     "y"])
 references = ['mv', 'rf', 'i', 'io']
 measurements = ['acc', 'precisionMi', 'recallMi', 'fScoreMi', 'precisionM', 'recallM', 'fScoreM']
 scores = np.array([ref + '_' + meas for ref in references for meas in measurements])
@@ -50,7 +21,17 @@ n_mappings = len(mappings)
 from_db = True
 con = psycopg2.connect(database = "doc", user = "jb", password = "", host = "127.0.0.1", port = "5432")
 cur = con.cursor()
-cur.execute("select abbreviation from files order by id")
+cur.execute(
+    """
+    select abbreviation 
+    from files f
+    where exists(
+        select * 
+        from dynamic_ring_stats drs
+        where drs.file = f.id
+    )
+    order by f.id
+    """)
 filenames = [a[0] for a in cur.fetchall()]
 cur.close()
 n_files = len(filenames)
@@ -145,7 +126,7 @@ def print_results(file_to_write = None):
                     custom_print(',rank\n', file_to_write)
 
                     df = pd.DataFrame(cube_aggregated[:, [len(measurements) * n_ref + i for n_ref in range(0, len(references))], l].T)
-                    ranks = df.round(3).rank(ascending = False, method = 'dense').agg(np.average, axis = 1)
+                    ranks = df.round(3).rank(ascending = False, method = 'average').agg(np.average, axis = 1)
 
                     for n_ref, reference in enumerate(references[:-1]):
                         custom_print(single_script_psi(reference) + ',', file_to_write)
