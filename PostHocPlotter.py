@@ -11,6 +11,7 @@ critical_value = 0.38
 results_filename = 'reports/res.csv'
 figures_catalog = 'figures'
 fig_extension = 'png'
+save_to_files = True
 
 absolute_path = os.path.join(os.path.dirname(__file__), results_filename)
 experiments = []
@@ -42,5 +43,7 @@ for algorithm, title in zip(experiments, titles):
     avranks = [*algorithm.values()]
     names = [*algorithm.keys()]
     graph_ranks(avranks, names, cd = critical_value, textspace = 1.5)
-    plt.savefig(figures_catalog + '/' + title + '.' + fig_extension)
-    # plt.show()
+    if (save_to_files):
+        plt.savefig(figures_catalog + '/' + title + '.' + fig_extension)
+    else:
+        plt.show()
