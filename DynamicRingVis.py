@@ -122,8 +122,8 @@ plt.scatter(
     list(map(get_x, validation_points)),
     list(map(get_y, validation_points))
 )
-plt.scatter(midpoint[0], midpoint[1])
-show(region[0], region[1])
+plt.scatter(*midpoint)
+show(*region)
 
 for (tree, c) in zip(trees, colors):
     draw_tree(tree, c)
