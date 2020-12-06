@@ -1,4 +1,5 @@
 import itertools
+from functools import reduce
 from random import random
 
 import matplotlib.pyplot as plt
@@ -22,10 +23,10 @@ def draw_tangents(xs: [], ys: []):
         plt.plot([0, 1], [y, y], linestyle = ':', color = 'lightgray')
 
 
-def show():
+def show(x_lim = [0, 1], y_lim = [0, 1]):
     axes = plt.gca()
-    axes.set_xlim([0, 1])
-    axes.set_ylim([0, 1])
+    axes.set_xlim(x_lim)
+    axes.set_ylim(y_lim)
     plt.xlabel('$x_1$', fontsize = 16)
     plt.ylabel('$x_2$', fontsize = 16)
     plt.show()
@@ -92,12 +93,18 @@ def fill_two_rings(xs: [], ys: [], indexes: [], c1 = 'y', c2 = 'b', c3 = 'r'):
             )
 
 
+get_x = lambda p: p[0]
+get_y = lambda p: p[1]
+
 ### Script
 tree1 = [[0, .6], [.3, .6], [.3, .2], [.7, .2], [.7, 1]]
 tree2 = [[0, .4], [.6, .4], [.6, 1]]
 tree3 = [[0, 0], [.2, 0], [.2, .4], [.4, .4], [.4, .8], [.9, .8], [.9, 1]]
 trees = [tree1, tree2, tree3]
 
+region = [[.15, .45], [0, .2]]
+validation_points = [[.2, .05], [.2, .15], [.4, .05]]
+
 for (tree, c) in zip(trees, colors):
     draw_tree(tree, c)
 show()
@@ -105,16 +112,24 @@ show()
 for (tree, c) in zip(trees, colors):
     draw_tree(tree, c)
 points = [item for sublist in trees for item in sublist]
-xs = set(map(lambda p: p[0], points))
-ys = set(map(lambda p: p[1], points))
+xs = set(map(get_x, points))
+ys = set(map(get_y, points))
 draw_tangents(xs, ys)
 show()
 
+midpoint = list(map(lambda p: p / len(validation_points), reduce(lambda p1, p2: [p1[0] + p2[0], p1[1] + p2[1]], validation_points)))
+plt.scatter(
+    list(map(get_x, validation_points)),
+    list(map(get_y, validation_points))
+)
+plt.scatter(midpoint[0], midpoint[1])
+show(region[0], region[1])
+
 for (tree, c) in zip(trees, colors):
     draw_tree(tree, c)
 points = [item for sublist in trees for item in sublist]
-xs = list(set(list(map(lambda p: p[0], points)) + [0, 1]))
-ys = list(set(list(map(lambda p: p[1], points)) + [0, 1]))
+xs = list(set(list(map(get_x, points)) + [0, 1]))
+ys = list(set(list(map(get_y, points)) + [0, 1]))
 xs.sort()
 ys.sort()
 draw_tangents(xs, ys)
