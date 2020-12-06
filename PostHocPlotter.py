@@ -1,4 +1,5 @@
 import os
+
 import matplotlib.pyplot as plt
 from Orange.evaluation import graph_ranks
 from matplotlib import rc
@@ -7,7 +8,7 @@ rc('font', **{'family': 'sans-serif', 'sans-serif': ['Helvetica'], 'size': 15})
 ## for Palatino and other serif fonts use:
 # rc('font',**{'family':'serif','serif':['Palatino']})
 rc('text', usetex=True)
-critical_value = 0.38
+critical_value = 0.75
 results_filename = 'reports/res.csv'
 figures_catalog = 'figures'
 fig_extension = 'png'
