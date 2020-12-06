@@ -1,9 +1,12 @@
 import itertools
+from random import random
 
 import matplotlib.pyplot as plt
 
 ### Constants
 colors = ['r', 'g', 'b']
+
+rands = list(map(lambda _: random() * .6 + .2, range(70)))
 
 
 ### Functions
@@ -29,9 +32,18 @@ def show():
 
 
 def draw_mids(xs: [], ys: []):
-    xm = map(lambda xt: (xt[0] + xt[1]) / 2, [(xs[i], xs[i + 1]) for i in range(len(xs) - 1)])
-    ym = map(lambda yt: (yt[0] + yt[1]) / 2, [(ys[i], ys[i + 1]) for i in range(len(ys) - 1)])
-    cross_join = list(zip(*itertools.product(xm, ym)))
+    prod = [(
+        xt[0] * rands[counter] + xt[1] * (1 - rands[counter]),
+        yt[0] * rands[-1 - counter] + yt[1] * (1 - rands[-1 - counter])
+    ) for counter, (xt, yt) in
+        enumerate(
+            itertools.product(
+                [(xs[i], xs[i + 1]) for i in range(len(xs) - 1)],
+                [(ys[i], ys[i + 1]) for i in range(len(ys) - 1)]
+            )
+        )
+    ]
+    cross_join = list(zip(*prod))
     plt.scatter(cross_join[0], cross_join[1], zorder = 0)
 
 
@@ -80,7 +92,6 @@ def fill_two_rings(xs: [], ys: [], indexes: [], c1 = 'y', c2 = 'b', c3 = 'r'):
             )
 
 
-
 ### Script
 tree1 = [[0, .6], [.3, .6], [.3, .2], [.7, .2], [.7, 1]]
 tree2 = [[0, .4], [.6, .4], [.6, 1]]
@@ -91,7 +102,6 @@ for (tree, c) in zip(trees, colors):
     draw_tree(tree, c)
 show()
 
-
 for (tree, c) in zip(trees, colors):
     draw_tree(tree, c)
 points = [item for sublist in trees for item in sublist]
@@ -99,7 +109,6 @@ xs = set(map(lambda p: p[0], points))
 ys = set(map(lambda p: p[1], points))
 draw_tangents(xs, ys)
 show()
-
 
 for (tree, c) in zip(trees, colors):
     draw_tree(tree, c)
