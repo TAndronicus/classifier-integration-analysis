@@ -54,6 +54,9 @@ n_clfs = len(clfs)
 
 num_features = 2
 ANY = 0
+lines_to_ignore = [1, 11, 13]
+if has_header:
+    lines_to_ignore.append(0)
 
 
 def chunker(seq, size):
@@ -69,7 +72,7 @@ def read_cube():
             absolute_path = os.path.join(os.path.dirname(__file__), res_filename)
             with(open(absolute_path)) as file:
                 for (line_num, line) in enumerate(file.readlines()):
-                    if has_header and line_num == 0: continue
+                    if line_num in lines_to_ignore: continue
                     file_index = line_num - [0, 1][has_header]
                     values = line.split(',')
                     assert len(values) == (n_algorithms_independent + n_algorithms_mapping_dep * n_mappings + n_algorithms_mapping_div_dep * n_mappings * n_divs) * n_measurements
