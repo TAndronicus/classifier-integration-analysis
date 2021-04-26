@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from functools import reduce
+import os
 
 base_models = {
     'base1': [
@@ -30,7 +31,7 @@ base_models = {
 }
 integrated_model = [
     [0, 0, 0, 1, 1, 1],
-    [0, 0, 1, 1, 1, 1],
+    [0, 0, 0, 1, 1, 1],
     [0, 0, 0, 1, 1, 1],
     [0, 0, 0, 0, 1, 1],
     [0, 0, 0, 0, 1, 1],
@@ -39,12 +40,14 @@ integrated_model = [
 
 # config
 region_colors = {
-    0: 'lightgray',
-    1: 'gray'
+    0: 'r',
+    1: 'b'
 }
 boundary_color = 'b'
 include_boundaries = True
 incluse_mv = True
+save_to_file = True
+figures_dir = 'fig'
 
 
 # defs
@@ -106,23 +109,33 @@ def calculate_mv(bases):
     ) / len(bases)).round().tolist()
 
 
-def show(x_lim=[0, 1], y_lim=[0, 1]):
+def create_dir_if_not_exists():
+    if not(os.path.exists(figures_dir)):
+        os.makedirs(figures_dir)
+
+
+def show(name, x_lim=[0, 1], y_lim=[0, 1]):
     axes = plt.gca()
     axes.set_xlim(x_lim)
     axes.set_ylim(y_lim)
     plt.xlabel('$x_1$', fontsize=16)
     plt.ylabel('$x_2$', fontsize=16)
-    plt.show()
+    if save_to_file:
+        plt.savefig(figures_dir + '/' + name + '.png')
+    else:
+        plt.show()
+    plt.clf()
 
 
-def plot_model(model):
+def plot_model(model, name):
     plot_regions(model)
     if include_boundaries: plot_boundaries(model)
-    show()
+    show(name)
 
 
 # script
-for model in base_models.values():
-    plot_model(model)
-if incluse_mv: plot_model(calculate_mv(base_models))
-plot_model(integrated_model)
+if save_to_file: create_dir_if_not_exists()
+for name, model in base_models.items():
+    plot_model(model, name)
+if incluse_mv: plot_model(calculate_mv(base_models), 'mv')
+plot_model(integrated_model, 'integrated')
