@@ -48,6 +48,7 @@ include_boundaries = True
 incluse_mv = True
 save_to_file = True
 figures_dir = 'fig'
+custom_regions = True
 
 
 # defs
@@ -66,8 +67,13 @@ def get_cell(regions, x_ind, y_ind):
     return regions[-y_ind - 1][x_ind]
 
 
+def custom_boundaries():
+    return [0, .2, .3, .4, .6, .7, .9, 1], [0, .2, .4, .6, .8, 1]
+
+
 def calculate_boundaries(regions):
-    return np.linspace(0, 1, len(regions[0]) + 1), np.linspace(0, 1, len(regions) + 1)
+    if custom_regions: return custom_boundaries()
+    else: return np.linspace(0, 1, len(regions[0]) + 1), np.linspace(0, 1, len(regions) + 1)
 
 
 def plot_boundaries(regions):
